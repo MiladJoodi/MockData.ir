@@ -9,6 +9,7 @@ import {
   internalError,
   jsonError,
   jsonSuccess,
+  jsonLocalizedSuccess,
   notFoundError,
   validationError,
 } from "@/lib/api/response";
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const country = await getCountryById(parsedId.data);
     if (!country) return notFoundError("Country not found");
-    return jsonSuccess(country);
+    return jsonLocalizedSuccess(request, "countries", country);
   } catch (error) {
     console.error("GET /api/countries/[id] failed:", error);
     return internalError();
@@ -58,7 +59,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     const country = await updateCountry(parsedId.data, parsed.data);
     if (!country) return notFoundError("Country not found");
-    return jsonSuccess(country);
+    return jsonLocalizedSuccess(request, "countries", country);
   } catch (error) {
     console.error("PATCH /api/countries/[id] failed:", error);
     return internalError();

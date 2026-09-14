@@ -18,6 +18,11 @@ export const commonListQueryParams: QueryParamRow[] = [
     example: "order=asc",
   },
   {
+    param: "lang",
+    description: "Pass fa for Persian text · omit for English (default)",
+    example: "lang=fa",
+  },
+  {
     param: "delay",
     description: "Artificial wait in ms · max 5000",
     example: "delay=800",
@@ -42,6 +47,11 @@ export function withCommonListParams(
 
 /** Mock controls only — for endpoints without pagination (e.g. Auth). */
 export const mockControlQueryParams: QueryParamRow[] = [
+  {
+    param: "lang",
+    description: "Pass fa for Persian text · omit for English (default)",
+    example: "lang=fa",
+  },
   {
     param: "delay",
     description: "Artificial wait in ms · max 5000",

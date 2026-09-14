@@ -32,7 +32,11 @@ export default function HomePage() {
         </h1>
         <p className="mt-5 max-w-lg text-[15px] leading-7 text-muted-foreground">
           Free fake REST APIs with live JSON. Prototype UIs, test auth, and call
-          real endpoints — no backend setup.
+          real endpoints — no backend setup. Add{" "}
+          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[13px]">
+            ?lang=fa
+          </code>{" "}
+          for Persian data.
         </p>
         <div className="relative z-20 mt-8 w-full max-w-xl">
           <SiteSearch large autofocus />

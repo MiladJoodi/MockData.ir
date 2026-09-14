@@ -9,6 +9,7 @@ import {
   internalError,
   jsonError,
   jsonSuccess,
+  jsonLocalizedSuccess,
   notFoundError,
   validationError,
 } from "@/lib/api/response";
@@ -37,7 +38,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return notFoundError("User not found");
     }
 
-    return jsonSuccess(user);
+    return jsonLocalizedSuccess(request, "users", user);
   } catch (error) {
     console.error("GET /api/users/[id] failed:", error);
     return internalError();
@@ -72,7 +73,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       return notFoundError("User not found");
     }
 
-    return jsonSuccess(user);
+    return jsonLocalizedSuccess(request, "users", user);
   } catch (error) {
     console.error("PATCH /api/users/[id] failed:", error);
     return internalError();

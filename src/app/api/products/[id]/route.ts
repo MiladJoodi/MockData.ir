@@ -9,6 +9,7 @@ import {
   internalError,
   jsonError,
   jsonSuccess,
+  jsonLocalizedSuccess,
   notFoundError,
   validationError,
 } from "@/lib/api/response";
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const product = await getProductById(parsedId.data);
     if (!product) return notFoundError("Product not found");
-    return jsonSuccess(product);
+    return jsonLocalizedSuccess(request, "products", product);
   } catch (error) {
     console.error("GET /api/products/[id] failed:", error);
     return internalError();
@@ -58,7 +59,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     const product = await updateProduct(parsedId.data, parsed.data);
     if (!product) return notFoundError("Product not found");
-    return jsonSuccess(product);
+    return jsonLocalizedSuccess(request, "products", product);
   } catch (error) {
     console.error("PATCH /api/products/[id] failed:", error);
     return internalError();

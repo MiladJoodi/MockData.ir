@@ -9,6 +9,7 @@ import {
   internalError,
   jsonError,
   jsonSuccess,
+  jsonLocalizedSuccess,
   notFoundError,
   validationError,
 } from "@/lib/api/response";
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const notification = await getNotificationById(parsedId.data);
     if (!notification) return notFoundError("Notification not found");
-    return jsonSuccess(notification);
+    return jsonLocalizedSuccess(request, "notifications", notification);
   } catch (error) {
     console.error("GET /api/notifications/[id] failed:", error);
     return internalError();
@@ -58,7 +59,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     const notification = await updateNotification(parsedId.data, parsed.data);
     if (!notification) return notFoundError("Notification not found");
-    return jsonSuccess(notification);
+    return jsonLocalizedSuccess(request, "notifications", notification);
   } catch (error) {
     console.error("PATCH /api/notifications/[id] failed:", error);
     return internalError();

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CopyButton } from "@/components/docs/copy-button";
+import { ApiBasePath } from "@/components/docs/api-base-path";
 import { EndpointTable } from "@/components/docs/endpoint-table";
 import { LiveBadge } from "@/components/docs/live-badge";
 import {
@@ -59,10 +59,7 @@ export function ResourceApiDocs({
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <code className="rounded-md border border-border bg-muted px-2.5 py-1.5 font-mono text-[12px] text-[var(--request)]">
-              {resource.basePath}
-            </code>
-            <CopyButton value={resource.basePath} />
+            <ApiBasePath path={resource.basePath} />
             <Link
               href={`/playground?resource=${resource.id}`}
               className="rounded-md border border-border bg-muted/40 px-3 py-1.5 text-[12px] hover:border-[var(--request)]/40"
@@ -86,6 +83,20 @@ export function ResourceApiDocs({
                 Query params
               </h2>
               <QueryParamsTable rows={queryParams} />
+              <p className="text-[12px] leading-5 text-muted-foreground">
+                Persian text: add{" "}
+                <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">
+                  lang=fa
+                </code>
+                . See{" "}
+                <Link
+                  href="/docs#language"
+                  className="text-[var(--request)] hover:underline"
+                >
+                  Docs · Language
+                </Link>
+                .
+              </p>
             </div>
           ) : null}
 

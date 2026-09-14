@@ -9,6 +9,7 @@ import {
   internalError,
   jsonError,
   jsonSuccess,
+  jsonLocalizedSuccess,
   notFoundError,
   validationError,
 } from "@/lib/api/response";
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return notFoundError("Post not found");
     }
 
-    return jsonSuccess(post);
+    return jsonLocalizedSuccess(request, "posts", post);
   } catch (error) {
     console.error("GET /api/posts/[id] failed:", error);
     return internalError();
@@ -69,7 +70,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       return notFoundError("Post not found");
     }
 
-    return jsonSuccess(post);
+    return jsonLocalizedSuccess(request, "posts", post);
   } catch (error) {
     console.error("PATCH /api/posts/[id] failed:", error);
     return internalError();

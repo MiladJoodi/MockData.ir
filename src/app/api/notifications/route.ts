@@ -7,7 +7,7 @@ import { applyMockControls, applyParsedMockControls } from "@/lib/api/mock-contr
 import {
   internalError,
   jsonError,
-  jsonSuccess,
+  jsonLocalizedSuccess,
   validationError,
 } from "@/lib/api/response";
 import {
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     if (forced) return forced;
 
     const result = await listNotifications(query);
-    return jsonSuccess(result.items, { pagination: result.pagination });
+    return jsonLocalizedSuccess(request, "notifications", result.items, { pagination: result.pagination });
   } catch (error) {
     console.error("GET /api/notifications failed:", error);
     return internalError();
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) return validationError(parsed.error);
 
     const notification = await createNotification(parsed.data);
-    return jsonSuccess(notification, { status: 201 });
+    return jsonLocalizedSuccess(request, "notifications", notification, { status: 201 });
   } catch (error) {
     console.error("POST /api/notifications failed:", error);
     return internalError();

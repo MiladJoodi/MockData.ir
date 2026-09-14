@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { User } from "lucide-react";
+import { ApiLocaleToggle } from "@/components/layout/api-locale-toggle";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 
@@ -50,6 +51,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex shrink-0 items-center gap-2">
+          <ApiLocaleToggle />
           <ThemeToggle />
           <span
             aria-hidden

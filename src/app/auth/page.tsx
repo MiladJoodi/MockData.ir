@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CopyButton } from "@/components/docs/copy-button";
+import { ApiBasePath } from "@/components/docs/api-base-path";
 import { EndpointTable } from "@/components/docs/endpoint-table";
 import { LiveBadge } from "@/components/docs/live-badge";
 import { QueryParamsTable } from "@/components/docs/query-params-table";
@@ -141,10 +141,7 @@ export default function AuthApiPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <code className="rounded-md border border-border bg-muted px-2.5 py-1.5 font-mono text-[12px] text-[var(--request)]">
-              {resource.basePath}
-            </code>
-            <CopyButton value={resource.basePath} />
+            <ApiBasePath path={resource.basePath} />
             <Link
               href="/playground?resource=auth"
               className="rounded-md border border-border bg-muted/40 px-3 py-1.5 text-[12px] hover:border-[var(--request)]/40"
@@ -167,6 +164,20 @@ export default function AuthApiPage() {
               Query params
             </h2>
             <QueryParamsTable rows={mockControlQueryParams} />
+            <p className="text-[12px] leading-5 text-muted-foreground">
+              Persian user fields in the response: add{" "}
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">
+                lang=fa
+              </code>
+              . See{" "}
+              <Link
+                href="/docs#language"
+                className="text-[var(--request)] hover:underline"
+              >
+                Docs · Language
+              </Link>
+              .
+            </p>
           </div>
 
           <div className="space-y-3 rounded-xl border border-border bg-card p-4 pt-4">

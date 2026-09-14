@@ -19,6 +19,15 @@ const jsExample = `const res = await fetch('/api/posts?limit=6');
 const { data, pagination } = await res.json();
 console.log(data, pagination);`;
 
+const faExample = `// Persian (Iranian) names & copy — English is default
+const res = await fetch('/api/users?limit=3&lang=fa');
+const { data, font } = await res.json();
+// font.cssUrl → Vazirmatn stylesheet for Persian text
+console.log(data, font);`;
+
+const faCurlExample = `# Same with curl
+curl "http://localhost:3000/api/users?limit=3&lang=fa"`;
+
 const errorExample = `{
   "error": {
     "code": "NOT_FOUND",
@@ -50,6 +59,7 @@ export default function DocsPage() {
             {[
               ["#intro", "Introduction"],
               ["#shared-data", "Shared data"],
+              ["#language", "Language"],
               ["#resources", "Resources"],
               ["#openapi", "OpenAPI"],
               ["#requests", "Requests"],
@@ -112,6 +122,52 @@ export default function DocsPage() {
               . Use this for prototyping and demos — not for storing anything you
               need to keep.
             </p>
+          </section>
+
+          <section id="language" className="scroll-mt-20 space-y-4">
+            <h2 className="text-xl font-semibold tracking-tight">Language</h2>
+            <p className="text-[14px] leading-6 text-muted-foreground">
+              All resource text is English by default. Pass{" "}
+              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
+                lang=fa
+              </code>{" "}
+              for Persian responses with Iranian names, usernames, emails,
+              phones, and copy. No cookie or{" "}
+              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
+                Accept-Language
+              </code>{" "}
+              header is used — only the query param.
+            </p>
+            <ul className="list-inside list-disc space-y-1.5 text-[14px] leading-6 text-muted-foreground">
+              <li>
+                Example:{" "}
+                <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
+                  GET /api/users?lang=fa
+                </code>
+              </li>
+              <li>
+                FA responses include{" "}
+                <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
+                  Content-Language: fa
+                </code>{" "}
+                and a{" "}
+                <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
+                  font
+                </code>{" "}
+                object (Vazirmatn) for rendering.
+              </li>
+              <li>
+                Header{" "}
+                <span className="font-medium text-foreground">EN | FA</span>{" "}
+                only adds{" "}
+                <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
+                  ?lang=fa
+                </code>{" "}
+                in the Playground.
+              </li>
+            </ul>
+            <VsCodeBlock code={faExample} language="javascript" />
+            <VsCodeBlock code={faCurlExample} language="bash" />
           </section>
 
           <section id="resources" className="scroll-mt-20 space-y-4">
@@ -245,6 +301,17 @@ curl -O http://localhost:3000/openapi.json`}
               .
             </p>
             <VsCodeBlock code={jsExample} language="javascript" />
+            <p className="text-[13px] leading-6 text-muted-foreground">
+              Persian: append{" "}
+              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
+                lang=fa
+              </code>
+              . See{" "}
+              <a href="#language" className="text-[var(--request)] hover:underline">
+                Language
+              </a>
+              .
+            </p>
           </section>
 
           <section id="errors" className="scroll-mt-20 space-y-4">

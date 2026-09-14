@@ -5,6 +5,7 @@ import {
   internalError,
   jsonError,
   jsonSuccess,
+  jsonLocalizedSuccess,
   notFoundError,
   validationError,
 } from "@/lib/api/response";
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const todo = await getTodoById(parsedId.data);
     if (!todo) return notFoundError("Todo not found");
-    return jsonSuccess(todo);
+    return jsonLocalizedSuccess(request, "todos", todo);
   } catch (error) {
     console.error("GET /api/todos/[id] failed:", error);
     return internalError();
@@ -51,7 +52,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     const todo = await updateTodo(parsedId.data, parsed.data);
     if (!todo) return notFoundError("Todo not found");
-    return jsonSuccess(todo);
+    return jsonLocalizedSuccess(request, "todos", todo);
   } catch (error) {
     console.error("PATCH /api/todos/[id] failed:", error);
     return internalError();

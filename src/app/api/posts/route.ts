@@ -3,7 +3,7 @@ import { createPost, listPosts } from "@/db/queries/posts";
 import { applyMockControls, applyParsedMockControls } from "@/lib/api/mock-controls";
 import {
   jsonError,
-  jsonSuccess,
+  jsonLocalizedSuccess,
   internalError,
   validationError,
 } from "@/lib/api/response";
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     if (forced) return forced;
 
     const result = await listPosts(query);
-    return jsonSuccess(result.items, { pagination: result.pagination });
+    return jsonLocalizedSuccess(request, "posts", result.items, { pagination: result.pagination });
   } catch (error) {
     console.error("GET /api/posts failed:", error);
     return internalError();
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
 
     const post = await createPost(parsed.data);
-    return jsonSuccess(post, { status: 201 });
+    return jsonLocalizedSuccess(request, "posts", post, { status: 201 });
   } catch (error) {
     console.error("POST /api/posts failed:", error);
     return internalError();

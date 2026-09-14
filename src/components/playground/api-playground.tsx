@@ -5,6 +5,11 @@ import { ChevronDown } from "lucide-react";
 import { CopyButton } from "@/components/docs/copy-button";
 import { MOCK_PASSWORD } from "@/lib/auth/constants";
 import {
+  API_LOCALE_EVENT,
+  API_LOCALE_STORAGE_KEY,
+  type ApiLocale,
+} from "@/lib/api/locale-constants";
+import {
   type PlaygroundResourceId,
 } from "@/lib/playground";
 import { cn } from "@/lib/utils";
@@ -565,8 +570,28 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
   const [responseText, setResponseText] = useState(
     "// Pick a resource + action, then Send",
   );
+  const [responseIsFa, setResponseIsFa] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [apiLocale, setApiLocale] = useState<ApiLocale>("en");
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(API_LOCALE_STORAGE_KEY);
+      setApiLocale(stored === "fa" ? "fa" : "en");
+    } catch {
+      setApiLocale("en");
+    }
+    // Drop legacy cookie so direct /api/* navigation stays English.
+    document.cookie =
+      "mockdata-api-locale=; path=/; max-age=0; SameSite=Lax";
+    function onLocale(e: Event) {
+      const detail = (e as CustomEvent<ApiLocale>).detail;
+      if (detail === "fa" || detail === "en") setApiLocale(detail);
+    }
+    window.addEventListener(API_LOCALE_EVENT, onLocale);
+    return () => window.removeEventListener(API_LOCALE_EVENT, onLocale);
+  }, []);
 
   const selectedUser = useMemo(
     () => users.find((u) => u.id === userId) ?? users[0] ?? null,
@@ -676,8 +701,10 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
     const needCountries = resource === "countries";
 
     async function loadJson(url: string) {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`Failed ${url}`);
+      const withLang =
+        apiLocale === "fa" ? withQuery(url, { lang: "fa" }) : url;
+      const res = await fetch(withLang);
+      if (!res.ok) throw new Error(`Failed ${withLang}`);
       return res.json();
     }
 
@@ -798,7 +825,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
     return () => {
       cancelled = true;
     };
-  }, [resource]);
+  }, [resource, apiLocale]);
 
   useEffect(() => {
     if (manual) return;
@@ -827,6 +854,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
           : {}),
         delay: forceDelay,
         status: forceStatus,
+        lang: apiLocale === "fa" ? "fa" : undefined,
       }),
     );
     setBody(built.body);
@@ -848,6 +876,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
     search,
     forceDelay,
     forceStatus,
+    apiLocale,
     manual,
   ]);
 
@@ -912,6 +941,10 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
         setStatus(res.status);
         setMs(elapsed);
         setResponseText(pretty || "(empty body)");
+        setResponseIsFa(
+          res.headers.get("content-language") === "fa" ||
+            /"font"\s*:/.test(pretty),
+        );
 
         if (requestUrl.includes("/api/auth/login") && res.ok) {
           try {
@@ -1023,6 +1056,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
         setMs(null);
         setError(err instanceof Error ? err.message : "Request failed");
         setResponseText("// Request failed");
+        setResponseIsFa(false);
       }
     });
   }
@@ -1752,7 +1786,15 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
             <CopyButton value={absoluteLastUrl} label="Copy request URL" />
           </div>
         ) : null}
-        <pre className="max-h-[420px] overflow-auto rounded-lg border border-[var(--vscode-border)] bg-[var(--vscode-bg)] p-4 font-mono text-[12px] leading-5 text-[var(--vscode-fg)]">
+        <pre
+          className={cn(
+            "max-h-[420px] overflow-auto rounded-lg border border-[var(--vscode-border)] bg-[var(--vscode-bg)] p-4 text-[12px] leading-5 text-[var(--vscode-fg)]",
+            responseIsFa
+              ? "font-[family-name:var(--font-vazirmatn)]"
+              : "font-mono",
+          )}
+          dir={responseIsFa ? "auto" : undefined}
+        >
           {responseText}
         </pre>
       </div>

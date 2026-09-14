@@ -395,6 +395,15 @@ const delayParam = {
   schema: { type: "integer", minimum: 0, maximum: 5000 },
 } as const;
 
+const langParam = {
+  name: "lang",
+  in: "query",
+  required: false,
+  description:
+    "Pass fa for Persian (Iranian) text in the response. Omit for English (default).",
+  schema: { type: "string", enum: ["fa"], example: "fa" },
+} as const;
+
 const statusParam = {
   name: "status",
   in: "query",
@@ -534,7 +543,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
       title: "MockData",
       version: "1.0.0",
       description:
-        "Fake REST APIs with live JSON. Public resources need no keys. Auth demo: any seeded username + password `password`.",
+        "Fake REST APIs with live JSON. Public resources need no keys. Auth demo: any seeded username + password `password`. Persian text: pass query `lang=fa` (English is default).",
       contact: { name: "MockData" },
     },
     servers: [
@@ -563,7 +572,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
             "Wipes seed tables and reloads default data. Requires ADMIN_SECRET via x-admin-key or Bearer.",
           operationId: "resetSeed",
           security: [{ adminKey: [] }],
-          parameters: [delayParam, statusParam],
+          parameters: [langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Seed reloaded",
@@ -626,7 +635,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           description:
             "Returns a Bearer token when username exists and password is `password`.",
           operationId: "login",
-          parameters: [delayParam, statusParam],
+          parameters: [langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -656,7 +665,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Auth"],
           summary: "Current user",
           operationId: "getMe",
-          parameters: [delayParam, statusParam],
+          parameters: [langParam, delayParam, statusParam],
           security: [{ bearerAuth: [] }],
           responses: {
             "200": {
@@ -715,7 +724,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
               in: "query",
               schema: { type: "string", enum: ["asc", "desc"], default: "desc" },
             },
-            delayParam,
+            langParam, delayParam,
             statusParam,
           ],
           responses: {
@@ -735,7 +744,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Users"],
           summary: "Create user",
           operationId: "createUser",
-          parameters: [delayParam, statusParam],
+          parameters: [langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -769,7 +778,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Users"],
           summary: "Get user",
           operationId: "getUser",
-          parameters: [idPathParam("User"), delayParam, statusParam],
+          parameters: [idPathParam("User"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "User",
@@ -794,7 +803,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Users"],
           summary: "Update user",
           operationId: "updateUser",
-          parameters: [idPathParam("User"), delayParam, statusParam],
+          parameters: [idPathParam("User"), langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -827,7 +836,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Users"],
           summary: "Delete user",
           operationId: "deleteUser",
-          parameters: [idPathParam("User"), delayParam, statusParam],
+          parameters: [idPathParam("User"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Deleted",
@@ -896,7 +905,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
               in: "query",
               schema: { type: "string", enum: ["asc", "desc"], default: "desc" },
             },
-            delayParam,
+            langParam, delayParam,
             statusParam,
           ],
           responses: {
@@ -916,7 +925,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Posts"],
           summary: "Create post",
           operationId: "createPost",
-          parameters: [delayParam, statusParam],
+          parameters: [langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -950,7 +959,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Posts"],
           summary: "Get post",
           operationId: "getPost",
-          parameters: [idPathParam("Post"), delayParam, statusParam],
+          parameters: [idPathParam("Post"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Post",
@@ -975,7 +984,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Posts"],
           summary: "Update post",
           operationId: "updatePost",
-          parameters: [idPathParam("Post"), delayParam, statusParam],
+          parameters: [idPathParam("Post"), langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1008,7 +1017,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Posts"],
           summary: "Delete post",
           operationId: "deletePost",
-          parameters: [idPathParam("Post"), delayParam, statusParam],
+          parameters: [idPathParam("Post"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Deleted",
@@ -1059,7 +1068,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
               },
             },
             orderParam,
-            delayParam,
+            langParam, delayParam,
             statusParam,
           ],
           responses: {
@@ -1079,7 +1088,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Comments"],
           summary: "Create comment",
           operationId: "createComment",
-          parameters: [delayParam, statusParam],
+          parameters: [langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1107,7 +1116,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Comments"],
           summary: "Get comment",
           operationId: "getComment",
-          parameters: [idPathParam("Comment"), delayParam, statusParam],
+          parameters: [idPathParam("Comment"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Comment",
@@ -1126,7 +1135,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Comments"],
           summary: "Update comment",
           operationId: "updateComment",
-          parameters: [idPathParam("Comment"), delayParam, statusParam],
+          parameters: [idPathParam("Comment"), langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1153,7 +1162,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Comments"],
           summary: "Delete comment",
           operationId: "deleteComment",
-          parameters: [idPathParam("Comment"), delayParam, statusParam],
+          parameters: [idPathParam("Comment"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Deleted",
@@ -1196,7 +1205,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
               in: "query",
               schema: { type: "string", enum: ["asc", "desc"], default: "asc" },
             },
-            delayParam,
+            langParam, delayParam,
             statusParam,
           ],
           responses: {
@@ -1216,7 +1225,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Albums"],
           summary: "Create album",
           operationId: "createAlbum",
-          parameters: [delayParam, statusParam],
+          parameters: [langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1244,7 +1253,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Albums"],
           summary: "Get album",
           operationId: "getAlbum",
-          parameters: [albumIdPathParam, delayParam, statusParam],
+          parameters: [albumIdPathParam, langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Album",
@@ -1263,7 +1272,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Albums"],
           summary: "Update album",
           operationId: "updateAlbum",
-          parameters: [albumIdPathParam, delayParam, statusParam],
+          parameters: [albumIdPathParam, langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1290,7 +1299,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Albums"],
           summary: "Delete album",
           operationId: "deleteAlbum",
-          parameters: [albumIdPathParam, delayParam, statusParam],
+          parameters: [albumIdPathParam, langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Deleted",
@@ -1332,7 +1341,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
               },
             },
             orderParam,
-            delayParam,
+            langParam, delayParam,
             statusParam,
           ],
           responses: {
@@ -1352,7 +1361,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Photos"],
           summary: "Create photo",
           operationId: "createPhoto",
-          parameters: [delayParam, statusParam],
+          parameters: [langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1380,7 +1389,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Photos"],
           summary: "Get photo",
           operationId: "getPhoto",
-          parameters: [idPathParam("Photo"), delayParam, statusParam],
+          parameters: [idPathParam("Photo"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Photo",
@@ -1399,7 +1408,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Photos"],
           summary: "Update photo",
           operationId: "updatePhoto",
-          parameters: [idPathParam("Photo"), delayParam, statusParam],
+          parameters: [idPathParam("Photo"), langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1426,7 +1435,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Photos"],
           summary: "Delete photo",
           operationId: "deletePhoto",
-          parameters: [idPathParam("Photo"), delayParam, statusParam],
+          parameters: [idPathParam("Photo"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Deleted",
@@ -1470,7 +1479,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
               },
             },
             orderParam,
-            delayParam,
+            langParam, delayParam,
             statusParam,
           ],
           responses: {
@@ -1490,7 +1499,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Todos"],
           summary: "Create todo",
           operationId: "createTodo",
-          parameters: [delayParam, statusParam],
+          parameters: [langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1518,7 +1527,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Todos"],
           summary: "Get todo",
           operationId: "getTodo",
-          parameters: [idPathParam("Todo"), delayParam, statusParam],
+          parameters: [idPathParam("Todo"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Todo",
@@ -1537,7 +1546,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Todos"],
           summary: "Update todo",
           operationId: "updateTodo",
-          parameters: [idPathParam("Todo"), delayParam, statusParam],
+          parameters: [idPathParam("Todo"), langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1564,7 +1573,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Todos"],
           summary: "Delete todo",
           operationId: "deleteTodo",
-          parameters: [idPathParam("Todo"), delayParam, statusParam],
+          parameters: [idPathParam("Todo"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Deleted",
@@ -1599,7 +1608,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
               },
             },
             orderParam,
-            delayParam,
+            langParam, delayParam,
             statusParam,
           ],
           responses: {
@@ -1619,7 +1628,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Products"],
           summary: "Create product",
           operationId: "createProduct",
-          parameters: [delayParam, statusParam],
+          parameters: [langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1647,7 +1656,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Products"],
           summary: "Get product",
           operationId: "getProduct",
-          parameters: [idPathParam("Product"), delayParam, statusParam],
+          parameters: [idPathParam("Product"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Product",
@@ -1666,7 +1675,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Products"],
           summary: "Update product",
           operationId: "updateProduct",
-          parameters: [idPathParam("Product"), delayParam, statusParam],
+          parameters: [idPathParam("Product"), langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1693,7 +1702,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Products"],
           summary: "Delete product",
           operationId: "deleteProduct",
-          parameters: [idPathParam("Product"), delayParam, statusParam],
+          parameters: [idPathParam("Product"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Deleted",
@@ -1745,7 +1754,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
               },
             },
             orderParam,
-            delayParam,
+            langParam, delayParam,
             statusParam,
           ],
           responses: {
@@ -1767,7 +1776,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Notifications"],
           summary: "Create notification",
           operationId: "createNotification",
-          parameters: [delayParam, statusParam],
+          parameters: [langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1795,7 +1804,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Notifications"],
           summary: "Get notification",
           operationId: "getNotification",
-          parameters: [idPathParam("Notification"), delayParam, statusParam],
+          parameters: [idPathParam("Notification"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Notification",
@@ -1814,7 +1823,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Notifications"],
           summary: "Update notification",
           operationId: "updateNotification",
-          parameters: [idPathParam("Notification"), delayParam, statusParam],
+          parameters: [idPathParam("Notification"), langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1841,7 +1850,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Notifications"],
           summary: "Delete notification",
           operationId: "deleteNotification",
-          parameters: [idPathParam("Notification"), delayParam, statusParam],
+          parameters: [idPathParam("Notification"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Deleted",
@@ -1881,7 +1890,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
               },
             },
             orderParam,
-            delayParam,
+            langParam, delayParam,
             statusParam,
           ],
           responses: {
@@ -1901,7 +1910,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Countries"],
           summary: "Create country",
           operationId: "createCountry",
-          parameters: [delayParam, statusParam],
+          parameters: [langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1929,7 +1938,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Countries"],
           summary: "Get country",
           operationId: "getCountry",
-          parameters: [idPathParam("Country"), delayParam, statusParam],
+          parameters: [idPathParam("Country"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Country",
@@ -1948,7 +1957,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Countries"],
           summary: "Update country",
           operationId: "updateCountry",
-          parameters: [idPathParam("Country"), delayParam, statusParam],
+          parameters: [idPathParam("Country"), langParam, delayParam, statusParam],
           requestBody: {
             required: true,
             content: {
@@ -1975,7 +1984,7 @@ export function buildOpenApiDocument(serverUrl = "http://localhost:3000"): OpenA
           tags: ["Countries"],
           summary: "Delete country",
           operationId: "deleteCountry",
-          parameters: [idPathParam("Country"), delayParam, statusParam],
+          parameters: [idPathParam("Country"), langParam, delayParam, statusParam],
           responses: {
             "200": {
               description: "Deleted",

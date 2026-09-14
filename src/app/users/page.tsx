@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CopyButton } from "@/components/docs/copy-button";
+import { ApiBasePath } from "@/components/docs/api-base-path";
 import { EndpointTable } from "@/components/docs/endpoint-table";
 import { LiveBadge } from "@/components/docs/live-badge";
 import { QueryParamsTable } from "@/components/docs/query-params-table";
@@ -194,10 +194,7 @@ export default function UsersApiPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <code className="rounded-md border border-border bg-muted px-2.5 py-1.5 font-mono text-[12px] text-[var(--request)]">
-              {resource.basePath}
-            </code>
-            <CopyButton value={resource.basePath} />
+            <ApiBasePath path={resource.basePath} />
             <Link
               href="/playground?resource=users"
               className="rounded-md border border-border bg-muted/40 px-3 py-1.5 text-[12px] hover:border-[var(--request)]/40"
@@ -255,6 +252,11 @@ export default function UsersApiPage() {
                   param: "order",
                   description: "asc · desc",
                   example: "order=asc",
+                },
+                {
+                  param: "lang",
+                  description: "Pass fa for Persian text · omit for English",
+                  example: "lang=fa",
                 },
                 {
                   param: "delay",

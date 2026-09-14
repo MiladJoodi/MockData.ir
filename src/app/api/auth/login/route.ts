@@ -4,7 +4,7 @@ import { applyMockControls } from "@/lib/api/mock-controls";
 import {
   internalError,
   jsonError,
-  jsonSuccess,
+  jsonLocalizedSuccess,
   unauthorizedError,
   validationError,
 } from "@/lib/api/response";
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       return unauthorizedError();
     }
 
-    return jsonSuccess({
+    return jsonLocalizedSuccess(request, "auth", {
       token: createMockToken(user.id),
       tokenType: "Bearer",
       expiresIn: 3600,

@@ -3,7 +3,7 @@ import { createUser, listUsers } from "@/db/queries/users";
 import { applyMockControls, applyParsedMockControls } from "@/lib/api/mock-controls";
 import {
   jsonError,
-  jsonSuccess,
+  jsonLocalizedSuccess,
   internalError,
   validationError,
 } from "@/lib/api/response";
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     if (forced) return forced;
 
     const result = await listUsers(query);
-    return jsonSuccess(result.items, { pagination: result.pagination });
+    return jsonLocalizedSuccess(request, "users", result.items, { pagination: result.pagination });
   } catch (error) {
     console.error("GET /api/users failed:", error);
     return internalError();
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await createUser(parsed.data);
-    return jsonSuccess(user, { status: 201 });
+    return jsonLocalizedSuccess(request, "users", user, { status: 201 });
   } catch (error) {
     console.error("POST /api/users failed:", error);
     return internalError();

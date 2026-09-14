@@ -8,6 +8,7 @@ Hit live endpoints, get predictable seeded responses, try auth flows, then wire 
 
 - **10 live resources** — Auth, Users, Posts, Comments, Albums, Photos, Todos, Products, Notifications, Countries
 - **Full CRUD** — list, create, read, update, delete with pagination, search, and filters
+- **Persian data** — add `?lang=fa` for Iranian names and copy (English is default)
 - **Docs + Playground** — per-resource docs, live examples, and an in-browser request runner
 - **Mock controls** — `?delay=` and `?status=` for loading and error UI demos
 - **OpenAPI 3.1** — downloadable at `/openapi.json` for Postman, Insomnia, or codegen
@@ -126,6 +127,26 @@ Append to any API request:
 curl "http://localhost:3000/api/users?delay=1000"
 curl "http://localhost:3000/api/posts/1?status=404"
 ```
+
+## Persian (`lang=fa`)
+
+Responses are **English by default**. For Persian (Iranian names, usernames, emails, and copy), add `lang=fa`:
+
+```bash
+curl "http://localhost:3000/api/users?limit=3&lang=fa"
+```
+
+```js
+const res = await fetch("/api/users?limit=3&lang=fa");
+const { data, font } = await res.json();
+// font.family / font.cssUrl → Vazirmatn for rendering Persian text
+```
+
+- Works on list, single-item, create/update, and auth responses
+- FA responses set `Content-Language: fa` and include a `font` object
+- The site header **EN | FA** toggle only appends `?lang=fa` in the Playground — the API does not read cookies
+
+See also [Docs → Language](https://mockdata.ir/docs#language).
 
 ## Rate limit
 

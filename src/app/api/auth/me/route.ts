@@ -3,7 +3,7 @@ import { getUserFromAuthHeader } from "@/lib/auth/mock-auth";
 import { applyMockControls } from "@/lib/api/mock-controls";
 import {
   internalError,
-  jsonSuccess,
+  jsonLocalizedSuccess,
   unauthorizedError,
 } from "@/lib/api/response";
 
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
       return unauthorizedError("Missing or invalid Bearer token");
     }
 
-    return jsonSuccess(user);
+    return jsonLocalizedSuccess(request, "auth", user);
   } catch (error) {
     console.error("GET /api/auth/me failed:", error);
     return internalError();

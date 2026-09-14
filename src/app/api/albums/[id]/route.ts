@@ -9,6 +9,7 @@ import {
   internalError,
   jsonError,
   jsonSuccess,
+  jsonLocalizedSuccess,
   notFoundError,
   validationError,
 } from "@/lib/api/response";
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const album = await getAlbumById(parsedId.data);
     if (!album) return notFoundError("Album not found");
-    return jsonSuccess(album);
+    return jsonLocalizedSuccess(request, "albums", album);
   } catch (error) {
     console.error("GET /api/albums/[id] failed:", error);
     return internalError();
@@ -55,7 +56,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     const album = await updateAlbum(parsedId.data, parsed.data);
     if (!album) return notFoundError("Album not found");
-    return jsonSuccess(album);
+    return jsonLocalizedSuccess(request, "albums", album);
   } catch (error) {
     console.error("PATCH /api/albums/[id] failed:", error);
     return internalError();

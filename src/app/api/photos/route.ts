@@ -4,7 +4,7 @@ import { applyMockControls, applyParsedMockControls } from "@/lib/api/mock-contr
 import {
   internalError,
   jsonError,
-  jsonSuccess,
+  jsonLocalizedSuccess,
   validationError,
 } from "@/lib/api/response";
 import {
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     if (forced) return forced;
 
     const result = await listPhotos(query);
-    return jsonSuccess(result.items, { pagination: result.pagination });
+    return jsonLocalizedSuccess(request, "photos", result.items, { pagination: result.pagination });
   } catch (error) {
     console.error("GET /api/photos failed:", error);
     return internalError();
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) return validationError(parsed.error);
 
     const photo = await createPhoto(parsed.data);
-    return jsonSuccess(photo, { status: 201 });
+    return jsonLocalizedSuccess(request, "photos", photo, { status: 201 });
   } catch (error) {
     console.error("POST /api/photos failed:", error);
     return internalError();

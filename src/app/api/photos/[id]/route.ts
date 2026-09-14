@@ -9,6 +9,7 @@ import {
   internalError,
   jsonError,
   jsonSuccess,
+  jsonLocalizedSuccess,
   notFoundError,
   validationError,
 } from "@/lib/api/response";
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const photo = await getPhotoById(parsedId.data);
     if (!photo) return notFoundError("Photo not found");
-    return jsonSuccess(photo);
+    return jsonLocalizedSuccess(request, "photos", photo);
   } catch (error) {
     console.error("GET /api/photos/[id] failed:", error);
     return internalError();
@@ -55,7 +56,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     const photo = await updatePhoto(parsedId.data, parsed.data);
     if (!photo) return notFoundError("Photo not found");
-    return jsonSuccess(photo);
+    return jsonLocalizedSuccess(request, "photos", photo);
   } catch (error) {
     console.error("PATCH /api/photos/[id] failed:", error);
     return internalError();

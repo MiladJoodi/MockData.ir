@@ -9,6 +9,7 @@ import {
   internalError,
   jsonError,
   jsonSuccess,
+  jsonLocalizedSuccess,
   notFoundError,
   validationError,
 } from "@/lib/api/response";
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const comment = await getCommentById(parsedId.data);
     if (!comment) return notFoundError("Comment not found");
-    return jsonSuccess(comment);
+    return jsonLocalizedSuccess(request, "comments", comment);
   } catch (error) {
     console.error("GET /api/comments/[id] failed:", error);
     return internalError();
@@ -58,7 +59,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     const comment = await updateComment(parsedId.data, parsed.data);
     if (!comment) return notFoundError("Comment not found");
-    return jsonSuccess(comment);
+    return jsonLocalizedSuccess(request, "comments", comment);
   } catch (error) {
     console.error("PATCH /api/comments/[id] failed:", error);
     return internalError();

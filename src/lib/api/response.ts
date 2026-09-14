@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server";
 import type { ZodError } from "zod";
+import {
+  localizePayload,
+  resolveApiLocale,
+  type LocaleResource,
+  type ApiLocale,
+} from "@/lib/api/locale";
+import { FA_API_FONT } from "@/lib/api/locale-constants";
 
 export type PaginationMeta = {
   page: number;
@@ -8,15 +15,50 @@ export type PaginationMeta = {
   totalPages: number;
 };
 
+export type ApiFontMeta = {
+  family: string;
+  cssUrl: string;
+};
+
 export function jsonSuccess<T>(
   data: T,
-  init?: { status?: number; pagination?: PaginationMeta },
+  init?: {
+    status?: number;
+    pagination?: PaginationMeta;
+    locale?: ApiLocale;
+  },
 ) {
-  const body: { data: T; pagination?: PaginationMeta } = { data };
+  const body: {
+    data: T;
+    pagination?: PaginationMeta;
+    font?: ApiFontMeta;
+  } = { data };
   if (init?.pagination) {
     body.pagination = init.pagination;
   }
-  return NextResponse.json(body, { status: init?.status ?? 200 });
+  if (init?.locale === "fa") {
+    body.font = { ...FA_API_FONT };
+  }
+  const headers = new Headers();
+  if (init?.locale) {
+    headers.set("Content-Language", init.locale);
+  }
+  return NextResponse.json(body, {
+    status: init?.status ?? 200,
+    headers,
+  });
+}
+
+/** Localize entity payload when ?lang=fa is present. */
+export function jsonLocalizedSuccess<T>(
+  request: Request,
+  resource: LocaleResource,
+  data: T,
+  init?: { status?: number; pagination?: PaginationMeta },
+) {
+  const locale = resolveApiLocale(request);
+  const localized = localizePayload(resource, data, locale) as T;
+  return jsonSuccess(localized, { ...init, locale });
 }
 
 export function jsonError(

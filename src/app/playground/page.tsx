@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ApiPlayground } from "@/components/playground/api-playground";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { parsePlaygroundResource } from "@/lib/playground";
@@ -36,8 +37,16 @@ export default async function PlaygroundPage({
         <p className="max-w-xl text-[14px] leading-6 text-muted-foreground">
           Choose a resource and action. Pick a related record when needed —
           path and body fill in automatically. Login · Correct stores the token
-          for Me. Changes hit the shared demo database and reset daily in
-          production.
+          for Me. Use header{" "}
+          <span className="font-medium text-foreground">EN | FA</span> to append{" "}
+          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
+            lang=fa
+          </code>{" "}
+          for Persian data (
+          <Link href="/docs#language" className="text-[var(--request)] hover:underline">
+            docs
+          </Link>
+          ). Changes hit the shared demo database and reset daily in production.
         </p>
       </header>
 

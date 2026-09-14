@@ -101,7 +101,7 @@ export default function DocsPage() {
             <p className="text-[14px] leading-6 text-muted-foreground">
               All visitors share the same live database. Creates, updates, and
               deletes are real and visible to everyone. On production, seed data
-              resets automatically every hour via{" "}
+              resets automatically once per day via{" "}
               <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
                 GET /api/cron/reset
               </code>
@@ -300,7 +300,7 @@ curl -O http://localhost:3000/openapi.json`}
             <h2 className="text-xl font-semibold tracking-tight">Reset seed</h2>
             <p className="text-[14px] leading-6 text-muted-foreground">
               For an immediate reset, use the panel below with the admin secret.
-              Production also resets automatically every hour (
+              Production also resets automatically once per day (
               <a href="#shared-data" className="text-[var(--request)] hover:underline">
                 Shared data
               </a>

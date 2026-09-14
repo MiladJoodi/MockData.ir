@@ -24,7 +24,7 @@ export default function PlaygroundPage() {
         <p className="max-w-xl text-[14px] leading-6 text-muted-foreground">
           Choose a resource and action. Pick a related record when needed —
           path and body fill in automatically. Login · Correct stores the token
-          for Me. Changes hit the shared demo database and reset hourly in
+          for Me. Changes hit the shared demo database and reset daily in
           production.
         </p>
       </header>

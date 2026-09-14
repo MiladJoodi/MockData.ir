@@ -11,7 +11,7 @@ Hit live endpoints, get predictable seeded responses, try auth flows, then wire 
 - **Docs + Playground** — per-resource docs, live examples, and an in-browser request runner
 - **Mock controls** — `?delay=` and `?status=` for loading and error UI demos
 - **OpenAPI 3.1** — downloadable at `/openapi.json` for Postman, Insomnia, or codegen
-- **Shared demo DB** — production seed data resets automatically every hour
+- **Shared demo DB** — production seed data resets automatically once per day
 
 ## Quick start
 
@@ -54,7 +54,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Everyone shares one production database. You can create, update, and delete freely.
 
-On Vercel, seed data **resets every hour** via `GET /api/cron/reset`. Treat it as a disposable demo — not private storage.
+On Vercel, seed data **resets once per day** via `GET /api/cron/reset`. Treat it as a disposable demo — not private storage.
 
 Locally, re-seed with:
 
@@ -147,10 +147,10 @@ Also accepts `Authorization: Bearer <ADMIN_SECRET>`.
 **Automatic** (production):
 
 1. Set `CRON_SECRET` in the Vercel project env (16+ random characters).
-2. Deploy so `vercel.json` registers the hourly cron (`0 * * * *` → `/api/cron/reset`).
+2. Deploy so `vercel.json` registers the daily cron (`0 0 * * *` → `/api/cron/reset`, around midnight UTC).
 3. Vercel sends `Authorization: Bearer <CRON_SECRET>` automatically.
 
-> Hobby plan may limit cron to once per day. Pro allows hourly.
+> On Hobby, cron runs at most once per day (this project matches that). Timing may drift by up to ~59 minutes.
 
 ## Scripts
 
@@ -170,7 +170,7 @@ Also accepts `Authorization: Bearer <ADMIN_SECRET>`.
 - **Drizzle ORM** + Neon / Postgres
 - **Zod** request validation
 - **Resend** for the contact form
-- Deployed on **Vercel** (optional hourly cron)
+- Deployed on **Vercel** (optional daily cron reset)
 
 ## Roadmap
 

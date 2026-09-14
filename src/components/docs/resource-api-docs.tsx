@@ -12,6 +12,7 @@ import {
 } from "@/components/docs/request-panel";
 import { ResponseViewer } from "@/components/docs/response-viewer";
 import { TryExample } from "@/components/docs/try-example";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import type { ApiResource } from "@/lib/catalog";
 
 type Props = {
@@ -37,17 +38,13 @@ export function ResourceApiDocs({
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <header className="mb-10 space-y-4 border-b border-border pb-8">
-        <p className="text-[13px] text-muted-foreground">
-          <Link href="/" className="hover:text-foreground">
-            Home
-          </Link>
-          <span className="mx-2 text-border">/</span>
-          <Link href="/docs" className="hover:text-foreground">
-            Docs
-          </Link>
-          <span className="mx-2 text-border">/</span>
-          <span className="text-foreground">{resource.title}</span>
-        </p>
+        <Breadcrumbs
+          items={[
+            { name: "Home", href: "/", path: "/" },
+            { name: "Docs", href: "/docs", path: "/docs" },
+            { name: resource.title, path: resource.href },
+          ]}
+        />
 
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

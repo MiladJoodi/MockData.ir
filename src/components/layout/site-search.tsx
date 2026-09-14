@@ -57,7 +57,7 @@ export function SiteSearch({ large = false, autofocus = false }: SiteSearchProps
       return;
     }
     if (value.trim()) {
-      router.push(`/docs?q=${encodeURIComponent(value.trim())}`);
+      router.push(`/docs`);
       setOpen(false);
     }
   }

@@ -54,7 +54,7 @@ export function SiteHeader() {
           <span
             aria-hidden
             title="Profile (coming soon)"
-            className="grid size-8 shrink-0 place-items-center rounded-full border border-border bg-muted text-muted-foreground/55 ring-1 ring-border/60"
+            className="grid size-8 shrink-0 place-items-center rounded-full border border-border bg-muted text-muted-foreground/70 ring-1 ring-border/60"
           >
             <User className="size-3.5" strokeWidth={1.75} />
           </span>

@@ -2,13 +2,11 @@ import type { Metadata } from "next";
 import { ResourceApiDocs } from "@/components/docs/resource-api-docs";
 import { apiResources } from "@/lib/catalog";
 import { withCommonListParams } from "@/lib/docs/query-params";
-
-export const metadata: Metadata = {
-  title: "Products",
-  description: "Products mock REST API with price, stock, and category.",
-};
+import { createResourceMetadata } from "@/lib/seo";
 
 const resource = apiResources.find((item) => item.id === "products")!;
+
+export const metadata: Metadata = createResourceMetadata(resource);
 
 const listResponse = `{
   "data": [

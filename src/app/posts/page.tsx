@@ -9,16 +9,13 @@ import {
   type RequestExample,
 } from "@/components/docs/request-panel";
 import { TryExample } from "@/components/docs/try-example";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { apiResources } from "@/lib/catalog";
-
-export const metadata: Metadata = {
-  title: "Posts",
-  description:
-    "Posts mock REST API — endpoints, request examples, and response preview.",
-};
+import { createResourceMetadata } from "@/lib/seo";
 
 const resource = apiResources.find((item) => item.id === "posts")!;
 
+export const metadata: Metadata = createResourceMetadata(resource);
 const postBody = `{
   "userId": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
   "title": "Shipping mock posts",
@@ -169,17 +166,13 @@ export default function PostsApiPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <header className="mb-10 space-y-4 border-b border-border pb-8">
-        <p className="text-[13px] text-muted-foreground">
-          <Link href="/" className="hover:text-foreground">
-            Home
-          </Link>
-          <span className="mx-2 text-border">/</span>
-          <Link href="/docs" className="hover:text-foreground">
-            Docs
-          </Link>
-          <span className="mx-2 text-border">/</span>
-          <span className="text-foreground">Posts</span>
-        </p>
+        <Breadcrumbs
+          items={[
+            { name: "Home", href: "/", path: "/" },
+            { name: "Docs", href: "/docs", path: "/docs" },
+            { name: "Posts", path: "/posts" },
+          ]}
+        />
 
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

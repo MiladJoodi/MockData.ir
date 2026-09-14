@@ -2,13 +2,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ResetSeedPanel } from "@/components/docs/reset-seed-panel";
 import { VsCodeBlock } from "@/components/docs/vscode-block";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { apiResources, plannedResources } from "@/lib/catalog";
 import { RATE_LIMIT } from "@/lib/api/rate-limit";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Docs",
-  description: "How to use MockData — resources, requests, and errors.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "API Docs",
+  description:
+    "How to use MockData fake REST APIs — resources, requests, errors, rate limits, OpenAPI, and shared demo data.",
+  path: "/docs",
+});
+
 
 const jsExample = `const res = await fetch('/api/posts?limit=6');
 const { data, pagination } = await res.json();
@@ -65,13 +70,12 @@ export default function DocsPage() {
 
         <article className="min-w-0 space-y-14">
           <header className="space-y-3" id="intro">
-            <p className="text-[13px] text-muted-foreground">
-              <Link href="/" className="hover:text-foreground">
-                Home
-              </Link>
-              <span className="mx-2 text-border">/</span>
-              Docs
-            </p>
+            <Breadcrumbs
+              items={[
+                { name: "Home", href: "/", path: "/" },
+                { name: "Docs", path: "/docs" },
+              ]}
+            />
             <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
               Documentation
             </h1>

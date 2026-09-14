@@ -1,23 +1,25 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ContactForm } from "@/components/contact/contact-form";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Contact",
-  description: "Send a message to the MockData team.",
-};
+  description:
+    "Contact the MockData team — questions, feedback, or ideas. Email info@mockdata.ir.",
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (
     <div className="mx-auto max-w-xl px-4 py-10 sm:px-6 sm:py-14">
       <header className="mb-8 space-y-3">
-        <p className="text-[13px] text-muted-foreground">
-          <Link href="/" className="hover:text-foreground">
-            Home
-          </Link>
-          <span className="mx-2 text-border">/</span>
-          <span className="text-foreground">Contact</span>
-        </p>
+        <Breadcrumbs
+          items={[
+            { name: "Home", href: "/", path: "/" },
+            { name: "Contact", path: "/contact" },
+          ]}
+        />
         <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
           Contact
         </h1>
@@ -30,7 +32,7 @@ export default function ContactPage() {
           >
             info@mockdata.ir
           </a>
-          
+          .
         </p>
       </header>
 

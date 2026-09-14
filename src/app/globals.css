@@ -55,32 +55,32 @@
   --card-foreground: #14151a;
   --popover: #ffffff;
   --popover-foreground: #14151a;
-  --primary: #a67c0a;
+  --primary: #8f6b09;
   --primary-foreground: #1a1405;
   --secondary: #e4e1da;
   --secondary-foreground: #14151a;
   --muted: #e4e1da;
-  --muted-foreground: #4a5160;
+  --muted-foreground: #3a404c;
   --accent: #e4e1da;
   --accent-foreground: #14151a;
   --destructive: #b91c1c;
   --border: #cfc9bd;
   --input: #cfc9bd;
-  --ring: #a67c0a;
-  --chart-1: #a67c0a;
-  --chart-2: #4a5160;
+  --ring: #8f6b09;
+  --chart-1: #8f6b09;
+  --chart-2: #3a404c;
   --chart-3: #1d4ed8;
   --chart-4: #b45309;
   --chart-5: #0f766e;
   --radius: 0.5rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #14151a;
-  --sidebar-primary: #a67c0a;
+  --sidebar-primary: #8f6b09;
   --sidebar-primary-foreground: #1a1405;
   --sidebar-accent: #e4e1da;
   --sidebar-accent-foreground: #14151a;
   --sidebar-border: #cfc9bd;
-  --sidebar-ring: #a67c0a;
+  --sidebar-ring: #8f6b09;
 
   /* Always dark — used only inside code panes */
   --vscode-bg: #1e1e1e;
@@ -98,15 +98,15 @@
   --vscode-line: #858585;
 
   /* UI accents (theme-aware) */
-  --token: #0a6ebd;
-  --request: #a67c0a;
-  --request-bg: rgb(166 124 10 / 0.12);
-  --response: #0f766e;
-  --response-bg: rgb(15 118 110 / 0.12);
+  --token: #0a5fad;
+  --request: #8f6b09;
+  --request-bg: rgb(143 107 9 / 0.12);
+  --response: #0b6b63;
+  --response-bg: rgb(11 107 99 / 0.12);
 
-  --get: #0f766e;
+  --get: #0b6b63;
   --post: #1d4ed8;
-  --patch: #92400e;
+  --patch: #7c3d0e;
   --delete: #b91c1c;
 
   --header-bg: rgb(240 238 234 / 0.92);
@@ -125,7 +125,7 @@
   --secondary: #22262e;
   --secondary-foreground: #eceef2;
   --muted: #1c1f26;
-  --muted-foreground: #9aa3b5;
+  --muted-foreground: #b4bccb;
   --accent: #22262e;
   --accent-foreground: #eceef2;
   --destructive: #f14c4c;

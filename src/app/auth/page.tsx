@@ -9,18 +9,15 @@ import {
   type RequestExample,
 } from "@/components/docs/request-panel";
 import { ResponseViewer } from "@/components/docs/response-viewer";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { MOCK_PASSWORD } from "@/lib/auth/mock-auth";
 import { apiResources } from "@/lib/catalog";
 import { mockControlQueryParams } from "@/lib/docs/query-params";
-
-export const metadata: Metadata = {
-  title: "Auth",
-  description:
-    "Mock login API — correct username/password returns a Bearer token; wrong credentials return 401.",
-};
+import { createResourceMetadata } from "@/lib/seo";
 
 const resource = apiResources.find((item) => item.id === "auth")!;
 
+export const metadata: Metadata = createResourceMetadata(resource);
 const loginOkBody = `{
   "username": "avachen",
   "password": "${MOCK_PASSWORD}"
@@ -115,17 +112,13 @@ export default function AuthApiPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <header className="mb-10 space-y-4 border-b border-border pb-8">
-        <p className="text-[13px] text-muted-foreground">
-          <Link href="/" className="hover:text-foreground">
-            Home
-          </Link>
-          <span className="mx-2 text-border">/</span>
-          <Link href="/docs" className="hover:text-foreground">
-            Docs
-          </Link>
-          <span className="mx-2 text-border">/</span>
-          <span className="text-foreground">Auth</span>
-        </p>
+        <Breadcrumbs
+          items={[
+            { name: "Home", href: "/", path: "/" },
+            { name: "Docs", href: "/docs", path: "/docs" },
+            { name: "Auth", path: "/auth" },
+          ]}
+        />
 
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

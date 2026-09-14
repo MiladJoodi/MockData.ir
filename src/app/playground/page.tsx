@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ApiPlayground } from "@/components/playground/api-playground";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { parsePlaygroundResource } from "@/lib/playground";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Playground",
-  description: "Send live requests to MockData — try login, lists, and auth.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "API Playground",
+  description:
+    "Send live requests to MockData fake REST APIs in the browser — pick a resource, action, headers, and body.",
+  path: "/playground",
+});
 
 type PlaygroundPageProps = {
   searchParams: Promise<{ resource?: string | string[] }>;
@@ -21,13 +24,12 @@ export default async function PlaygroundPage({
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14">
       <header className="mb-8 space-y-3">
-        <p className="text-[13px] text-muted-foreground">
-          <Link href="/" className="hover:text-foreground">
-            Home
-          </Link>
-          <span className="mx-2 text-border">/</span>
-          <span className="text-foreground">Playground</span>
-        </p>
+        <Breadcrumbs
+          items={[
+            { name: "Home", href: "/", path: "/" },
+            { name: "Playground", path: "/playground" },
+          ]}
+        />
         <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
           Playground
         </h1>

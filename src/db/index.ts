@@ -16,7 +16,10 @@ const client =
   globalForDb.postgresClient ??
   postgres(connectionString, {
     prepare: false,
-    max: 10,
+    // Neon pooler: keep a single connection per Next.js process
+    max: 1,
+    idle_timeout: 20,
+    connect_timeout: 30,
   });
 
 if (process.env.NODE_ENV !== "production") {

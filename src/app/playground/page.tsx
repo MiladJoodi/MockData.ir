@@ -1,13 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ApiPlayground } from "@/components/playground/api-playground";
+import { parsePlaygroundResource } from "@/lib/playground";
 
 export const metadata: Metadata = {
   title: "Playground",
   description: "Send live requests to MockData — try login, lists, and auth.",
 };
 
-export default function PlaygroundPage() {
+type PlaygroundPageProps = {
+  searchParams: Promise<{ resource?: string | string[] }>;
+};
+
+export default async function PlaygroundPage({
+  searchParams,
+}: PlaygroundPageProps) {
+  const params = await searchParams;
+  const initialResource = parsePlaygroundResource(params.resource);
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14">
       <header className="mb-8 space-y-3">
@@ -29,7 +39,10 @@ export default function PlaygroundPage() {
         </p>
       </header>
 
-      <ApiPlayground />
+      <ApiPlayground
+        key={initialResource}
+        initialResource={initialResource}
+      />
     </div>
   );
 }

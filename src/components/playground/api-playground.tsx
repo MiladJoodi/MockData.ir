@@ -4,20 +4,13 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { ChevronDown } from "lucide-react";
 import { CopyButton } from "@/components/docs/copy-button";
 import { MOCK_PASSWORD } from "@/lib/auth/constants";
+import {
+  type PlaygroundResourceId,
+} from "@/lib/playground";
 import { cn } from "@/lib/utils";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
-type ResourceId =
-  | "auth"
-  | "users"
-  | "posts"
-  | "comments"
-  | "albums"
-  | "photos"
-  | "todos"
-  | "products"
-  | "notifications"
-  | "countries";
+type ResourceId = PlaygroundResourceId;
 type CrudAction = "list" | "get" | "create" | "update" | "delete";
 type AuthAction = "login" | "me";
 type ActionId = CrudAction | AuthAction;
@@ -666,99 +659,146 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
     let cancelled = false;
     setLoadingOptions(true);
 
-    Promise.all([
-      fetch("/api/users?limit=50&sort=name&order=asc").then((r) => r.json()),
-      fetch("/api/posts?limit=50&sort=title&order=asc").then((r) => r.json()),
-      fetch("/api/comments?limit=50&sort=name&order=asc").then((r) => r.json()),
-      fetch("/api/albums?limit=50&sort=id&order=asc").then((r) => r.json()),
-      fetch("/api/photos?limit=50&sort=title&order=asc").then((r) => r.json()),
-      fetch("/api/todos?limit=50&sort=title&order=asc").then((r) => r.json()),
-      fetch("/api/products?limit=50&sort=name&order=asc").then((r) => r.json()),
-      fetch("/api/notifications?limit=50&sort=title&order=asc").then((r) =>
-        r.json(),
-      ),
-      fetch("/api/countries?limit=50&sort=name&order=asc").then((r) =>
-        r.json(),
-      ),
-    ])
-      .then(
-        ([
-          usersPayload,
-          postsPayload,
-          commentsPayload,
-          albumsPayload,
-          photosPayload,
-          todosPayload,
-          productsPayload,
-          notificationsPayload,
-          countriesPayload,
-        ]) => {
+    const needUsers =
+      resource === "auth" ||
+      resource === "users" ||
+      resource === "posts" ||
+      resource === "albums" ||
+      resource === "todos" ||
+      resource === "notifications";
+    const needPosts = resource === "posts" || resource === "comments";
+    const needComments = resource === "comments";
+    const needAlbums = resource === "albums" || resource === "photos";
+    const needPhotos = resource === "photos";
+    const needTodos = resource === "todos";
+    const needProducts = resource === "products";
+    const needNotifications = resource === "notifications";
+    const needCountries = resource === "countries";
+
+    async function loadJson(url: string) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Failed ${url}`);
+      return res.json();
+    }
+
+    (async () => {
+      try {
+        // Load only what this resource needs, one request at a time —
+        // avoids Neon connection timeouts from 9 parallel API hits.
+        if (needUsers) {
+          const payload = await loadJson(
+            "/api/users?limit=30&sort=name&order=asc",
+          );
           if (cancelled) return;
-          const nextUsers = (usersPayload.data ?? []) as UserOption[];
-          const nextPosts = (postsPayload.data ?? []) as PostOption[];
+          const nextUsers = (payload.data ?? []) as UserOption[];
+          setUsers(nextUsers);
+          if (nextUsers[0]) setUserId((id) => id || nextUsers[0]!.id);
+        }
+        if (needPosts) {
+          const payload = await loadJson(
+            "/api/posts?limit=30&sort=title&order=asc",
+          );
+          if (cancelled) return;
+          const nextPosts = (payload.data ?? []) as PostOption[];
+          setPosts(nextPosts);
+          if (nextPosts[0]) setPostId((id) => id || nextPosts[0]!.id);
+        }
+        if (needComments) {
+          const payload = await loadJson(
+            "/api/comments?limit=30&sort=name&order=asc",
+          );
+          if (cancelled) return;
           const nextComments = (
-            (commentsPayload.data ?? []) as { id: string; name: string }[]
+            (payload.data ?? []) as { id: string; name: string }[]
           ).map((c) => ({ id: c.id, label: c.name }));
+          setComments(nextComments);
+          if (nextComments[0]) setCommentId((id) => id || nextComments[0]!.id);
+        }
+        if (needAlbums) {
+          const payload = await loadJson(
+            "/api/albums?limit=30&sort=id&order=asc",
+          );
+          if (cancelled) return;
           const nextAlbums = (
-            (albumsPayload.data ?? []) as { id: number; title: string }[]
+            (payload.data ?? []) as { id: number; title: string }[]
           ).map((a) => ({ id: String(a.id), label: a.title }));
+          setAlbumsList(nextAlbums);
+          if (nextAlbums[0]) setAlbumId((id) => id || nextAlbums[0]!.id);
+        }
+        if (needPhotos) {
+          const payload = await loadJson(
+            "/api/photos?limit=30&sort=title&order=asc",
+          );
+          if (cancelled) return;
           const nextPhotos = (
-            (photosPayload.data ?? []) as { id: string; title: string }[]
+            (payload.data ?? []) as { id: string; title: string }[]
           ).map((p) => ({ id: p.id, label: p.title }));
+          setPhotosList(nextPhotos);
+          if (nextPhotos[0]) setPhotoId((id) => id || nextPhotos[0]!.id);
+        }
+        if (needTodos) {
+          const payload = await loadJson(
+            "/api/todos?limit=30&sort=title&order=asc",
+          );
+          if (cancelled) return;
           const nextTodos = (
-            (todosPayload.data ?? []) as { id: string; title: string }[]
+            (payload.data ?? []) as { id: string; title: string }[]
           ).map((t) => ({ id: t.id, label: t.title }));
+          setTodosList(nextTodos);
+          if (nextTodos[0]) setTodoId((id) => id || nextTodos[0]!.id);
+        }
+        if (needProducts) {
+          const payload = await loadJson(
+            "/api/products?limit=30&sort=name&order=asc",
+          );
+          if (cancelled) return;
           const nextProducts = (
-            (productsPayload.data ?? []) as { id: string; name: string }[]
+            (payload.data ?? []) as { id: string; name: string }[]
           ).map((p) => ({ id: p.id, label: p.name }));
+          setProductsList(nextProducts);
+          if (nextProducts[0]) setProductId((id) => id || nextProducts[0]!.id);
+        }
+        if (needNotifications) {
+          const payload = await loadJson(
+            "/api/notifications?limit=30&sort=title&order=asc",
+          );
+          if (cancelled) return;
           const nextNotifications = (
-            (notificationsPayload.data ?? []) as {
-              id: string;
-              title: string;
-            }[]
+            (payload.data ?? []) as { id: string; title: string }[]
           ).map((n) => ({ id: n.id, label: n.title }));
+          setNotificationsList(nextNotifications);
+          if (nextNotifications[0]) {
+            setNotificationId((id) => id || nextNotifications[0]!.id);
+          }
+        }
+        if (needCountries) {
+          const payload = await loadJson(
+            "/api/countries?limit=30&sort=name&order=asc",
+          );
+          if (cancelled) return;
           const nextCountries = (
-            (countriesPayload.data ?? []) as {
+            (payload.data ?? []) as {
               id: string;
               name: string;
               code: string;
             }[]
           ).map((c) => ({ id: c.id, label: `${c.name} (${c.code})` }));
-          setUsers(nextUsers);
-          setPosts(nextPosts);
-          setComments(nextComments);
-          setAlbumsList(nextAlbums);
-          setPhotosList(nextPhotos);
-          setTodosList(nextTodos);
-          setProductsList(nextProducts);
-          setNotificationsList(nextNotifications);
           setCountriesList(nextCountries);
-          if (nextUsers[0]) setUserId((id) => id || nextUsers[0]!.id);
-          if (nextPosts[0]) setPostId((id) => id || nextPosts[0]!.id);
-          if (nextComments[0]) setCommentId((id) => id || nextComments[0]!.id);
-          if (nextAlbums[0]) setAlbumId((id) => id || nextAlbums[0]!.id);
-          if (nextPhotos[0]) setPhotoId((id) => id || nextPhotos[0]!.id);
-          if (nextTodos[0]) setTodoId((id) => id || nextTodos[0]!.id);
-          if (nextProducts[0]) setProductId((id) => id || nextProducts[0]!.id);
-          if (nextNotifications[0]) {
-            setNotificationId((id) => id || nextNotifications[0]!.id);
-          }
           if (nextCountries[0]) {
             setCountryId((id) => id || nextCountries[0]!.id);
           }
-        },
-      )
-      .catch(() => {
+        }
+      } catch {
         if (!cancelled) setError("Could not load picker options");
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoadingOptions(false);
-      });
+      }
+    })();
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [resource]);
 
   useEffect(() => {
     if (manual) return;

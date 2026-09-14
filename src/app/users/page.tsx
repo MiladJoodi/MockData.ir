@@ -206,7 +206,7 @@ export default function UsersApiPage() {
             </code>
             <CopyButton value={resource.basePath} />
             <Link
-              href="/playground"
+              href="/playground?resource=users"
               className="rounded-md border border-border bg-muted/40 px-3 py-1.5 text-[12px] hover:border-[var(--request)]/40"
             >
               Open Playground

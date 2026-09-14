@@ -108,7 +108,6 @@
 
   --header-bg: rgb(244 243 239 / 0.9);
   --surface-hover: rgb(20 21 26 / 0.04);
-  --body-glow: transparent;
 }
 
 .dark {
@@ -156,7 +155,6 @@
 
   --header-bg: rgb(14 15 18 / 0.9);
   --surface-hover: rgb(255 255 255 / 0.05);
-  --body-glow: linear-gradient(180deg, #12141a 0%, #0e0f12 40%, #0e0f12 100%);
 }
 
 @layer base {
@@ -165,7 +163,6 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    background-image: var(--body-glow);
   }
   html {
     @apply font-sans;

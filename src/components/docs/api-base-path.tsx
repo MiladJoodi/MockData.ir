@@ -10,16 +10,16 @@ export function ApiBasePath({ path }: { path: string }) {
   const href = withApiLang(path, locale);
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="inline-flex max-w-full items-center gap-0.5 rounded-md border border-border bg-muted py-0.5 pr-0.5 pl-2.5">
       <Link
         href={href}
         target="_blank"
         rel="noreferrer"
-        className="rounded-md border border-border bg-muted px-2.5 py-1.5 font-mono text-[12px] text-[var(--request)] underline-offset-2 hover:underline"
+        className="min-w-0 truncate font-mono text-[12px] text-[var(--request)] underline-offset-2 hover:underline"
       >
         {href}
       </Link>
-      <CopyButton value={href} />
+      <CopyButton value={href} className="size-7" />
     </div>
   );
 }

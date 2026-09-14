@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Eye } from "lucide-react";
 import { ApiBasePath } from "@/components/docs/api-base-path";
 import { EndpointTable } from "@/components/docs/endpoint-table";
 import { LiveBadge } from "@/components/docs/live-badge";
@@ -143,10 +144,17 @@ export default function AuthApiPage() {
           <div className="flex flex-wrap items-center gap-2">
             <ApiBasePath path={resource.basePath} />
             <Link
+              href="/preview/auth"
+              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/40 px-3 py-1.5 text-[12px] hover:border-[var(--request)]/40"
+            >
+              <Eye className="size-3.5" strokeWidth={1.75} aria-hidden />
+              Preview
+            </Link>
+            <Link
               href="/playground?resource=auth"
               className="rounded-md border border-border bg-muted/40 px-3 py-1.5 text-[12px] hover:border-[var(--request)]/40"
             >
-              Open Playground
+              Playground
             </Link>
           </div>
         </div>

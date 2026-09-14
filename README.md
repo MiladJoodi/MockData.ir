@@ -1,4 +1,4 @@
-# MockData
+# MockData 
 
 Fake REST APIs with real JSON — a docs-first playground for frontends, demos, and prototypes.
 

@@ -17,7 +17,7 @@ export function SiteHeader() {
           href="/"
           className="shrink-0 text-[15px] font-semibold tracking-tight text-foreground"
         >
-          MockData
+          MockData.ir
         </Link>
 
         <nav

@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     const apiKey = process.env.RESEND_API_KEY;
     const to = process.env.CONTACT_TO;
     const from =
-      process.env.CONTACT_FROM ?? "MockData <onboarding@resend.com>";
+      process.env.CONTACT_FROM ?? "MockData <info@mockdata.ir>";
 
     if (!apiKey || !to) {
       console.error("Contact form missing RESEND_API_KEY or CONTACT_TO");

@@ -37,7 +37,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `CRON_SECRET` | Production cron | Protects `GET /api/cron/reset` (Vercel sends it as `Authorization: Bearer …`) |
 | `RESEND_API_KEY` | Contact form | Resend API key |
 | `CONTACT_TO` | Contact form | Inbox address |
-| `CONTACT_FROM` | Optional | Sender, e.g. `MockData <onboarding@resend.com>` |
+| `CONTACT_FROM` | Optional | Sender, e.g. `MockData <info@mockdata.ir>` |
 
 ## Product surfaces
 

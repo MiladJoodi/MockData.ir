@@ -1,0 +1,180 @@
+import type { NewPost } from "./schema/posts";
+
+/** Seed rows resolve `authorUsername` → `userId` after users are inserted. */
+export type SeedPost = Omit<
+  NewPost,
+  "id" | "userId" | "createdAt" | "updatedAt"
+> & {
+  authorUsername: string;
+};
+
+export const seedPosts: SeedPost[] = [
+  {
+    authorUsername: "avachen",
+    title: "Why fake APIs speed up frontend work",
+    body: "Mock endpoints let UI teams ship screens before the backend is ready. Keep payloads realistic and document edge cases early.",
+    tags: ["dx", "frontend", "mock"],
+    published: true,
+  },
+  {
+    authorUsername: "mreid",
+    title: "Design tokens that survive dark mode",
+    body: "Start with semantic names (surface, accent, danger) instead of raw hex. Your components will thank you when themes swap overnight.",
+    tags: ["design", "css"],
+    published: true,
+  },
+  {
+    authorUsername: "sofia.a",
+    title: "Pagination patterns that feel obvious",
+    body: "Page + limit is enough for most demos. Return total and totalPages so tables can render without guessing.",
+    tags: ["api", "pagination"],
+    published: true,
+  },
+  {
+    authorUsername: "noahk",
+    title: "Draft: notes from an API workshop",
+    body: "Still collecting examples for status codes and delay params. Publish after the next meetup.",
+    tags: ["draft", "workshop"],
+    published: false,
+  },
+  {
+    authorUsername: "epetrova",
+    title: "Postgres jsonb for flexible arrays",
+    body: "Ingredients, tags, and instructions fit jsonb well when you do not need per-item joins yet. Index what you filter on.",
+    tags: ["postgres", "jsonb"],
+    published: true,
+  },
+  {
+    authorUsername: "jwright",
+    title: "Bearer tokens in playground demos",
+    body: "Store a mock token in sessionStorage so Me requests stay sticky while you explore protected routes.",
+    tags: ["auth", "playground"],
+    published: true,
+  },
+  {
+    authorUsername: "priyan",
+    title: "Search that matches title and body",
+    body: "A single search param with ilike across title and body covers 80% of list UIs without full-text search.",
+    tags: ["search", "api"],
+    published: true,
+  },
+  {
+    authorUsername: "lmoreau",
+    title: "French toast for developers",
+    body: "Not a recipe post — just a reminder that sample content should feel human, not lorem ipsum forever.",
+    tags: ["writing", "content"],
+    published: true,
+  },
+  {
+    authorUsername: "hbrooks",
+    title: "Rate limits without Redis",
+    body: "An in-memory Map per process is fine for mock platforms. Document the headers so clients can back off cleanly.",
+    tags: ["rate-limit", "ops"],
+    published: true,
+  },
+  {
+    authorUsername: "ohassan",
+    title: "OpenAPI as a living catalog",
+    body: "When you add a resource, update schemas and paths in the same PR. Tools and AI assistants read that file first.",
+    tags: ["openapi", "docs"],
+    published: true,
+  },
+  {
+    authorUsername: "ytanaka",
+    title: "Unpublished: travel notes",
+    body: "Private draft about Tokyo cafes with good Wi-Fi. Not ready for the public feed.",
+    tags: ["travel", "draft"],
+    published: false,
+  },
+  {
+    authorUsername: "icosta",
+    title: "Filtering by author id",
+    body: "Pass userId on list endpoints to build profile walls without nested routes. Keep it optional for global feeds.",
+    tags: ["api", "users"],
+    published: true,
+  },
+  {
+    authorUsername: "dokonkwo",
+    title: "Seed data that resets cleanly",
+    body: "Delete dependents first, reinsert users with returning(), then attach posts by username. Predictable demos beat random UUIDs.",
+    tags: ["seed", "dx"],
+    published: true,
+  },
+  {
+    authorUsername: "mjohansson",
+    title: "Boolean query params",
+    body: "published=true and published=false should parse as booleans. Avoid coerce.boolean — the string false becomes true in JS.",
+    tags: ["zod", "validation"],
+    published: true,
+  },
+  {
+    authorUsername: "eclarke",
+    title: "Error shapes clients expect",
+    body: "One error object with code and message is enough. Add details only for validation failures.",
+    tags: ["errors", "api"],
+    published: true,
+  },
+  {
+    authorUsername: "asaleh",
+    title: "Delay param for skeleton UIs",
+    body: "Artificial latency helps you verify loading states. Cap it so nobody locks the playground for minutes.",
+    tags: ["mock", "ui"],
+    published: true,
+  },
+  {
+    authorUsername: "tsilva",
+    title: "Tags as short labels",
+    body: "Keep tags short and optional. They are great for chips in a feed without becoming a taxonomy product.",
+    tags: ["tags", "content"],
+    published: true,
+  },
+  {
+    authorUsername: "gliu",
+    title: "Sorting by title vs createdAt",
+    body: "Default to newest first. Offer title sort for alphabetical admin tables.",
+    tags: ["sort", "lists"],
+    published: true,
+  },
+  {
+    authorUsername: "bortiz",
+    title: "Draft: product launch checklist",
+    body: "Domain, Resend, env secrets, seed reset, and a smoke test of every live resource.",
+    tags: ["launch", "checklist"],
+    published: false,
+  },
+  {
+    authorUsername: "cmartin",
+    title: "Client helpers vs raw fetch",
+    body: "Docs should show fetch, axios, and curl. Playground can stay on fetch for fewer dependencies.",
+    tags: ["docs", "clients"],
+    published: true,
+  },
+  {
+    authorUsername: "rpatel",
+    title: "UUID ids everywhere",
+    body: "Stable UUID primary keys make create/update demos copy-paste friendly across environments.",
+    tags: ["uuid", "schema"],
+    published: true,
+  },
+  {
+    authorUsername: "nvolkov",
+    title: "When to add Comments next",
+    body: "Once Posts are live, nested comments become the natural follow-up. Keep postId as a soft uuid at first.",
+    tags: ["roadmap", "comments"],
+    published: true,
+  },
+  {
+    authorUsername: "landersson",
+    title: "Accessibility in developer UIs",
+    body: "Labels, focus rings, and clear method colors help more than fancy cards. Docs pages are products too.",
+    tags: ["a11y", "ui"],
+    published: true,
+  },
+  {
+    authorUsername: "fzahra",
+    title: "Hello from MockData",
+    body: "A simple welcome post so new installs always have something to GET on day one.",
+    tags: ["welcome"],
+    published: true,
+  },
+];

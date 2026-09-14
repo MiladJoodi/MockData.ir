@@ -1,0 +1,62 @@
+import Link from "next/link";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { cn } from "@/lib/utils";
+
+const links = [
+  { href: "/playground", label: "Playground", featured: true },
+  { href: "/docs", label: "Docs" },
+  { href: "/contact", label: "Contact" },
+] as const;
+
+export function SiteHeader() {
+  return (
+    <header className="sticky top-0 z-40 border-b border-border bg-[var(--header-bg)] backdrop-blur-md">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:gap-5 sm:px-6">
+        <Link
+          href="/"
+          className="shrink-0 text-[15px] font-semibold tracking-tight text-foreground"
+        >
+          MockData
+        </Link>
+
+        <nav
+          className="hidden items-center gap-1 md:flex"
+          aria-label="Primary"
+        >
+          {links.map((link) => {
+            const featured = "featured" in link && link.featured;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded px-2.5 py-1.5 text-[13px] transition-colors",
+                  featured
+                    ? "font-medium text-foreground hover:bg-[var(--surface-hover)]"
+                    : "text-muted-foreground hover:bg-[var(--surface-hover)] hover:text-foreground",
+                )}
+              >
+                {link.label}
+                {featured ? (
+                  <span
+                    aria-hidden
+                    className="size-1.5 rounded-full bg-[var(--request)]"
+                  />
+                ) : null}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle />
+          <span
+            aria-hidden
+            title="Profile (coming soon)"
+            className="inline-block size-8 shrink-0 rounded-full border border-border bg-muted ring-1 ring-border/60"
+          />
+        </div>
+      </div>
+    </header>
+  );
+}

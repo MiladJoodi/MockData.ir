@@ -189,13 +189,6 @@ export default function AuthApiPage() {
               <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
                 {MOCK_PASSWORD}
               </code>
-              . Try it in the{" "}
-              <Link
-                href="/playground"
-                className="text-[var(--request)] hover:underline"
-              >
-                Playground
-              </Link>
               .
             </p>
           </div>

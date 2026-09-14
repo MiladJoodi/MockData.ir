@@ -12,7 +12,7 @@ export function ResetSeedPanel() {
   async function onReset() {
     if (!key.trim()) {
       setStatus("error");
-      setMessage("Enter your ADMIN_SECRET first.");
+      setMessage("Enter the admin secret first.");
       return;
     }
       if (
@@ -66,19 +66,7 @@ export function ResetSeedPanel() {
   return (
     <div className="space-y-3 rounded-xl border border-border bg-card p-4">
       <p className="text-[13px] leading-6 text-muted-foreground">
-        Requires{" "}
-        <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
-          ADMIN_SECRET
-        </code>{" "}
-        from{" "}
-        <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
-          .env.local
-        </code>
-        . Or run{" "}
-        <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
-          npm run db:seed
-        </code>
-        .
+        Enter the admin secret to wipe and reload default seed data.
       </p>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <input

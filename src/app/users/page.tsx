@@ -200,11 +200,17 @@ export default function UsersApiPage() {
               by name, username, or email.
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <code className="rounded-md border border-border bg-muted px-2.5 py-1.5 font-mono text-[12px] text-[var(--request)]">
               {resource.basePath}
             </code>
             <CopyButton value={resource.basePath} />
+            <Link
+              href="/playground"
+              className="rounded-md border border-border bg-muted/40 px-3 py-1.5 text-[12px] hover:border-[var(--request)]/40"
+            >
+              Open Playground
+            </Link>
           </div>
         </div>
       </header>

@@ -33,7 +33,8 @@ export default function HomePage() {
           </h2>
           <p className="mt-3 text-[15px] leading-7 text-muted-foreground">
             Ten live REST APIs with seeded JSON. Open any resource for routes,
-            examples, and a quick path into the playground.
+            examples, and a quick path into the playground. Shared demo data
+            resets every hour on production.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-x-3 gap-y-10 lg:grid-cols-5">

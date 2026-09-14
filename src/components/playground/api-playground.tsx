@@ -818,6 +818,14 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
     return "text-[var(--patch)]";
   }, [status]);
 
+  const absoluteLastUrl = useMemo(() => {
+    if (!lastUrl) return null;
+    const path = lastUrl.startsWith("http")
+      ? lastUrl
+      : `${typeof window !== "undefined" ? window.location.origin : ""}${lastUrl.startsWith("/") ? lastUrl : `/${lastUrl}`}`;
+    return path;
+  }, [lastUrl]);
+
   function switchResource(next: ResourceId) {
     setResource(next);
     setAction(next === "auth" ? "login" : "list");
@@ -1690,18 +1698,18 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
           </div>
           <CopyButton value={responseText} label="Copy response" />
         </div>
-        {lastUrl ? (
+        {absoluteLastUrl ? (
           <div className="mb-1 flex min-w-0 items-center gap-2 px-2">
             <span className="shrink-0 font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
               Requested
             </span>
             <code
               className="min-w-0 truncate font-mono text-[11px] text-[var(--request)]"
-              title={`${method} ${lastUrl}`}
+              title={`${method} ${absoluteLastUrl}`}
             >
-              <span className="font-semibold">{method}</span> {lastUrl}
+              <span className="font-semibold">{method}</span> {absoluteLastUrl}
             </code>
-            <CopyButton value={lastUrl} label="Copy request URL" />
+            <CopyButton value={absoluteLastUrl} label="Copy request URL" />
           </div>
         ) : null}
         <pre className="max-h-[420px] overflow-auto rounded-lg border border-[var(--vscode-border)] bg-[var(--vscode-bg)] p-4 font-mono text-[12px] leading-5 text-[var(--vscode-fg)]">

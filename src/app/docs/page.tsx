@@ -28,9 +28,6 @@ const rateLimitExample = `{
   }
 }`;
 
-const resetExample = `curl -X POST http://localhost:3000/api/admin/reset \\
-  -H "x-admin-key: YOUR_ADMIN_SECRET"`;
-
 export default function DocsPage() {
   const limitPerMin = RATE_LIMIT.limit;
 
@@ -47,6 +44,7 @@ export default function DocsPage() {
             </p>
             {[
               ["#intro", "Introduction"],
+              ["#shared-data", "Shared data"],
               ["#resources", "Resources"],
               ["#openapi", "OpenAPI"],
               ["#requests", "Requests"],
@@ -90,9 +88,27 @@ export default function DocsPage() {
               >
                 Playground
               </Link>
+              . Production uses one shared database — see{" "}
+              <a href="#shared-data" className="text-[var(--request)] hover:underline">
+                Shared data
+              </a>
               .
             </p>
           </header>
+
+          <section id="shared-data" className="scroll-mt-20 space-y-4">
+            <h2 className="text-xl font-semibold tracking-tight">Shared data</h2>
+            <p className="text-[14px] leading-6 text-muted-foreground">
+              All visitors share the same live database. Creates, updates, and
+              deletes are real and visible to everyone. On production, seed data
+              resets automatically every hour via{" "}
+              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
+                GET /api/cron/reset
+              </code>
+              . Use this for prototyping and demos — not for storing anything you
+              need to keep.
+            </p>
+          </section>
 
           <section id="resources" className="scroll-mt-20 space-y-4">
             <h2 className="text-xl font-semibold tracking-tight">Resources</h2>
@@ -201,9 +217,8 @@ export default function DocsPage() {
               </a>
             </div>
             <VsCodeBlock
-              code={`# Import in Postman / Insomnia / Swagger
+              code={`# Import into Postman / Insomnia / Swagger
 curl -O http://localhost:3000/openapi.json`}
-              filename="openapi.sh"
               language="bash"
             />
           </section>
@@ -225,11 +240,7 @@ curl -O http://localhost:3000/openapi.json`}
               </code>
               .
             </p>
-            <VsCodeBlock
-              code={jsExample}
-              filename="example.js"
-              language="javascript"
-            />
+            <VsCodeBlock code={jsExample} language="javascript" />
           </section>
 
           <section id="errors" className="scroll-mt-20 space-y-4">
@@ -246,11 +257,7 @@ curl -O http://localhost:3000/openapi.json`}
               </code>{" "}
               (400–599) to force an error for UI demos.
             </p>
-            <VsCodeBlock
-              code={errorExample}
-              filename="error.json"
-              language="json"
-            />
+            <VsCodeBlock code={errorExample} language="json" />
           </section>
 
           <section id="rate-limit" className="scroll-mt-20 space-y-4">
@@ -286,39 +293,19 @@ curl -O http://localhost:3000/openapi.json`}
               </code>
               .
             </p>
-            <VsCodeBlock
-              code={rateLimitExample}
-              filename="rate-limit.json"
-              language="json"
-            />
+            <VsCodeBlock code={rateLimitExample} language="json" />
           </section>
 
           <section id="reset" className="scroll-mt-20 space-y-4">
             <h2 className="text-xl font-semibold tracking-tight">Reset seed</h2>
             <p className="text-[14px] leading-6 text-muted-foreground">
-              Wipe seed tables, then reload the default data. Protected by{" "}
-              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
-                ADMIN_SECRET
-              </code>{" "}
-              (set in{" "}
-              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
-                .env.local
-              </code>
-              ). Send it as{" "}
-              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
-                x-admin-key
-              </code>{" "}
-              or{" "}
-              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
-                Authorization: Bearer …
-              </code>
-              .
+              For an immediate reset, use the panel below with the admin secret.
+              Production also resets automatically every hour (
+              <a href="#shared-data" className="text-[var(--request)] hover:underline">
+                Shared data
+              </a>
+              ).
             </p>
-            <VsCodeBlock
-              code={resetExample}
-              filename="reset.sh"
-              language="bash"
-            />
             <ResetSeedPanel />
           </section>
         </article>

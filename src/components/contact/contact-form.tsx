@@ -21,7 +21,7 @@ export function ContactForm() {
   const topicRootRef = useRef<HTMLDivElement>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [topic, setTopic] = useState<ContactInput["topic"] | "">("");
+  const [topic, setTopic] = useState<ContactInput["topic"]>("other");
   const [topicOpen, setTopicOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +74,7 @@ export function ContactForm() {
         setDone(true);
         setName("");
         setEmail("");
-        setTopic("");
+        setTopic("other");
         setMessage("");
       } catch {
         setError("Network error. Try again.");
@@ -141,8 +141,8 @@ export function ContactForm() {
             onClick={() => setTopicOpen((open) => !open)}
             className="flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-border bg-card px-3 text-left text-[14px] outline-none focus-visible:border-[var(--request)]/50"
           >
-            <span className={cn(!topic && "text-muted-foreground")}>
-              {topic ? contactTopicLabels[topic] : "Select one…"}
+            <span>
+              {contactTopicLabels[topic]}
             </span>
             <ChevronDown
               className={cn(

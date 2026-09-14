@@ -88,7 +88,7 @@ export function ContactForm() {
         <div className="space-y-1.5">
           <label
             htmlFor="contact-name"
-            className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+            className="block text-[13px] font-medium text-foreground"
           >
             Name
           </label>
@@ -100,13 +100,13 @@ export function ContactForm() {
             required
             maxLength={120}
             autoComplete="name"
-            className="h-10 w-full rounded-md border border-border bg-muted px-3 text-[14px] outline-none focus-visible:border-[var(--request)]/50"
+            className="h-10 w-full rounded-md border border-border bg-card px-3 text-[14px] outline-none focus-visible:border-[var(--request)]/50"
           />
         </div>
         <div className="space-y-1.5">
           <label
             htmlFor="contact-email"
-            className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+            className="block text-[13px] font-medium text-foreground"
           >
             Email
           </label>
@@ -119,7 +119,7 @@ export function ContactForm() {
             required
             maxLength={255}
             autoComplete="email"
-            className="h-10 w-full rounded-md border border-border bg-muted px-3 text-[14px] outline-none focus-visible:border-[var(--request)]/50"
+            className="h-10 w-full rounded-md border border-border bg-card px-3 text-[14px] outline-none focus-visible:border-[var(--request)]/50"
           />
         </div>
       </div>
@@ -127,7 +127,7 @@ export function ContactForm() {
       <div className="space-y-1.5" ref={topicRootRef}>
         <span
           id={`${topicListId}-label`}
-          className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+          className="block text-[13px] font-medium text-foreground"
         >
           What do you need?
         </span>
@@ -139,7 +139,7 @@ export function ContactForm() {
             aria-expanded={topicOpen}
             aria-labelledby={`${topicListId}-label`}
             onClick={() => setTopicOpen((open) => !open)}
-            className="flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-border bg-muted px-3 text-left text-[14px] outline-none focus-visible:border-[var(--request)]/50"
+            className="flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-border bg-card px-3 text-left text-[14px] outline-none focus-visible:border-[var(--request)]/50"
           >
             <span className={cn(!topic && "text-muted-foreground")}>
               {topic ? contactTopicLabels[topic] : "Select one…"}
@@ -187,7 +187,7 @@ export function ContactForm() {
       <div className="space-y-1.5">
         <label
           htmlFor="contact-message"
-          className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+          className="block text-[13px] font-medium text-foreground"
         >
           Message
         </label>
@@ -200,7 +200,7 @@ export function ContactForm() {
           minLength={10}
           maxLength={5000}
           rows={7}
-          className="w-full resize-y rounded-md border border-border bg-muted px-3 py-2.5 text-[14px] leading-6 outline-none focus-visible:border-[var(--request)]/50"
+          className="w-full resize-y rounded-md border border-border bg-card px-3 py-2.5 text-[14px] leading-6 outline-none focus-visible:border-[var(--request)]/50"
         />
       </div>
 

@@ -1,11 +1,11 @@
 import { cn } from "@/lib/utils";
 
 const tones: Record<string, string> = {
-  GET: "text-[var(--get)] bg-[var(--get)]/15 ring-1 ring-[var(--get)]/25",
-  POST: "text-[var(--post)] bg-[var(--post)]/15 ring-1 ring-[var(--post)]/25",
-  PATCH: "text-[var(--patch)] bg-[var(--patch)]/15 ring-1 ring-[var(--patch)]/25",
-  PUT: "text-[var(--patch)] bg-[var(--patch)]/15 ring-1 ring-[var(--patch)]/25",
-  DELETE: "text-[var(--delete)] bg-[var(--delete)]/15 ring-1 ring-[var(--delete)]/25",
+  GET: "text-[var(--get)] bg-[var(--get)]/12 ring-1 ring-[var(--get)]/30",
+  POST: "text-[var(--post)] bg-[var(--post)]/12 ring-1 ring-[var(--post)]/30",
+  PATCH: "text-[var(--patch)] bg-[var(--patch)]/12 ring-1 ring-[var(--patch)]/30",
+  PUT: "text-[var(--patch)] bg-[var(--patch)]/12 ring-1 ring-[var(--patch)]/30",
+  DELETE: "text-[var(--delete)] bg-[var(--delete)]/12 ring-1 ring-[var(--delete)]/30",
 };
 
 export function MethodBadges({ methods }: { methods: string }) {

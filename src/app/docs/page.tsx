@@ -118,7 +118,7 @@ export default function DocsPage() {
             </p>
             <div className="overflow-hidden rounded-xl border border-border bg-card">
               <table className="w-full text-left text-[13px]">
-                <thead className="border-b border-border bg-muted/50 font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
+                <thead className="border-b border-border bg-muted font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
                   <tr>
                     <th className="px-4 py-2.5 font-medium">Resource</th>
                     <th className="px-4 py-2.5 font-medium">Base path</th>
@@ -227,11 +227,11 @@ curl -O http://localhost:3000/openapi.json`}
             <h2 className="text-xl font-semibold tracking-tight">Requests</h2>
             <p className="text-[14px] leading-6 text-muted-foreground">
               Lists return{" "}
-              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px] text-[var(--vscode-property)]">
+              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px] text-[var(--token)]">
                 data
               </code>{" "}
               +{" "}
-              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px] text-[var(--vscode-property)]">
+              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px] text-[var(--token)]">
                 pagination
               </code>
               . Single items return{" "}

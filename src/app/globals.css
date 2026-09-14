@@ -49,39 +49,40 @@
 }
 
 :root {
-  --background: #f4f3ef;
+  --background: #f0eeea;
   --foreground: #14151a;
   --card: #ffffff;
   --card-foreground: #14151a;
   --popover: #ffffff;
   --popover-foreground: #14151a;
-  --primary: #c8890a;
+  --primary: #a67c0a;
   --primary-foreground: #1a1405;
-  --secondary: #ebe9e3;
+  --secondary: #e4e1da;
   --secondary-foreground: #14151a;
-  --muted: #ebe9e3;
-  --muted-foreground: #5c6270;
-  --accent: #ebe9e3;
+  --muted: #e4e1da;
+  --muted-foreground: #4a5160;
+  --accent: #e4e1da;
   --accent-foreground: #14151a;
-  --destructive: #c62828;
-  --border: #ddd9d0;
-  --input: #ddd9d0;
-  --ring: #c8890a;
-  --chart-1: #c8890a;
-  --chart-2: #5c6270;
-  --chart-3: #2563eb;
+  --destructive: #b91c1c;
+  --border: #cfc9bd;
+  --input: #cfc9bd;
+  --ring: #a67c0a;
+  --chart-1: #a67c0a;
+  --chart-2: #4a5160;
+  --chart-3: #1d4ed8;
   --chart-4: #b45309;
   --chart-5: #0f766e;
   --radius: 0.5rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #14151a;
-  --sidebar-primary: #c8890a;
+  --sidebar-primary: #a67c0a;
   --sidebar-primary-foreground: #1a1405;
-  --sidebar-accent: #ebe9e3;
+  --sidebar-accent: #e4e1da;
   --sidebar-accent-foreground: #14151a;
-  --sidebar-border: #ddd9d0;
-  --sidebar-ring: #c8890a;
+  --sidebar-border: #cfc9bd;
+  --sidebar-ring: #a67c0a;
 
+  /* Always dark — used only inside code panes */
   --vscode-bg: #1e1e1e;
   --vscode-bg-elevated: #252526;
   --vscode-border: #3c3c3c;
@@ -96,18 +97,20 @@
   --vscode-punctuation: #d4d4d4;
   --vscode-line: #858585;
 
-  --request: #c8890a;
-  --request-bg: rgb(200 137 10 / 0.08);
+  /* UI accents (theme-aware) */
+  --token: #0a6ebd;
+  --request: #a67c0a;
+  --request-bg: rgb(166 124 10 / 0.12);
   --response: #0f766e;
-  --response-bg: rgb(15 118 110 / 0.08);
+  --response-bg: rgb(15 118 110 / 0.12);
 
   --get: #0f766e;
-  --post: #2563eb;
-  --patch: #a16207;
-  --delete: #c62828;
+  --post: #1d4ed8;
+  --patch: #92400e;
+  --delete: #b91c1c;
 
-  --header-bg: rgb(244 243 239 / 0.9);
-  --surface-hover: rgb(20 21 26 / 0.04);
+  --header-bg: rgb(240 238 234 / 0.92);
+  --surface-hover: rgb(20 21 26 / 0.06);
 }
 
 .dark {
@@ -153,6 +156,8 @@
   --patch: #dcdcaa;
   --delete: #f14c4c;
 
+  --token: #9cdcfe;
+
   --header-bg: rgb(14 15 18 / 0.9);
   --surface-hover: rgb(255 255 255 / 0.05);
 }
@@ -182,7 +187,7 @@
     cursor: not-allowed;
   }
   ::selection {
-    background: rgb(200 137 10 / 0.28);
+    background: rgb(166 124 10 / 0.28);
     color: inherit;
   }
   .dark ::selection {

@@ -23,7 +23,14 @@ export default function ContactPage() {
         </h1>
         <p className="text-[14px] leading-6 text-muted-foreground">
           Questions, feedback, or ideas — send a short message and it goes
-          straight to inbox.
+          straight to inbox. You can also email{" "}
+          <a
+            href="mailto:info@mockdata.ir"
+            className="text-[var(--request)] underline-offset-2 hover:underline"
+          >
+            info@mockdata.ir
+          </a>
+          
         </p>
       </header>
 

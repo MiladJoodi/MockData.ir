@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { User } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 
@@ -53,8 +54,10 @@ export function SiteHeader() {
           <span
             aria-hidden
             title="Profile (coming soon)"
-            className="inline-block size-8 shrink-0 rounded-full border border-border bg-muted ring-1 ring-border/60"
-          />
+            className="grid size-8 shrink-0 place-items-center rounded-full border border-border bg-muted text-muted-foreground/55 ring-1 ring-border/60"
+          >
+            <User className="size-3.5" strokeWidth={1.75} />
+          </span>
         </div>
       </div>
     </header>

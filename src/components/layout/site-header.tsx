@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { User } from "lucide-react";
+import { Mail } from "lucide-react";
 import { ApiLocaleToggle } from "@/components/layout/api-locale-toggle";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 const links = [
   { href: "/playground", label: "Playground", featured: true },
   { href: "/docs", label: "Docs" },
-  { href: "/contact", label: "Contact" },
 ] as const;
 
 export function SiteHeader() {
@@ -53,13 +52,14 @@ export function SiteHeader() {
         <div className="ml-auto flex shrink-0 items-center gap-2">
           <ApiLocaleToggle />
           <ThemeToggle />
-          <span
-            aria-hidden
-            title="Profile (coming soon)"
-            className="grid size-8 shrink-0 place-items-center rounded-full border border-border bg-muted text-muted-foreground/70 ring-1 ring-border/60"
+          <Link
+            href="/contact"
+            aria-label="Contact"
+            title="Contact"
+            className="grid size-9 shrink-0 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground"
           >
-            <User className="size-3.5" strokeWidth={1.75} />
-          </span>
+            <Mail className="size-4" strokeWidth={1.75} />
+          </Link>
         </div>
       </div>
     </header>

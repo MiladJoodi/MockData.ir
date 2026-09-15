@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono, Vazirmatn } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import {
@@ -89,6 +90,7 @@ export default function RootLayout({
           <SiteHeader />
           <main className="flex-1">{children}</main>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

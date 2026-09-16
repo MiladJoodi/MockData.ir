@@ -35,6 +35,7 @@ import { cn } from "@/lib/utils";
 export function GeneratorPageContent() {
   const { dict, locale } = useUiLocale();
   const t = dict.generator;
+  const tmp = dict.temporary;
   const isFa = locale === "fa";
 
   const initial = loadGeneratorSession();
@@ -236,7 +237,12 @@ export function GeneratorPageContent() {
         manageToken: created.manageToken,
       });
       setCreatedUrl(created.url);
-      setStatus(t.createSuccess);
+      setStatus(null);
+      requestAnimationFrame(() => {
+        document
+          .getElementById("generator-tmp-success")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     } catch {
       setError(t.errors.CREATE_FAILED);
     } finally {
@@ -382,7 +388,10 @@ export function GeneratorPageContent() {
             isFa={isFa}
             copyLabel={dict.common.copy}
             downloadLabel={t.download}
-            createApiLabel={t.createApi}
+            createApiLabel={tmp.create}
+            creatingLabel={tmp.creating}
+            createdTitle={tmp.createdTitle}
+            durationLabel={tmp.durationLabel}
             viewJsonLabel={t.viewJson}
             viewTypeLabel={t.viewType}
             creating={creating}
@@ -391,10 +400,10 @@ export function GeneratorPageContent() {
             duration={duration}
             onDurationChange={setDuration}
             durationLabels={{
-              "1h": t.duration1h,
-              "6h": t.duration6h,
-              "12h": t.duration12h,
-              "24h": t.duration24h,
+              "1h": tmp.duration1h,
+              "6h": tmp.duration6h,
+              "12h": tmp.duration12h,
+              "24h": tmp.duration24h,
             }}
             onDownload={onDownload}
             onCreateApi={onCreateApi}
@@ -404,7 +413,6 @@ export function GeneratorPageContent() {
               "{n}",
               records.length.toLocaleString(isFa ? "fa-IR" : "en-US"),
             )}
-            statusMessage={status}
           />
         ) : null}
       </div>

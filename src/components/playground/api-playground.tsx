@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { ChevronDown, Lock, Pencil } from "lucide-react";
+import { Check, ChevronDown, Loader2, Lock, Pencil } from "lucide-react";
 import { CopyButton } from "@/components/docs/copy-button";
 import { HighlightedJsonEditor } from "@/components/playground/highlighted-json-editor";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
@@ -15,15 +15,25 @@ import { actionLabels } from "@/lib/docs/action-labels";
 import {
   type PlaygroundResourceId,
 } from "@/lib/playground";
+import {
+  EMPTY_RESPONSE,
+  defaultResourceUi,
+  loadPlaygroundSession,
+  savePlaygroundSession,
+  type PlaygroundActionId,
+  type PlaygroundHttpMethod,
+  type PlaygroundResourceUiSnap,
+  type PlaygroundResponseSnap,
+} from "@/lib/playground-session-state";
 import { highlightCode } from "@/lib/syntax";
 import { typesFromResponseText } from "@/lib/json-types";
 import { cn } from "@/lib/utils";
 
-type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
+type HttpMethod = PlaygroundHttpMethod;
 type ResourceId = PlaygroundResourceId;
 type CrudAction = "list" | "get" | "create" | "update" | "delete";
 type AuthAction = "login" | "me";
-type ActionId = CrudAction | AuthAction;
+type ActionId = PlaygroundActionId;
 
 type UserOption = {
   id: string;
@@ -526,21 +536,7 @@ function buildRequest(input: {
   return { method: "GET", path: "/api/users", body: "" };
 }
 
-type ResponseSnap = {
-  text: string;
-  status: number | null;
-  ms: number | null;
-  lastUrl: string | null;
-  isFa: boolean;
-};
-
-const EMPTY_RESPONSE: ResponseSnap = {
-  text: "// Pick a resource + action, then Send",
-  status: null,
-  ms: null,
-  lastUrl: null,
-  isFa: false,
-};
+type ResponseSnap = PlaygroundResponseSnap;
 
 type PlaygroundProps = {
   initialResource?: ResourceId;
@@ -548,11 +544,10 @@ type PlaygroundProps = {
 
 export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
   const { dict, locale: uiLocale } = useUiLocale();
-  const [resource, setResource] = useState<ResourceId>(initialResource);
-  const [action, setAction] = useState<ActionId>(
-    initialResource === "auth" ? "login" : "list",
-  );
-  const [loginOk, setLoginOk] = useState(true);
+  const initial = loadPlaygroundSession(initialResource);
+  const [resource, setResource] = useState<ResourceId>(initial.resource);
+  const [action, setAction] = useState<ActionId>(initial.action);
+  const [loginOk, setLoginOk] = useState(initial.loginOk);
   const [users, setUsers] = useState<UserOption[]>([]);
   const [posts, setPosts] = useState<PostOption[]>([]);
   const [comments, setComments] = useState<SimpleOption[]>([]);
@@ -564,44 +559,51 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
     [],
   );
   const [countriesList, setCountriesList] = useState<SimpleOption[]>([]);
-  const [userId, setUserId] = useState("");
-  const [postId, setPostId] = useState("");
-  const [commentId, setCommentId] = useState("");
-  const [albumId, setAlbumId] = useState("");
-  const [photoId, setPhotoId] = useState("");
-  const [todoId, setTodoId] = useState("");
-  const [productId, setProductId] = useState("");
-  const [notificationId, setNotificationId] = useState("");
-  const [countryId, setCountryId] = useState("");
+  const [userId, setUserId] = useState(initial.userId);
+  const [postId, setPostId] = useState(initial.postId);
+  const [commentId, setCommentId] = useState(initial.commentId);
+  const [albumId, setAlbumId] = useState(initial.albumId);
+  const [photoId, setPhotoId] = useState(initial.photoId);
+  const [todoId, setTodoId] = useState(initial.todoId);
+  const [productId, setProductId] = useState(initial.productId);
+  const [notificationId, setNotificationId] = useState(initial.notificationId);
+  const [countryId, setCountryId] = useState(initial.countryId);
   const [loadingOptions, setLoadingOptions] = useState(true);
 
-  const [method, setMethod] = useState<HttpMethod>("GET");
-  const [path, setPath] = useState("/api/users?limit=12");
-  const [body, setBody] = useState("");
-  const [manual, setManual] = useState(false);
-  const [forceStatus, setForceStatus] = useState<number | "">("");
-  const [forceDelay, setForceDelay] = useState<number | "">("");
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(12);
-  const [search, setSearch] = useState("");
-  const [role, setRole] = useState("");
-  const [countryFilter, setCountryFilter] = useState("");
-  const [sort, setSort] = useState("");
-  const [order, setOrder] = useState<"asc" | "desc" | "">("");
-  const [queryLang, setQueryLang] = useState<"en" | "fa">("en");
+  const [method, setMethod] = useState<HttpMethod>(initial.method);
+  const [path, setPath] = useState(initial.path);
+  const [body, setBody] = useState(initial.body);
+  const [manual, setManual] = useState(initial.manual);
+  const [forceStatus, setForceStatus] = useState<number | "">(
+    initial.forceStatus,
+  );
+  const [forceDelay, setForceDelay] = useState<number | "">(initial.forceDelay);
+  const [page, setPage] = useState(initial.page);
+  const [limit, setLimit] = useState(initial.limit);
+  const [search, setSearch] = useState(initial.search);
+  const [role, setRole] = useState(initial.role);
+  const [countryFilter, setCountryFilter] = useState(initial.countryFilter);
+  const [sort, setSort] = useState(initial.sort);
+  const [order, setOrder] = useState<"asc" | "desc" | "">(initial.order);
+  const [queryLang, setQueryLang] = useState<"en" | "fa">(initial.queryLang);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [methodOpen, setMethodOpen] = useState(false);
-  const [responseView, setResponseView] = useState<"json" | "types">("json");
+  const [responseView, setResponseView] = useState<"json" | "types">(
+    initial.responseView,
+  );
   const methodMenuRef = useRef<HTMLDivElement>(null);
 
-  const [token, setToken] = useState("");
-  const [tokenEditable, setTokenEditable] = useState(false);
+  const [token, setToken] = useState(initial.token);
+  const [tokenEditable, setTokenEditable] = useState(initial.tokenEditable);
   const [responsesByResource, setResponsesByResource] = useState<
     Partial<Record<ResourceId, ResponseSnap>>
-  >({});
-  const [error, setError] = useState<string | null>(null);
+  >(initial.responsesByResource);
+  const [uiByResource, setUiByResource] = useState<
+    Partial<Record<ResourceId, PlaygroundResourceUiSnap>>
+  >(initial.uiByResource);
+  const [error, setError] = useState<string | null>(initial.error);
   const [pending, startTransition] = useTransition();
-  const [apiLocale, setApiLocale] = useState<ApiLocale>("en");
+  const [apiLocale, setApiLocale] = useState<ApiLocale>(initial.apiLocale);
 
   const responseSnap = responsesByResource[resource] ?? EMPTY_RESPONSE;
   const responseText = responseSnap.text;
@@ -614,6 +616,97 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
   const ms = responseSnap.ms;
   const lastUrl = responseSnap.lastUrl;
   const responseIsFa = responseSnap.isFa;
+
+  useEffect(() => {
+    const currentUi: PlaygroundResourceUiSnap = {
+      action,
+      method,
+      path,
+      body,
+      manual,
+      forceStatus,
+      forceDelay,
+      page,
+      limit,
+      search,
+      role,
+      countryFilter,
+      sort,
+      order,
+    };
+    setUiByResource((prev) => {
+      const nextUiByResource = { ...prev, [resource]: currentUi };
+      savePlaygroundSession({
+        resource,
+        action,
+        loginOk,
+        userId,
+        postId,
+        commentId,
+        albumId,
+        photoId,
+        todoId,
+        productId,
+        notificationId,
+        countryId,
+        method,
+        path,
+        body,
+        manual,
+        forceStatus,
+        forceDelay,
+        page,
+        limit,
+        search,
+        role,
+        countryFilter,
+        sort,
+        order,
+        queryLang,
+        responseView,
+        token,
+        tokenEditable,
+        responsesByResource,
+        uiByResource: nextUiByResource,
+        error,
+        apiLocale,
+      });
+      return nextUiByResource;
+    });
+  }, [
+    resource,
+    action,
+    loginOk,
+    userId,
+    postId,
+    commentId,
+    albumId,
+    photoId,
+    todoId,
+    productId,
+    notificationId,
+    countryId,
+    method,
+    path,
+    body,
+    manual,
+    forceStatus,
+    forceDelay,
+    page,
+    limit,
+    search,
+    role,
+    countryFilter,
+    sort,
+    order,
+    queryLang,
+    responseView,
+    token,
+    tokenEditable,
+    responsesByResource,
+    error,
+    apiLocale,
+  ]);
 
   useEffect(() => {
     try {
@@ -971,13 +1064,58 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
     return path;
   }, [lastUrl]);
 
+  function applyResourceUi(snap: PlaygroundResourceUiSnap) {
+    setAction(snap.action);
+    setMethod(snap.method);
+    setPath(snap.path);
+    setBody(snap.body);
+    setManual(snap.manual);
+    setForceStatus(snap.forceStatus);
+    setForceDelay(snap.forceDelay);
+    setPage(snap.page);
+    setLimit(snap.limit);
+    setSearch(snap.search);
+    setRole(snap.role);
+    setCountryFilter(snap.countryFilter);
+    setSort(snap.sort);
+    setOrder(snap.order);
+  }
+
   function switchResource(next: ResourceId) {
+    if (next === resource) return;
+
+    const currentUi: PlaygroundResourceUiSnap = {
+      action,
+      method,
+      path,
+      body,
+      manual,
+      forceStatus,
+      forceDelay,
+      page,
+      limit,
+      search,
+      role,
+      countryFilter,
+      sort,
+      order,
+    };
+    const nextMap = { ...uiByResource, [resource]: currentUi };
+    const restored = nextMap[next] ?? defaultResourceUi(next);
+
+    setUiByResource(nextMap);
     setResource(next);
-    setAction(next === "auth" ? "login" : "list");
-    setManual(false);
+    applyResourceUi(restored);
     setError(null);
     setOptionsOpen(false);
     setMethodOpen(false);
+
+    savePlaygroundSession({
+      resource: next,
+      ...restored,
+      uiByResource: nextMap,
+      error: null,
+    });
   }
 
   function switchAction(next: ActionId) {
@@ -1613,8 +1751,29 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
               </div>
             ) : (
               <div className="flex items-end">
-                <p className="pb-1.5 font-mono text-[11px] text-muted-foreground">
-                  {loadingOptions ? "Loading…" : "Ready"}
+                <p
+                  className="flex items-center gap-1.5 pb-1.5 font-mono text-[11px] text-muted-foreground"
+                  aria-live="polite"
+                >
+                  {loadingOptions ? (
+                    <>
+                      <Loader2
+                        className="size-3.5 animate-spin"
+                        strokeWidth={2}
+                        aria-hidden
+                      />
+                      <span className="sr-only">Loading</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check
+                        className="size-3.5 text-[var(--get)]"
+                        strokeWidth={2.5}
+                        aria-hidden
+                      />
+                      <span className="sr-only">Ready</span>
+                    </>
+                  )}
                 </p>
               </div>
             )}

@@ -2,19 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import Link from "next/link";
-import {
-  BookOpen,
-  Home,
-  Languages,
-  Mail,
-  Menu,
-  Moon,
-  Sparkles,
-  SquareTerminal,
-  Sun,
-  WandSparkles,
-  X,
-} from "lucide-react";
+import { Mail, Menu, X } from "lucide-react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useTheme } from "@/components/providers/theme-provider";
@@ -48,7 +36,7 @@ export function SiteHeader() {
   }
 
   const navLinkClass = cn(
-    "inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1.5 text-[13px] text-muted-foreground whitespace-nowrap transition-colors",
+    "inline-flex shrink-0 items-center rounded-md px-2 py-1.5 text-[13px] text-muted-foreground whitespace-nowrap transition-colors",
     "hover:bg-[var(--surface-hover)] hover:text-foreground",
     isFa && "font-fa-label",
   );
@@ -108,15 +96,12 @@ export function SiteHeader() {
           >
             {/* Physical left→right on mobile: playground, temporary, generator, resources */}
             <Link href="/playground" className={navLinkClass}>
-              <SquareTerminal className="size-3.5" strokeWidth={2} aria-hidden />
               {dict.common.playground}
             </Link>
             <Link href="/temporary" className={navLinkClass}>
-              <Sparkles className="size-3.5" strokeWidth={2} aria-hidden />
               {dict.common.temporary}
             </Link>
             <Link href="/generator" className={navLinkClass}>
-              <WandSparkles className="size-3.5" strokeWidth={2} aria-hidden />
               {dict.common.generator}
             </Link>
             <Link href="/#resources" className={navLinkClass}>
@@ -129,19 +114,13 @@ export function SiteHeader() {
             aria-label={dict.header.primaryNav}
           >
             <Link href="/playground" className={navLinkClass}>
-              <SquareTerminal className="size-3.5" strokeWidth={2} aria-hidden />
               {dict.common.playground}
             </Link>
             <Link href="/temporary" className={navLinkClass}>
-              <Sparkles className="size-3.5" strokeWidth={2} aria-hidden />
               {dict.common.temporary}
             </Link>
             <Link href="/generator" className={navLinkClass}>
-              <WandSparkles className="size-3.5" strokeWidth={2} aria-hidden />
               {dict.common.generator}
-            </Link>
-            <Link href="/#resources" className={navLinkClass}>
-              {dict.home.resourcesTitle}
             </Link>
             <Link href="/docs" className={navLinkClass}>
               {dict.common.docs}
@@ -206,7 +185,6 @@ export function SiteHeader() {
 
             <nav className="flex flex-col py-1" aria-label={dict.header.menu}>
               <Link href="/" onClick={closeMenu} className={drawerItemClass}>
-                <Home className="size-4 shrink-0" strokeWidth={1.75} aria-hidden />
                 {dict.common.home}
               </Link>
               <Link
@@ -214,11 +192,6 @@ export function SiteHeader() {
                 onClick={closeMenu}
                 className={drawerItemClass}
               >
-                <BookOpen
-                  className="size-4 shrink-0"
-                  strokeWidth={1.75}
-                  aria-hidden
-                />
                 {dict.common.docs}
               </Link>
               <Link
@@ -226,7 +199,6 @@ export function SiteHeader() {
                 onClick={closeMenu}
                 className={drawerItemClass}
               >
-                <Mail className="size-4 shrink-0" strokeWidth={1.75} aria-hidden />
                 {dict.header.contact}
               </Link>
               <button
@@ -235,11 +207,6 @@ export function SiteHeader() {
                 className={drawerItemClass}
                 aria-label={dict.header.apiLangGroup}
               >
-                <Languages
-                  className="size-4 shrink-0"
-                  strokeWidth={1.75}
-                  aria-hidden
-                />
                 <span className="flex-1">{dict.header.apiLangGroup}</span>
                 <span className="text-[12px] text-muted-foreground" dir="ltr">
                   {isFa ? "FA" : "EN"}
@@ -253,19 +220,6 @@ export function SiteHeader() {
                   isDark ? dict.header.lightMode : dict.header.darkMode
                 }
               >
-                {isDark ? (
-                  <Moon
-                    className="size-4 shrink-0"
-                    strokeWidth={1.75}
-                    aria-hidden
-                  />
-                ) : (
-                  <Sun
-                    className="size-4 shrink-0"
-                    strokeWidth={1.75}
-                    aria-hidden
-                  />
-                )}
                 <span className="flex-1">
                   {isDark ? dict.header.dark : dict.header.light}
                 </span>

@@ -22,7 +22,7 @@ export function PlaygroundPageContent({
         </p>
       </header>
 
-      <ApiPlayground key={initialResource} initialResource={initialResource} />
+      <ApiPlayground initialResource={initialResource} />
     </div>
   );
 }

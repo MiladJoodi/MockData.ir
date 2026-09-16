@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Check, Download, Link2, Loader2 } from "lucide-react";
+import { Check, ChevronDown, CircleAlert, Download, Loader2 } from "lucide-react";
 import { CopyButton } from "@/components/docs/copy-button";
 import { highlightCode } from "@/lib/syntax";
 import { recordToTypeScript } from "@/lib/generator/to-typescript";
@@ -19,6 +19,9 @@ export function GeneratedResult({
   copyLabel,
   downloadLabel,
   createApiLabel,
+  creatingLabel,
+  createdTitle,
+  durationLabel,
   viewJsonLabel,
   viewTypeLabel,
   creating,
@@ -32,7 +35,6 @@ export function GeneratedResult({
   createdUrl,
   openTemporaryLabel,
   generatedLabel,
-  statusMessage,
 }: {
   count: number;
   records: Record<string, unknown>[];
@@ -42,6 +44,9 @@ export function GeneratedResult({
   copyLabel: string;
   downloadLabel: string;
   createApiLabel: string;
+  creatingLabel: string;
+  createdTitle: string;
+  durationLabel: string;
   viewJsonLabel: string;
   viewTypeLabel: string;
   creating: boolean;
@@ -55,7 +60,6 @@ export function GeneratedResult({
   createdUrl: string | null;
   openTemporaryLabel: string;
   generatedLabel: string;
-  statusMessage: string | null;
 }) {
   const [view, setView] = useState<"json" | "type">("json");
 
@@ -74,105 +78,139 @@ export function GeneratedResult({
   const displayLines = useMemo(() => displayText.split("\n"), [displayText]);
 
   return (
-    <section className="space-y-3" aria-live="polite">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2
+    <section className="space-y-4" aria-live="polite">
+      <h2
+        className={cn(
+          "text-[15px] font-medium text-foreground",
+          isFa && "font-fa-label",
+        )}
+      >
+        {generatedLabel}
+      </h2>
+
+      {createdUrl ? (
+        <div
+          key={createdUrl}
+          id="generator-tmp-success"
+          role="status"
           className={cn(
-            "text-[15px] font-medium text-foreground",
+            "scroll-mt-20 space-y-3 rounded-xl border border-[var(--response)]/30 bg-[var(--response-bg)] px-3.5 py-4",
+            "animate-in fade-in-0 slide-in-from-top-2 duration-300",
+          )}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[var(--response)] text-white">
+              <Check className="size-3.5" strokeWidth={2.5} aria-hidden />
+            </span>
+            <p
+              className={cn(
+                "text-[14px] font-medium text-[var(--response)]",
+                isFa && "font-fa-label",
+              )}
+            >
+              {createdTitle}
+            </p>
+          </div>
+          <div className="flex items-center justify-center gap-1" dir="ltr">
+            <a
+              href={createdUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={createdUrl}
+              className="max-w-[calc(100%-2.25rem)] truncate text-center font-mono text-[14px] text-[var(--response)] underline-offset-2 hover:underline sm:text-[15px]"
+            >
+              {createdUrl}
+            </a>
+            <CopyButton
+              value={createdUrl}
+              label={copyLabel}
+              className="size-8 shrink-0 text-[var(--response)] hover:bg-[var(--response)]/15 hover:text-[var(--response)]"
+            />
+          </div>
+          <div className="flex justify-center">
+            <Link
+              href="/temporary"
+              className={cn(
+                "text-[12px] text-muted-foreground underline-offset-2 hover:underline",
+                isFa && "font-fa-label",
+              )}
+            >
+              {openTemporaryLabel}
+            </Link>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="space-y-1.5">
+        <label
+          htmlFor="generator-tmp-duration"
+          className={cn(
+            "text-[13px] text-muted-foreground",
             isFa && "font-fa-label",
           )}
         >
-          {generatedLabel}
-        </h2>
-
-        <div className="flex flex-wrap items-center gap-1.5">
-          <div className="flex flex-wrap gap-1">
-            {TEMPORARY_DURATIONS.map((d) => (
-              <button
-                key={d}
-                type="button"
-                aria-pressed={duration === d}
-                onClick={() => onDurationChange(d)}
-                className={cn(
-                  "rounded-md border px-2 py-1 text-[11px] tabular-nums",
-                  duration === d
-                    ? "border-[var(--request)]/40 bg-[var(--request)]/10 text-foreground"
-                    : "border-border text-muted-foreground hover:text-foreground",
-                  isFa && "font-fa-label",
-                )}
-              >
-                {durationLabels[d]}
-              </button>
-            ))}
+          {durationLabel}
+        </label>
+        <div className="flex items-center gap-2">
+          <div className="relative w-[8.5rem] shrink-0 sm:w-[9.5rem]">
+            <select
+              id="generator-tmp-duration"
+              value={duration}
+              onChange={(e) =>
+                onDurationChange(e.target.value as TemporaryDuration)
+              }
+              className={cn(
+                "h-10 w-full appearance-none rounded-lg border border-border bg-white pe-9 ps-3 text-[14px] outline-none transition-colors focus:border-foreground/35 dark:bg-background",
+                isFa && "font-fa-label",
+              )}
+            >
+              {TEMPORARY_DURATIONS.map((d) => (
+                <option key={d} value={d}>
+                  {durationLabels[d]}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              className="pointer-events-none absolute end-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+              strokeWidth={1.75}
+              aria-hidden
+            />
           </div>
           <button
             type="button"
             disabled={createDisabled || creating}
             onClick={onCreateApi}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-[12px] text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground disabled:cursor-not-allowed disabled:opacity-45",
+              "inline-flex h-10 min-w-0 flex-1 items-center justify-center gap-2 rounded-md bg-[var(--request-fill)] text-[14px] font-semibold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40",
               isFa && "font-fa-label",
             )}
           >
             {creating ? (
-              <Loader2 className="size-3.5 animate-spin" aria-hidden />
-            ) : (
-              <Link2 className="size-3.5" aria-hidden />
-            )}
-            {createApiLabel}
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+            ) : null}
+            {creating ? creatingLabel : createApiLabel}
           </button>
         </div>
       </div>
 
       {createBlockedReason ? (
-        <p
-          className={cn(
-            "text-[12px] text-amber-700 dark:text-amber-400",
-            isFa && "font-fa-label",
-          )}
+        <div
           role="status"
+          className="flex gap-3 rounded-lg border border-border bg-muted/45 px-3.5 py-3"
         >
-          {createBlockedReason}
-        </p>
-      ) : null}
-
-      {statusMessage ? (
-        <p
-          className={cn(
-            "text-[12px] text-muted-foreground",
-            isFa && "font-fa-label",
-          )}
-          role="status"
-        >
-          {statusMessage}
-        </p>
-      ) : null}
-
-      {createdUrl ? (
-        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-[13px]">
-          <Check
-            className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400"
+          <CircleAlert
+            className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+            strokeWidth={1.75}
             aria-hidden
           />
-          <a
-            href={createdUrl}
-            className="min-w-0 flex-1 truncate font-medium text-foreground underline-offset-2 hover:underline ltr-tech"
-            dir="ltr"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {createdUrl}
-          </a>
-          <CopyButton value={createdUrl} label={copyLabel} />
-          <Link
-            href="/temporary"
+          <p
             className={cn(
-              "text-[12px] text-muted-foreground underline-offset-2 hover:underline",
+              "text-[13px] leading-5 text-muted-foreground",
               isFa && "font-fa-label",
             )}
           >
-            {openTemporaryLabel}
-          </Link>
+            {createBlockedReason}
+          </p>
         </div>
       ) : null}
 

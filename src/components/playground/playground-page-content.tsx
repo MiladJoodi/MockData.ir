@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import { ApiPlayground } from "@/components/playground/api-playground";
-import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import type { PlaygroundResourceId } from "@/lib/playground";
 
@@ -16,12 +14,6 @@ export function PlaygroundPageContent({
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14">
       <header className="mb-8 space-y-3">
-        <Breadcrumbs
-          items={[
-            { name: dict.common.home, href: "/", path: "/" },
-            { name: dict.playground.title, path: "/playground" },
-          ]}
-        />
         <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
           {dict.playground.title}
         </h1>

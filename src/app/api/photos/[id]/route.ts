@@ -6,6 +6,10 @@ import {
 } from "@/db/queries/photos";
 import { applyMockControls } from "@/lib/api/mock-controls";
 import {
+  applyLocalizedDelete,
+  applyLocalizedPatch,
+} from "@/lib/api/locale-write";
+import {
   internalError,
   jsonError,
   jsonSuccess,
@@ -54,7 +58,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const parsed = updatePhotoSchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error);
 
-    const photo = await updatePhoto(parsedId.data, parsed.data);
+    const photo = await applyLocalizedPatch(
+      request,
+      "photos",
+      parsedId.data,
+      parsed.data,
+      updatePhoto,
+      getPhotoById,
+    );
     if (!photo) return notFoundError("Photo not found");
     return jsonLocalizedSuccess(request, "photos", photo);
   } catch (error) {
@@ -74,6 +85,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
 
     const photo = await deletePhoto(parsedId.data);
     if (!photo) return notFoundError("Photo not found");
+    applyLocalizedDelete("photos", photo.id);
     return jsonSuccess({ id: photo.id });
   } catch (error) {
     console.error("DELETE /api/photos/[id] failed:", error);

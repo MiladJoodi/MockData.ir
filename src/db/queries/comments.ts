@@ -32,9 +32,11 @@ function buildFilters(query: CommentListQuery): SQL | undefined {
 
 function orderByClause(query: CommentListQuery) {
   const direction = query.order === "asc" ? asc : desc;
-  return query.sort === "name"
-    ? direction(comments.name)
-    : direction(comments.createdAt);
+  const primary =
+    query.sort === "name"
+      ? direction(comments.name)
+      : direction(comments.createdAt);
+  return [primary, direction(comments.id)] as const;
 }
 
 export async function listComments(query: CommentListQuery) {
@@ -46,7 +48,7 @@ export async function listComments(query: CommentListQuery) {
       .select()
       .from(comments)
       .where(where)
-      .orderBy(orderByClause(query))
+      .orderBy(...orderByClause(query))
       .limit(query.limit)
       .offset(offset),
     db.select({ value: count() }).from(comments).where(where),

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ResourceApiDocs } from "@/components/docs/resource-api-docs";
 import { apiResources } from "@/lib/catalog";
+import { actionLabels } from "@/lib/docs/action-labels";
 import { withCommonListParams } from "@/lib/docs/query-params";
 import { createResourceMetadata } from "@/lib/seo";
 
@@ -49,7 +50,6 @@ export default function ProductsApiPage() {
     <ResourceApiDocs
       resource={resource}
       description="Catalog items with price, stock, category, and imageUrl."
-      tryHref="/api/products?category=electronics&limit=6"
       queryParams={withCommonListParams([
         {
           param: "search",
@@ -70,7 +70,7 @@ export default function ProductsApiPage() {
       examples={[
         {
           id: "list",
-          label: "list",
+          label: actionLabels.list,
           method: "GET",
           fetchCode: `const res = await fetch('/api/products?category=electronics');
 const { data } = await res.json();`,
@@ -80,7 +80,7 @@ const { data } = await res.json();`,
         },
         {
           id: "create",
-          label: "create",
+          label: actionLabels.create,
           method: "POST",
           fetchCode: `await fetch('/api/products', {
   method: 'POST',

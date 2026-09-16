@@ -43,7 +43,7 @@ export type PreviewResourceConfig = {
   sort?: string;
   order?: "asc" | "desc";
   fields: PreviewField[];
-  sample: () => Record<string, unknown>;
+  sample: (locale?: "en" | "fa") => Record<string, unknown>;
 };
 
 function stamp() {
@@ -83,8 +83,20 @@ export const previewResources: Record<PreviewResourceId, PreviewResourceConfig> 
         { key: "country", label: "Country", required: true, create: true, edit: true },
         { key: "company", label: "Company", create: true, edit: true },
       ],
-      sample: () => {
+      sample: (locale = "en") => {
         const s = stamp();
+        if (locale === "fa") {
+          return {
+            name: `کاربر ${s}`,
+            username: `karbar_${s}`,
+            email: `karbar_${s}@example.com`,
+            avatarUrl: `https://i.pravatar.cc/150?u=fa${s}`,
+            role: "member",
+            city: "تهران",
+            country: "ایران",
+            company: "ماک‌دیتا",
+          };
+        }
         return {
           name: `User ${s}`,
           username: `user_${s}`,
@@ -133,12 +145,23 @@ export const previewResources: Record<PreviewResourceId, PreviewResourceConfig> 
           column: true,
         },
       ],
-      sample: () => ({
-        title: `Draft post ${stamp()}`,
-        body: "Sample body for the MockData posts preview.",
-        published: true,
-        tags: ["preview", "demo"],
-      }),
+      sample: (locale = "en") => {
+        const s = stamp();
+        if (locale === "fa") {
+          return {
+            title: `پیش‌نویس ${s}`,
+            body: "متن نمونه برای پیش‌نمایش پست‌های ماک‌دیتا.",
+            published: true,
+            tags: ["پیش‌نمایش", "نمونه"],
+          };
+        }
+        return {
+          title: `Draft post ${s}`,
+          body: "Sample body for the MockData posts preview.",
+          published: true,
+          tags: ["preview", "demo"],
+        };
+      },
     },
     comments: {
       id: "comments",
@@ -169,8 +192,15 @@ export const previewResources: Record<PreviewResourceId, PreviewResourceConfig> 
           column: true,
         },
       ],
-      sample: () => {
+      sample: (locale = "en") => {
         const s = stamp();
+        if (locale === "fa") {
+          return {
+            name: `نظر‌دهنده ${s}`,
+            email: `nazar_${s}@example.com`,
+            body: "عالی بود — ممنون بابت این API نمونه.",
+          };
+        }
         return {
           name: `Commenter ${s}`,
           email: `c_${s}@example.com`,
@@ -196,8 +226,8 @@ export const previewResources: Record<PreviewResourceId, PreviewResourceConfig> 
         },
         { key: "title", label: "Title", required: true, create: true, edit: true, column: true },
       ],
-      sample: () => ({
-        title: `Album ${stamp()}`,
+      sample: (locale = "en") => ({
+        title: locale === "fa" ? `آلبوم ${stamp()}` : `Album ${stamp()}`,
       }),
     },
     photos: {
@@ -229,11 +259,11 @@ export const previewResources: Record<PreviewResourceId, PreviewResourceConfig> 
           column: true,
         },
       ],
-      sample: () => {
+      sample: (locale = "en") => {
         const s = stamp();
         const url = `https://picsum.photos/seed/${s}/600/400`;
         return {
-          title: `Photo ${s}`,
+          title: locale === "fa" ? `عکس ${s}` : `Photo ${s}`,
           url,
           thumbnailUrl: `https://picsum.photos/seed/${s}/150/150`,
         };
@@ -265,8 +295,8 @@ export const previewResources: Record<PreviewResourceId, PreviewResourceConfig> 
           column: true,
         },
       ],
-      sample: () => ({
-        title: `Todo ${stamp()}`,
+      sample: (locale = "en") => ({
+        title: locale === "fa" ? `کار ${stamp()}` : `Todo ${stamp()}`,
         completed: false,
       }),
     },
@@ -322,8 +352,18 @@ export const previewResources: Record<PreviewResourceId, PreviewResourceConfig> 
           edit: true,
         },
       ],
-      sample: () => {
+      sample: (locale = "en") => {
         const s = stamp();
+        if (locale === "fa") {
+          return {
+            name: `محصول ${s}`,
+            description: "آیتم نمونه برای پیش‌نمایش کاتالوگ.",
+            price: 199000,
+            stock: 12,
+            category: "الکترونیک",
+            imageUrl: `https://picsum.photos/seed/p${s}/400/400`,
+          };
+        }
         return {
           name: `Product ${s}`,
           description: "Sample catalog item for the preview UI.",
@@ -384,12 +424,23 @@ export const previewResources: Record<PreviewResourceId, PreviewResourceConfig> 
           column: true,
         },
       ],
-      sample: () => ({
-        title: `Ping ${stamp()}`,
-        message: "Preview notification from MockData.",
-        type: "info",
-        read: false,
-      }),
+      sample: (locale = "en") => {
+        const s = stamp();
+        if (locale === "fa") {
+          return {
+            title: `اعلان ${s}`,
+            message: "اعلان نمونه از ماک‌دیتا.",
+            type: "info",
+            read: false,
+          };
+        }
+        return {
+          title: `Ping ${s}`,
+          message: "Preview notification from MockData.",
+          type: "info",
+          read: false,
+        };
+      },
     },
     countries: {
       id: "countries",
@@ -416,8 +467,19 @@ export const previewResources: Record<PreviewResourceId, PreviewResourceConfig> 
         { key: "currency", label: "Currency", required: true, create: true, edit: true },
         { key: "flagUrl", label: "Flag URL", required: true, create: true, edit: true },
       ],
-      sample: () => {
+      sample: (locale = "en") => {
         const s = stamp().toUpperCase().slice(0, 2);
+        if (locale === "fa") {
+          return {
+            name: `کشور نمونه ${s}`,
+            code: `X${s[0] ?? "Z"}`,
+            capital: "شهر نمونه",
+            region: "آسیا",
+            population: 1000000,
+            currency: "IRR",
+            flagUrl: "https://flagcdn.com/w320/ir.png",
+          };
+        }
         return {
           name: `Demo Land ${s}`,
           code: `X${s[0] ?? "Z"}`,

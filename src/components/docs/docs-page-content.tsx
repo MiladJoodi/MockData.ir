@@ -5,7 +5,6 @@ import { Eye } from "lucide-react";
 import { DocsWhatsNew } from "@/components/docs/docs-whats-new";
 import { ResetSeedPanel } from "@/components/docs/reset-seed-panel";
 import { VsCodeBlock } from "@/components/docs/vscode-block";
-import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { apiResources, plannedResources } from "@/lib/catalog";
 import { RATE_LIMIT } from "@/lib/api/rate-limit";
@@ -68,8 +67,8 @@ export function DocsPageContent() {
           >
             <p
               className={cn(
-                "mb-2 px-2 text-[10px] tracking-[0.16em] text-muted-foreground uppercase",
-                isFa ? "font-fa-label tracking-normal normal-case" : "font-mono",
+                "mb-2 px-2 text-[13px] font-medium text-muted-foreground",
+                isFa && "font-fa-label",
               )}
             >
               {d.navLabel}
@@ -91,12 +90,6 @@ export function DocsPageContent() {
 
         <article className="min-w-0 space-y-14">
           <header className="space-y-3" id="intro">
-            <Breadcrumbs
-              items={[
-                { name: dict.common.home, href: "/", path: "/" },
-                { name: dict.common.docs, path: "/docs" },
-              ]}
-            />
             <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
               {d.title}
             </h1>

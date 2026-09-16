@@ -7,6 +7,7 @@ import {
   internalError,
   validationError,
 } from "@/lib/api/response";
+import { applyLocalizedCreate } from "@/lib/api/locale-write";
 import {
   createPostSchema,
   postListQuerySchema,
@@ -51,6 +52,12 @@ export async function POST(request: NextRequest) {
     }
 
     const post = await createPost(parsed.data);
+    applyLocalizedCreate(
+      request,
+      "posts",
+      post.id,
+      parsed.data as Record<string, unknown>,
+    );
     return jsonLocalizedSuccess(request, "posts", post, { status: 201 });
   } catch (error) {
     console.error("POST /api/posts failed:", error);

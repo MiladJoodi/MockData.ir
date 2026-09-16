@@ -7,6 +7,7 @@ import {
   jsonLocalizedSuccess,
   validationError,
 } from "@/lib/api/response";
+import { applyLocalizedCreate } from "@/lib/api/locale-write";
 import {
   countryListQuerySchema,
   createCountrySchema,
@@ -46,6 +47,12 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) return validationError(parsed.error);
 
     const country = await createCountry(parsed.data);
+    applyLocalizedCreate(
+      request,
+      "countries",
+      country.id,
+      parsed.data as Record<string, unknown>,
+    );
     return jsonLocalizedSuccess(request, "countries", country, { status: 201 });
   } catch (error) {
     console.error("POST /api/countries failed:", error);

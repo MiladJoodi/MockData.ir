@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Lock, Pencil } from "lucide-react";
 import { CopyButton } from "@/components/docs/copy-button";
 import { HighlightedJsonEditor } from "@/components/playground/highlighted-json-editor";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
@@ -11,6 +11,7 @@ import {
   API_LOCALE_STORAGE_KEY,
   type ApiLocale,
 } from "@/lib/api/locale-constants";
+import { actionLabels } from "@/lib/docs/action-labels";
 import {
   type PlaygroundResourceId,
 } from "@/lib/playground";
@@ -56,16 +57,16 @@ const resources: { id: ResourceId; label: string }[] = [
 ];
 
 const authActions: { id: AuthAction; label: string; method: HttpMethod }[] = [
-  { id: "login", label: "Login", method: "POST" },
-  { id: "me", label: "Me", method: "GET" },
+  { id: "login", label: actionLabels.login, method: "POST" },
+  { id: "me", label: actionLabels.me, method: "GET" },
 ];
 
 const crudActions: { id: CrudAction; label: string; method: HttpMethod }[] = [
-  { id: "list", label: "Get list", method: "GET" },
-  { id: "get", label: "Get one", method: "GET" },
-  { id: "create", label: "Create", method: "POST" },
-  { id: "update", label: "Update", method: "PATCH" },
-  { id: "delete", label: "Delete", method: "DELETE" },
+  { id: "list", label: actionLabels.list, method: "GET" },
+  { id: "get", label: actionLabels.get, method: "GET" },
+  { id: "create", label: actionLabels.create, method: "POST" },
+  { id: "update", label: actionLabels.update, method: "PATCH" },
+  { id: "delete", label: actionLabels.delete, method: "DELETE" },
 ];
 
 const methods: HttpMethod[] = ["GET", "POST", "PATCH", "DELETE"];
@@ -574,18 +575,25 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
   const [loadingOptions, setLoadingOptions] = useState(true);
 
   const [method, setMethod] = useState<HttpMethod>("GET");
-  const [path, setPath] = useState("/api/users?limit=3");
+  const [path, setPath] = useState("/api/users?limit=12");
   const [body, setBody] = useState("");
   const [manual, setManual] = useState(false);
   const [forceStatus, setForceStatus] = useState<number | "">("");
   const [forceDelay, setForceDelay] = useState<number | "">("");
-  const [limit, setLimit] = useState(3);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(12);
   const [search, setSearch] = useState("");
+  const [role, setRole] = useState("");
+  const [countryFilter, setCountryFilter] = useState("");
+  const [sort, setSort] = useState("");
+  const [order, setOrder] = useState<"asc" | "desc" | "">("");
+  const [queryLang, setQueryLang] = useState<"en" | "fa">("en");
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [methodOpen, setMethodOpen] = useState(false);
   const methodMenuRef = useRef<HTMLDivElement>(null);
 
   const [token, setToken] = useState("");
+  const [tokenEditable, setTokenEditable] = useState(false);
   const [responsesByResource, setResponsesByResource] = useState<
     Partial<Record<ResourceId, ResponseSnap>>
   >({});
@@ -603,16 +611,22 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(API_LOCALE_STORAGE_KEY);
-      setApiLocale(stored === "fa" ? "fa" : "en");
+      const next = stored === "fa" ? "fa" : "en";
+      setApiLocale(next);
+      setQueryLang(next);
     } catch {
       setApiLocale("en");
+      setQueryLang("en");
     }
     // Drop legacy cookie so direct /api/* navigation stays English.
     document.cookie =
       "mockdata-api-locale=; path=/; max-age=0; SameSite=Lax";
     function onLocale(e: Event) {
       const detail = (e as CustomEvent<ApiLocale>).detail;
-      if (detail === "fa" || detail === "en") setApiLocale(detail);
+      if (detail === "fa" || detail === "en") {
+        setApiLocale(detail);
+        setQueryLang(detail);
+      }
     }
     window.addEventListener(API_LOCALE_EVENT, onLocale);
     return () => window.removeEventListener(API_LOCALE_EVENT, onLocale);
@@ -887,17 +901,23 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
       loginOk,
     });
     setMethod(built.method);
+    const resolvedLang = queryLang === "fa" ? "fa" : undefined;
     setPath(
       withQuery(built.path, {
         ...(isList
           ? {
+              page: page > 1 ? page : undefined,
               limit,
               search: search.trim() || undefined,
+              role: role || undefined,
+              country: countryFilter.trim() || undefined,
+              sort: sort || undefined,
+              order: order || undefined,
             }
           : {}),
         delay: forceDelay,
         status: forceStatus,
-        lang: apiLocale === "fa" ? "fa" : undefined,
+        lang: resolvedLang,
       }),
     );
     setBody(built.body);
@@ -915,8 +935,14 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
     selectedCountry,
     loginOk,
     isList,
+    page,
     limit,
     search,
+    role,
+    countryFilter,
+    sort,
+    order,
+    queryLang,
     forceDelay,
     forceStatus,
     apiLocale,
@@ -943,6 +969,8 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
     setAction(next === "auth" ? "login" : "list");
     setManual(false);
     setError(null);
+    setOptionsOpen(false);
+    setMethodOpen(false);
   }
 
   function switchAction(next: ActionId) {
@@ -1543,93 +1571,38 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
                 <p className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
                   Password
                 </p>
-                <div
-                  className="overflow-hidden rounded-md border border-border bg-muted"
-                  role="radiogroup"
-                  aria-label="Demo password"
-                >
+                <div className="flex h-9 overflow-hidden rounded-md border border-border bg-muted p-0.5">
                   <button
                     type="button"
-                    role="radio"
-                    aria-checked={loginOk}
                     onClick={() => {
                       setLoginOk(true);
                       setManual(false);
                     }}
                     className={cn(
-                      "flex w-full items-center gap-2 border-b border-border px-2.5 py-2 text-start transition-colors",
+                      "flex-1 rounded px-2 font-mono text-[12px] transition-colors",
                       loginOk
-                        ? "bg-[var(--get)]/15"
-                        : "hover:bg-[var(--surface-hover)]",
+                        ? "bg-[var(--get)]/20 font-semibold text-[var(--get)]"
+                        : "text-muted-foreground hover:text-foreground",
                     )}
                   >
-                    <span
-                      className={cn(
-                        "grid size-3.5 shrink-0 place-items-center rounded-full border",
-                        loginOk
-                          ? "border-[var(--get)] bg-[var(--get)]"
-                          : "border-muted-foreground/40",
-                      )}
-                      aria-hidden
-                    >
-                      {loginOk ? (
-                        <span className="size-1.5 rounded-full bg-white" />
-                      ) : null}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-mono text-[12px] text-foreground">
-                        password
-                      </span>
-                      <span className="block text-[10px] text-muted-foreground">
-                        Correct — login returns a Bearer token
-                      </span>
-                    </span>
+                    password
                   </button>
                   <button
                     type="button"
-                    role="radio"
-                    aria-checked={!loginOk}
                     onClick={() => {
                       setLoginOk(false);
                       setManual(false);
                     }}
                     className={cn(
-                      "flex w-full items-center gap-2 px-2.5 py-2 text-start transition-colors",
+                      "flex-1 rounded px-2 font-mono text-[12px] transition-colors",
                       !loginOk
-                        ? "bg-[var(--delete)]/12"
-                        : "hover:bg-[var(--surface-hover)]",
+                        ? "bg-[var(--delete)]/20 font-semibold text-[var(--delete)]"
+                        : "text-muted-foreground hover:text-foreground",
                     )}
                   >
-                    <span
-                      className={cn(
-                        "grid size-3.5 shrink-0 place-items-center rounded-full border",
-                        !loginOk
-                          ? "border-[var(--delete)] bg-[var(--delete)]"
-                          : "border-muted-foreground/40",
-                      )}
-                      aria-hidden
-                    >
-                      {!loginOk ? (
-                        <span className="size-1.5 rounded-full bg-white" />
-                      ) : null}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-mono text-[12px] text-foreground">
-                        wrong
-                      </span>
-                      <span className="block text-[10px] text-muted-foreground">
-                        Incorrect — API responds 401
-                      </span>
-                    </span>
+                    wrong
                   </button>
                 </div>
-                <p className="text-[11px] leading-4 text-muted-foreground">
-                  Every seeded user uses{" "}
-                  <code className="rounded bg-muted px-1 font-mono text-[10px]">
-                    password
-                  </code>
-                  . This only fills the login body — then hit Send.
-                </p>
               </div>
             ) : (
               <div className="flex items-end">
@@ -1641,179 +1614,333 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
           </div>
         ) : null}
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
-          <div ref={methodMenuRef} className="relative shrink-0">
-            <label className="sr-only" htmlFor="playground-method">
-              Method
+        <div className="flex flex-col gap-2 md:flex-row md:items-stretch">
+          <div className="flex min-w-0 flex-1 items-stretch gap-2">
+            <div ref={methodMenuRef} className="relative shrink-0">
+              <label className="sr-only" htmlFor="playground-method">
+                Method
+              </label>
+              <button
+                id="playground-method"
+                type="button"
+                aria-haspopup="listbox"
+                aria-expanded={methodOpen}
+                onClick={() => setMethodOpen((open) => !open)}
+                className={cn(
+                  "inline-flex h-11 min-h-11 w-[5.75rem] items-center justify-between gap-1 rounded-md border border-border bg-muted px-2.5 font-mono text-[13px] font-semibold outline-none focus-visible:border-[var(--request)]/50",
+                  methodColor[method],
+                )}
+              >
+                {method}
+                <ChevronDown
+                  className={cn(
+                    "size-3.5 shrink-0 text-muted-foreground transition-transform",
+                    methodOpen && "rotate-180",
+                  )}
+                  aria-hidden
+                />
+              </button>
+              {methodOpen ? (
+                <ul
+                  role="listbox"
+                  aria-label="HTTP method"
+                  className="absolute top-[calc(100%+4px)] start-0 z-30 min-w-full overflow-hidden rounded-md border border-border bg-card py-1 shadow-lg"
+                >
+                  {methods.map((m) => (
+                    <li key={m} role="option" aria-selected={method === m}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMethod(m);
+                          setManual(true);
+                          setMethodOpen(false);
+                        }}
+                        className={cn(
+                          "flex w-full items-center px-3 py-2 font-mono text-[13px] font-semibold transition-colors hover:bg-[var(--surface-hover)]",
+                          methodColor[m],
+                          method === m && "bg-[var(--surface-hover)]",
+                        )}
+                      >
+                        {m}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+
+            <label className="sr-only" htmlFor="playground-path">
+              Path
             </label>
+            <input
+              id="playground-path"
+              value={path}
+              onChange={(e) => {
+                setPath(e.target.value);
+                setManual(true);
+              }}
+              spellCheck={false}
+              className="box-border h-11 min-h-11 min-w-0 flex-1 rounded-md border border-border bg-muted px-3 font-mono text-[13px] leading-none text-foreground outline-none focus-visible:border-[var(--request)]/50 ltr-tech"
+              placeholder="/api/users"
+              dir="ltr"
+            />
+          </div>
+
+          <div className="flex shrink-0 items-stretch gap-2">
             <button
-              id="playground-method"
               type="button"
-              aria-haspopup="listbox"
-              aria-expanded={methodOpen}
-              onClick={() => setMethodOpen((open) => !open)}
-              className={cn(
-                "inline-flex h-10 items-center gap-1.5 rounded-md border border-border bg-muted px-2.5 font-mono text-[13px] font-semibold outline-none focus-visible:border-[var(--request)]/50",
-                methodColor[method],
-              )}
+              onClick={() => setOptionsOpen((open) => !open)}
+              aria-expanded={optionsOpen}
+              aria-label={optionsOpen ? "Hide options" : "Show options"}
+              title="Options"
+              className="inline-flex h-11 min-h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground"
             >
-              {method}
               <ChevronDown
                 className={cn(
-                  "size-3.5 text-muted-foreground transition-transform",
-                  methodOpen && "rotate-180",
+                  "size-3.5 transition-transform",
+                  optionsOpen && "rotate-180",
                 )}
                 aria-hidden
               />
             </button>
-            {methodOpen ? (
-              <ul
-                role="listbox"
-                aria-label="HTTP method"
-                className="absolute top-[calc(100%+4px)] start-0 z-30 min-w-full overflow-hidden rounded-md border border-border bg-card py-1 shadow-lg"
-              >
-                {methods.map((m) => (
-                  <li key={m} role="option" aria-selected={method === m}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMethod(m);
-                        setManual(true);
-                        setMethodOpen(false);
-                      }}
-                      className={cn(
-                        "flex w-full items-center px-3 py-1.5 font-mono text-[13px] font-semibold transition-colors hover:bg-[var(--surface-hover)]",
-                        methodColor[m],
-                        method === m && "bg-[var(--surface-hover)]",
-                      )}
-                    >
-                      {m}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+
+            <button
+              type="button"
+              onClick={send}
+              disabled={pending || !path.trim()}
+              className="h-11 min-h-11 flex-1 rounded-md bg-[var(--request)] px-4 text-[13px] font-semibold text-white transition-opacity disabled:opacity-50 md:w-[6.5rem] md:flex-none"
+            >
+              {pending ? "Sending…" : "Send"}
+            </button>
           </div>
-
-          <label className="sr-only" htmlFor="playground-path">
-            Path
-          </label>
-          <input
-            id="playground-path"
-            value={path}
-            onChange={(e) => {
-              setPath(e.target.value);
-              setManual(true);
-            }}
-            spellCheck={false}
-            className="h-10 min-w-0 flex-1 rounded-md border border-border bg-muted px-3 font-mono text-[13px] text-foreground outline-none focus-visible:border-[var(--request)]/50 ltr-tech"
-            placeholder="/api/users"
-            dir="ltr"
-          />
-
-          <button
-            type="button"
-            onClick={() => setOptionsOpen((open) => !open)}
-            aria-expanded={optionsOpen}
-            aria-label={optionsOpen ? "Hide options" : "Show options"}
-            title="Options"
-            className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground"
-          >
-            <ChevronDown
-              className={cn(
-                "size-3.5 transition-transform",
-                optionsOpen && "rotate-180",
-              )}
-              aria-hidden
-            />
-          </button>
-
-          <button
-            type="button"
-            onClick={send}
-            disabled={pending || !path.trim()}
-            className="h-10 w-[6.5rem] shrink-0 rounded-md bg-[var(--request)] text-[13px] font-semibold text-white transition-opacity disabled:opacity-50"
-          >
-            {pending ? "Sending…" : "Send"}
-          </button>
         </div>
 
         {optionsOpen ? (
-          <div className="space-y-3 rounded-md border border-border p-3">
-              {isList ? (
-                <div className="grid gap-3 sm:grid-cols-[7.5rem_minmax(0,1fr)]">
-                  <div className="space-y-1.5">
-                    <label
-                      htmlFor="playground-limit"
-                      className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
-                    >
-                      Limit
-                    </label>
-                    <select
-                      id="playground-limit"
-                      value={String(limit)}
-                      onChange={(e) => {
-                        setLimit(Number(e.target.value));
+          <div className="space-y-3 rounded-md border border-border p-3" dir="ltr">
+            <p className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+              Query params
+            </p>
+
+            {isList ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="playground-page"
+                    className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+                  >
+                    page
+                  </label>
+                  <div className="flex h-9 overflow-hidden rounded-md border border-border bg-muted">
+                    <button
+                      type="button"
+                      aria-label="Previous page"
+                      disabled={page <= 1}
+                      onClick={() => {
+                        setPage((p) => Math.max(1, p - 1));
                         setManual(false);
                       }}
-                      className="h-9 w-full cursor-pointer rounded-md border border-border bg-muted px-2.5 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
+                      className="grid w-9 shrink-0 place-items-center text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground disabled:opacity-40"
                     >
-                      {[3, 6, 12, 24, 50].map((n) => (
+                      −
+                    </button>
+                    <select
+                      id="playground-page"
+                      value={String(page)}
+                      onChange={(e) => {
+                        setPage(Number(e.target.value));
+                        setManual(false);
+                      }}
+                      className="h-full min-w-0 flex-1 cursor-pointer border-x border-border bg-transparent px-2 text-center font-mono text-[12px] outline-none"
+                    >
+                      {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
                         <option key={n} value={n}>
                           {n}
                         </option>
                       ))}
                     </select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label
-                      htmlFor="playground-search"
-                      className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
-                    >
-                      Search
-                    </label>
-                    <input
-                      id="playground-search"
-                      value={search}
-                      onChange={(e) => {
-                        setSearch(e.target.value);
+                    <button
+                      type="button"
+                      aria-label="Next page"
+                      disabled={page >= 20}
+                      onClick={() => {
+                        setPage((p) => Math.min(20, p + 1));
                         setManual(false);
                       }}
-                      spellCheck={false}
-                      placeholder={
-                        resource === "users"
-                          ? "Name, username, email, company, city"
-                          : "Search…"
-                      }
-                      className="h-9 w-full rounded-md border border-border bg-muted px-3 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
-                    />
+                      className="grid w-9 shrink-0 place-items-center text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground disabled:opacity-40"
+                    >
+                      +
+                    </button>
                   </div>
                 </div>
-              ) : null}
 
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="space-y-1.5 sm:col-span-1">
+                <div className="space-y-1.5">
                   <label
-                    htmlFor="playground-token"
+                    htmlFor="playground-limit"
                     className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
                   >
-                    Bearer token
+                    limit
+                  </label>
+                  <select
+                    id="playground-limit"
+                    value={String(limit)}
+                    onChange={(e) => {
+                      setLimit(Number(e.target.value));
+                      setManual(false);
+                    }}
+                    className="h-9 w-full cursor-pointer rounded-md border border-border bg-muted px-2.5 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
+                  >
+                    {[3, 6, 12, 24, 50].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="playground-search"
+                    className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+                  >
+                    search
                   </label>
                   <input
-                    id="playground-token"
-                    value={token}
-                    onChange={(e) => setToken(e.target.value)}
+                    id="playground-search"
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setManual(false);
+                    }}
                     spellCheck={false}
-                    placeholder="Filled after Login · Correct"
-                    className="h-9 w-full rounded-md border border-border bg-muted px-3 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
+                    className="h-9 w-full rounded-md border border-border bg-muted px-2.5 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
                   />
                 </div>
+
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="playground-role"
+                    className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+                  >
+                    role
+                  </label>
+                  <select
+                    id="playground-role"
+                    value={role}
+                    onChange={(e) => {
+                      setRole(e.target.value);
+                      setManual(false);
+                    }}
+                    className="h-9 w-full cursor-pointer rounded-md border border-border bg-muted px-2.5 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
+                  >
+                    <option value="">Off</option>
+                    <option value="admin">admin</option>
+                    <option value="member">member</option>
+                    <option value="guest">guest</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="playground-country-filter"
+                    className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+                  >
+                    country
+                  </label>
+                  <input
+                    id="playground-country-filter"
+                    value={countryFilter}
+                    onChange={(e) => {
+                      setCountryFilter(e.target.value);
+                      setManual(false);
+                    }}
+                    spellCheck={false}
+                    className="h-9 w-full rounded-md border border-border bg-muted px-2.5 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="playground-sort"
+                    className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+                  >
+                    sort
+                  </label>
+                  <select
+                    id="playground-sort"
+                    value={sort}
+                    onChange={(e) => {
+                      setSort(e.target.value);
+                      setManual(false);
+                    }}
+                    className="h-9 w-full cursor-pointer rounded-md border border-border bg-muted px-2.5 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
+                  >
+                    <option value="">Off</option>
+                    <option value="createdAt">createdAt</option>
+                    <option value="name">name</option>
+                    <option value="username">username</option>
+                    <option value="title">title</option>
+                    <option value="id">id</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="playground-order"
+                    className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+                  >
+                    order
+                  </label>
+                  <select
+                    id="playground-order"
+                    value={order}
+                    onChange={(e) => {
+                      setOrder(e.target.value as "asc" | "desc" | "");
+                      setManual(false);
+                    }}
+                    className="h-9 w-full cursor-pointer rounded-md border border-border bg-muted px-2.5 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
+                  >
+                    <option value="">Off</option>
+                    <option value="asc">asc</option>
+                    <option value="desc">desc</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="playground-lang"
+                    className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+                  >
+                    lang
+                  </label>
+                  <select
+                    id="playground-lang"
+                    value={queryLang}
+                    onChange={(e) => {
+                      setQueryLang(e.target.value as "en" | "fa");
+                      setManual(false);
+                    }}
+                    className="h-9 w-full cursor-pointer rounded-md border border-border bg-muted px-2.5 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
+                  >
+                    {queryLang === "fa" ? (
+                      <>
+                        <option value="fa">fa</option>
+                        <option value="en">en</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="en">en</option>
+                        <option value="fa">fa</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+
                 <div className="space-y-1.5">
                   <label
                     htmlFor="playground-force-delay"
                     className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
                   >
-                    Delay
+                    delay
                   </label>
                   <select
                     id="playground-force-delay"
@@ -1826,19 +1953,20 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
                     className="h-9 w-full cursor-pointer rounded-md border border-border bg-muted px-2.5 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
                   >
                     <option value="">Off</option>
-                    <option value="300">300ms</option>
-                    <option value="800">800ms</option>
-                    <option value="1500">1500ms</option>
-                    <option value="3000">3000ms</option>
-                    <option value="5000">5000ms</option>
+                    <option value="300">300</option>
+                    <option value="800">800</option>
+                    <option value="1500">1500</option>
+                    <option value="3000">3000</option>
+                    <option value="5000">5000</option>
                   </select>
                 </div>
+
                 <div className="space-y-1.5">
                   <label
                     htmlFor="playground-force-status"
                     className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
                   >
-                    Force status
+                    status
                   </label>
                   <select
                     id="playground-force-status"
@@ -1850,17 +1978,202 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
                     }}
                     className="h-9 w-full cursor-pointer rounded-md border border-border bg-muted px-2.5 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
                   >
-                    <option value="">Off (normal)</option>
-                    <option value="400">400 Bad Request</option>
-                    <option value="401">401 Unauthorized</option>
-                    <option value="403">403 Forbidden</option>
-                    <option value="404">404 Not Found</option>
-                    <option value="429">429 Too Many Requests</option>
-                    <option value="500">500 Server Error</option>
-                    <option value="503">503 Unavailable</option>
+                    <option value="">Off</option>
+                    <option value="400">400</option>
+                    <option value="401">401</option>
+                    <option value="403">403</option>
+                    <option value="404">404</option>
+                    <option value="429">429</option>
+                    <option value="500">500</option>
+                    <option value="503">503</option>
                   </select>
                 </div>
+
+                <div className="space-y-1.5 sm:col-span-2 lg:col-span-2">
+                  <label
+                    htmlFor="playground-token"
+                    className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+                  >
+                    token
+                  </label>
+                  <div
+                    className={cn(
+                      "flex h-9 overflow-hidden rounded-md border",
+                      tokenEditable
+                        ? "border-[var(--request)]/50 bg-background"
+                        : "border-border bg-muted/70",
+                    )}
+                  >
+                    <input
+                      id="playground-token"
+                      value={token}
+                      readOnly={!tokenEditable}
+                      onChange={(e) => setToken(e.target.value)}
+                      spellCheck={false}
+                      className={cn(
+                        "min-w-0 flex-1 truncate bg-transparent px-2.5 font-mono text-[12px] outline-none",
+                        tokenEditable
+                          ? "text-foreground"
+                          : "cursor-default text-muted-foreground/70",
+                      )}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setTokenEditable((v) => !v)}
+                      aria-pressed={tokenEditable}
+                      aria-label={tokenEditable ? "Lock token" : "Edit token"}
+                      className={cn(
+                        "inline-flex size-9 shrink-0 items-center justify-center border-s transition-colors",
+                        tokenEditable
+                          ? "border-[var(--request)]/40 bg-[var(--request)]/15 text-[var(--request)]"
+                          : "border-border text-muted-foreground hover:bg-[var(--surface-hover)] hover:text-foreground",
+                      )}
+                    >
+                      {tokenEditable ? (
+                        <Lock className="size-3.5" aria-hidden />
+                      ) : (
+                        <Pencil className="size-3.5" aria-hidden />
+                      )}
+                    </button>
+                  </div>
+                </div>
               </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="playground-lang"
+                    className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+                  >
+                    lang
+                  </label>
+                  <select
+                    id="playground-lang"
+                    value={queryLang}
+                    onChange={(e) => {
+                      setQueryLang(e.target.value as "en" | "fa");
+                      setManual(false);
+                    }}
+                    className="h-9 w-full cursor-pointer rounded-md border border-border bg-muted px-2.5 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
+                  >
+                    {queryLang === "fa" ? (
+                      <>
+                        <option value="fa">fa</option>
+                        <option value="en">en</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="en">en</option>
+                        <option value="fa">fa</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="playground-force-delay"
+                    className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+                  >
+                    delay
+                  </label>
+                  <select
+                    id="playground-force-delay"
+                    value={forceDelay === "" ? "" : String(forceDelay)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setForceDelay(value ? Number(value) : "");
+                      setManual(false);
+                    }}
+                    className="h-9 w-full cursor-pointer rounded-md border border-border bg-muted px-2.5 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
+                  >
+                    <option value="">Off</option>
+                    <option value="300">300</option>
+                    <option value="800">800</option>
+                    <option value="1500">1500</option>
+                    <option value="3000">3000</option>
+                    <option value="5000">5000</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="playground-force-status"
+                    className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+                  >
+                    status
+                  </label>
+                  <select
+                    id="playground-force-status"
+                    value={forceStatus === "" ? "" : String(forceStatus)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setForceStatus(value ? Number(value) : "");
+                      setManual(false);
+                    }}
+                    className="h-9 w-full cursor-pointer rounded-md border border-border bg-muted px-2.5 font-mono text-[12px] outline-none focus-visible:border-[var(--request)]/50"
+                  >
+                    <option value="">Off</option>
+                    <option value="400">400</option>
+                    <option value="401">401</option>
+                    <option value="403">403</option>
+                    <option value="404">404</option>
+                    <option value="429">429</option>
+                    <option value="500">500</option>
+                    <option value="503">503</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="playground-token"
+                    className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+                  >
+                    token
+                  </label>
+                  <div
+                    className={cn(
+                      "flex h-9 overflow-hidden rounded-md border",
+                      tokenEditable
+                        ? "border-[var(--request)]/50 bg-background"
+                        : "border-border bg-muted/70",
+                    )}
+                  >
+                    <input
+                      id="playground-token"
+                      value={token}
+                      readOnly={!tokenEditable}
+                      onChange={(e) => setToken(e.target.value)}
+                      spellCheck={false}
+                      className={cn(
+                        "min-w-0 flex-1 truncate bg-transparent px-2.5 font-mono text-[12px] outline-none",
+                        tokenEditable
+                          ? "text-foreground"
+                          : "cursor-default text-muted-foreground/70",
+                      )}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setTokenEditable((v) => !v)}
+                      aria-pressed={tokenEditable}
+                      aria-label={tokenEditable ? "Lock token" : "Edit token"}
+                      className={cn(
+                        "inline-flex size-9 shrink-0 items-center justify-center border-s transition-colors",
+                        tokenEditable
+                          ? "border-[var(--request)]/40 bg-[var(--request)]/15 text-[var(--request)]"
+                          : "border-border text-muted-foreground hover:bg-[var(--surface-hover)] hover:text-foreground",
+                      )}
+                    >
+                      {tokenEditable ? (
+                        <Lock className="size-3.5" aria-hidden />
+                      ) : (
+                        <Pencil className="size-3.5" aria-hidden />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         ) : null}
 

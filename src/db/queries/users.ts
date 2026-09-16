@@ -38,14 +38,15 @@ function buildFilters(query: UserListQuery): SQL | undefined {
 
 function orderByClause(query: UserListQuery) {
   const direction = query.order === "asc" ? asc : desc;
+  // Secondary id keeps equal createdAt (and other ties) stable across UPDATEs.
   switch (query.sort) {
     case "name":
-      return direction(users.name);
+      return [direction(users.name), direction(users.id)] as const;
     case "username":
-      return direction(users.username);
+      return [direction(users.username), direction(users.id)] as const;
     case "createdAt":
     default:
-      return direction(users.createdAt);
+      return [direction(users.createdAt), direction(users.id)] as const;
   }
 }
 
@@ -58,7 +59,7 @@ export async function listUsers(query: UserListQuery) {
       .select()
       .from(users)
       .where(where)
-      .orderBy(orderByClause(query))
+      .orderBy(...orderByClause(query))
       .limit(query.limit)
       .offset(offset),
     db.select({ value: count() }).from(users).where(where),

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ResourceApiDocs } from "@/components/docs/resource-api-docs";
 import { apiResources } from "@/lib/catalog";
+import { actionLabels } from "@/lib/docs/action-labels";
 import { withCommonListParams } from "@/lib/docs/query-params";
 import { createResourceMetadata } from "@/lib/seo";
 
@@ -41,7 +42,6 @@ export default function AlbumsApiPage() {
     <ResourceApiDocs
       resource={resource}
       description="Photo albums owned by users. Photos use albumId to group into these albums."
-      tryHref="/api/albums?limit=8"
       queryParams={withCommonListParams([
         {
           param: "search",
@@ -62,7 +62,7 @@ export default function AlbumsApiPage() {
       examples={[
         {
           id: "list",
-          label: "list",
+          label: actionLabels.list,
           method: "GET",
           fetchCode: `const res = await fetch('/api/albums');
 const { data } = await res.json();`,
@@ -72,7 +72,7 @@ const { data } = await res.json();`,
         },
         {
           id: "create",
-          label: "create",
+          label: actionLabels.create,
           method: "POST",
           fetchCode: `await fetch('/api/albums', {
   method: 'POST',

@@ -101,8 +101,10 @@
   --token: #0a5fad;
   --request: #8f6b09;
   --request-bg: rgb(143 107 9 / 0.12);
-  --response: #0b6b63;
-  --response-bg: rgb(11 107 99 / 0.12);
+  --response: #0f766e;
+  --response-bg: rgb(15 118 110 / 0.14);
+  /* Readable on dark code chrome in both themes */
+  --response-fg: #2dd4bf;
 
   --get: #0d9488;
   --post: #1d4ed8;
@@ -150,6 +152,7 @@
   --request-bg: rgb(255 176 32 / 0.08);
   --response: #4ec9b0;
   --response-bg: rgb(78 201 176 / 0.08);
+  --response-fg: #4ec9b0;
 
   --get: #2dd4bf;
   --post: #569cd6;
@@ -225,6 +228,12 @@
   .code-pane::-webkit-scrollbar-thumb:hover,
   .code-pane *::-webkit-scrollbar-thumb:hover {
     background: rgb(255 255 255 / 0.28);
+  }
+
+  /* No manual resize handles on code / form boxes */
+  .code-pane textarea,
+  textarea {
+    resize: none;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),

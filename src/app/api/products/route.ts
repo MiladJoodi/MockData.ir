@@ -7,6 +7,7 @@ import {
   jsonLocalizedSuccess,
   validationError,
 } from "@/lib/api/response";
+import { applyLocalizedCreate } from "@/lib/api/locale-write";
 import {
   createProductSchema,
   productListQuerySchema,
@@ -46,6 +47,12 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) return validationError(parsed.error);
 
     const product = await createProduct(parsed.data);
+    applyLocalizedCreate(
+      request,
+      "products",
+      product.id,
+      parsed.data as Record<string, unknown>,
+    );
     return jsonLocalizedSuccess(request, "products", product, { status: 201 });
   } catch (error) {
     console.error("POST /api/products failed:", error);

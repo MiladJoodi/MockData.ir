@@ -6,6 +6,10 @@ import {
 } from "@/db/queries/products";
 import { applyMockControls } from "@/lib/api/mock-controls";
 import {
+  applyLocalizedDelete,
+  applyLocalizedPatch,
+} from "@/lib/api/locale-write";
+import {
   internalError,
   jsonError,
   jsonSuccess,
@@ -57,7 +61,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const parsed = updateProductSchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error);
 
-    const product = await updateProduct(parsedId.data, parsed.data);
+    const product = await applyLocalizedPatch(
+      request,
+      "products",
+      parsedId.data,
+      parsed.data,
+      updateProduct,
+      getProductById,
+    );
     if (!product) return notFoundError("Product not found");
     return jsonLocalizedSuccess(request, "products", product);
   } catch (error) {
@@ -77,6 +88,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
 
     const product = await deleteProduct(parsedId.data);
     if (!product) return notFoundError("Product not found");
+    applyLocalizedDelete("products", product.id);
     return jsonSuccess({ id: product.id });
   } catch (error) {
     console.error("DELETE /api/products/[id] failed:", error);

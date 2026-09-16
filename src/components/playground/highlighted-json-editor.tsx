@@ -57,7 +57,7 @@ export function HighlightedJsonEditor({
         rows={rows}
         dir="ltr"
         className={cn(
-          "relative z-10 w-full resize-y bg-transparent p-3 font-mono text-[12px] leading-5",
+          "relative z-10 w-full resize-none bg-transparent p-3 font-mono text-[12px] leading-5",
           "text-transparent caret-[#d4d4d4] outline-none selection:bg-[#264f78] selection:text-transparent",
           "code-scroll ltr-tech whitespace-pre-wrap break-all",
         )}

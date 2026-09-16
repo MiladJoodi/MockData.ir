@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { db } from "@/db";
 import { runSeed } from "@/db/seed";
 import { applyMockControls } from "@/lib/api/mock-controls";
+import { clearAllFaRuntimeOverlays } from "@/lib/api/fa/runtime";
 import { jsonError, jsonSuccess, internalError } from "@/lib/api/response";
 
 function isAuthorized(request: NextRequest): boolean {
@@ -34,6 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     const counts = await runSeed(db);
+    clearAllFaRuntimeOverlays();
     return jsonSuccess({
       reset: true,
       ...counts,

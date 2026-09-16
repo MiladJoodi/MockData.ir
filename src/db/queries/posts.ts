@@ -34,10 +34,10 @@ function orderByClause(query: PostListQuery) {
   const direction = query.order === "asc" ? asc : desc;
   switch (query.sort) {
     case "title":
-      return direction(posts.title);
+      return [direction(posts.title), direction(posts.id)] as const;
     case "createdAt":
     default:
-      return direction(posts.createdAt);
+      return [direction(posts.createdAt), direction(posts.id)] as const;
   }
 }
 
@@ -50,7 +50,7 @@ export async function listPosts(query: PostListQuery) {
       .select()
       .from(posts)
       .where(where)
-      .orderBy(orderByClause(query))
+      .orderBy(...orderByClause(query))
       .limit(query.limit)
       .offset(offset),
     db.select({ value: count() }).from(posts).where(where),

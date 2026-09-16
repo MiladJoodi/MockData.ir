@@ -2,6 +2,10 @@ import { NextRequest } from "next/server";
 import { deleteTodo, getTodoById, updateTodo } from "@/db/queries/todos";
 import { applyMockControls } from "@/lib/api/mock-controls";
 import {
+  applyLocalizedDelete,
+  applyLocalizedPatch,
+} from "@/lib/api/locale-write";
+import {
   internalError,
   jsonError,
   jsonSuccess,
@@ -50,7 +54,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const parsed = updateTodoSchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error);
 
-    const todo = await updateTodo(parsedId.data, parsed.data);
+    const todo = await applyLocalizedPatch(
+      request,
+      "todos",
+      parsedId.data,
+      parsed.data,
+      updateTodo,
+      getTodoById,
+    );
     if (!todo) return notFoundError("Todo not found");
     return jsonLocalizedSuccess(request, "todos", todo);
   } catch (error) {
@@ -70,6 +81,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
 
     const todo = await deleteTodo(parsedId.data);
     if (!todo) return notFoundError("Todo not found");
+    applyLocalizedDelete("todos", todo.id);
     return jsonSuccess({ id: todo.id });
   } catch (error) {
     console.error("DELETE /api/todos/[id] failed:", error);

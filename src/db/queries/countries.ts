@@ -36,9 +36,13 @@ function buildFilters(query: CountryListQuery): SQL | undefined {
 
 function orderByClause(query: CountryListQuery) {
   const direction = query.order === "asc" ? asc : desc;
-  if (query.sort === "name") return direction(countries.name);
-  if (query.sort === "population") return direction(countries.population);
-  return direction(countries.createdAt);
+  const primary =
+    query.sort === "name"
+      ? direction(countries.name)
+      : query.sort === "population"
+        ? direction(countries.population)
+        : direction(countries.createdAt);
+  return [primary, direction(countries.id)] as const;
 }
 
 export async function listCountries(query: CountryListQuery) {
@@ -50,7 +54,7 @@ export async function listCountries(query: CountryListQuery) {
       .select()
       .from(countries)
       .where(where)
-      .orderBy(orderByClause(query))
+      .orderBy(...orderByClause(query))
       .limit(query.limit)
       .offset(offset),
     db.select({ value: count() }).from(countries).where(where),

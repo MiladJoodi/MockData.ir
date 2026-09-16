@@ -21,3 +21,21 @@ export function formatUiDateShort(iso: string, locale: UiLocale): string {
     numberingSystem: "latn",
   });
 }
+
+/** Format API `createdAt` timestamps for tables. */
+export function formatApiDate(iso: string, locale: UiLocale): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  if (locale === "fa") {
+    return d.toLocaleDateString("fa-IR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
+  return d.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}

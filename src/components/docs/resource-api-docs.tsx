@@ -14,15 +14,12 @@ import {
   type RequestExample,
 } from "@/components/docs/request-panel";
 import { ResponseViewer } from "@/components/docs/response-viewer";
-import { TryExample } from "@/components/docs/try-example";
-import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import type { ApiResource } from "@/lib/catalog";
 
 type Props = {
   resource: ApiResource;
   description: string;
-  tryHref: string;
   examples: RequestExample[];
   queryParams?: QueryParamRow[];
   responseJson?: string;
@@ -31,7 +28,6 @@ type Props = {
 export function ResourceApiDocs({
   resource,
   description,
-  tryHref,
   examples,
   queryParams,
   responseJson,
@@ -45,14 +41,6 @@ export function ResourceApiDocs({
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <header className="mb-10 space-y-4 border-b border-border pb-8">
-        <Breadcrumbs
-          items={[
-            { name: dict.common.home, href: "/", path: "/" },
-            { name: dict.common.docs, href: "/docs", path: "/docs" },
-            { name: title, path: resource.href },
-          ]}
-        />
-
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-3">
@@ -100,24 +88,8 @@ export function ResourceApiDocs({
                 Query params
               </h2>
               <QueryParamsTable rows={queryParams} />
-              <p className="text-[12px] leading-5 text-muted-foreground">
-                For Persian sample data, add{" "}
-                <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">
-                  lang=fa
-                </code>
-                . See{" "}
-                <Link
-                  href="/docs#language"
-                  className="text-[var(--request)] hover:underline"
-                >
-                  Language
-                </Link>
-                .
-              </p>
             </div>
           ) : null}
-
-          <TryExample href={tryHref} />
         </section>
         <section className="min-w-0 space-y-5">
           <RequestPanel examples={examples} />

@@ -4,13 +4,11 @@ import Link from "next/link";
 import { Eye } from "lucide-react";
 import { ApiBasePath } from "@/components/docs/api-base-path";
 import { LiveBadge } from "@/components/docs/live-badge";
-import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 
 export function ResourceDocsHeader({
   resourceId,
   basePath,
-  href,
 }: {
   resourceId: string;
   basePath: string;
@@ -23,14 +21,6 @@ export function ResourceDocsHeader({
 
   return (
     <header className="mb-10 space-y-4 border-b border-border pb-8">
-      <Breadcrumbs
-        items={[
-          { name: dict.common.home, href: "/", path: "/" },
-          { name: dict.common.docs, href: "/docs", path: "/docs" },
-          { name: title, path: href },
-        ]}
-      />
-
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-3">

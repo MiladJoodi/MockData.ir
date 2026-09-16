@@ -1,31 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
-  API_LOCALE_EVENT,
   API_LOCALE_STORAGE_KEY,
   type ApiLocale,
 } from "@/lib/api/locale-constants";
+import { useUiLocale } from "@/components/providers/ui-locale-provider";
 
+/**
+ * Sample-data locale for API calls — follows the UI language
+ * (cookie/SSR-safe, no en→fa flash on first paint).
+ */
 export function useApiLocale(): ApiLocale {
-  const [locale, setLocale] = useState<ApiLocale>("en");
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(API_LOCALE_STORAGE_KEY);
-      setLocale(stored === "fa" ? "fa" : "en");
-    } catch {
-      setLocale("en");
-    }
-    function onLocale(e: Event) {
-      const detail = (e as CustomEvent<ApiLocale>).detail;
-      if (detail === "fa" || detail === "en") setLocale(detail);
-    }
-    window.addEventListener(API_LOCALE_EVENT, onLocale);
-    return () => window.removeEventListener(API_LOCALE_EVENT, onLocale);
-  }, []);
-
-  return locale;
+  const { locale } = useUiLocale();
+  return locale === "fa" ? "fa" : "en";
 }
 
 /** Append `lang=fa` when locale is Persian; leave English URLs unchanged. */
@@ -37,5 +24,13 @@ export function withApiLang(path: string, locale: ApiLocale): string {
     return `${url.pathname}${url.search}`;
   } catch {
     return path.includes("?") ? `${path}&lang=fa` : `${path}?lang=fa`;
+  }
+}
+
+export function readStoredApiLocale(): ApiLocale {
+  try {
+    return localStorage.getItem(API_LOCALE_STORAGE_KEY) === "fa" ? "fa" : "en";
+  } catch {
+    return "en";
   }
 }

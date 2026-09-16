@@ -6,6 +6,10 @@ import {
 } from "@/db/queries/notifications";
 import { applyMockControls } from "@/lib/api/mock-controls";
 import {
+  applyLocalizedDelete,
+  applyLocalizedPatch,
+} from "@/lib/api/locale-write";
+import {
   internalError,
   jsonError,
   jsonSuccess,
@@ -57,7 +61,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const parsed = updateNotificationSchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error);
 
-    const notification = await updateNotification(parsedId.data, parsed.data);
+    const notification = await applyLocalizedPatch(
+      request,
+      "notifications",
+      parsedId.data,
+      parsed.data,
+      updateNotification,
+      getNotificationById,
+    );
     if (!notification) return notFoundError("Notification not found");
     return jsonLocalizedSuccess(request, "notifications", notification);
   } catch (error) {
@@ -77,6 +88,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
 
     const notification = await deleteNotification(parsedId.data);
     if (!notification) return notFoundError("Notification not found");
+    applyLocalizedDelete("notifications", notification.id);
     return jsonSuccess({ id: notification.id });
   } catch (error) {
     console.error("DELETE /api/notifications/[id] failed:", error);

@@ -6,6 +6,10 @@ import {
 } from "@/db/queries/posts";
 import { applyMockControls } from "@/lib/api/mock-controls";
 import {
+  applyLocalizedDelete,
+  applyLocalizedPatch,
+} from "@/lib/api/locale-write";
+import {
   internalError,
   jsonError,
   jsonSuccess,
@@ -65,7 +69,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       return validationError(parsed.error);
     }
 
-    const post = await updatePost(parsedId.data, parsed.data);
+    const post = await applyLocalizedPatch(
+      request,
+      "posts",
+      parsedId.data,
+      parsed.data,
+      updatePost,
+      getPostById,
+    );
     if (!post) {
       return notFoundError("Post not found");
     }
@@ -93,6 +104,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
       return notFoundError("Post not found");
     }
 
+    applyLocalizedDelete("posts", post.id);
     return jsonSuccess({ id: post.id });
   } catch (error) {
     console.error("DELETE /api/posts/[id] failed:", error);

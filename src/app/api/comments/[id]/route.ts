@@ -6,6 +6,10 @@ import {
 } from "@/db/queries/comments";
 import { applyMockControls } from "@/lib/api/mock-controls";
 import {
+  applyLocalizedDelete,
+  applyLocalizedPatch,
+} from "@/lib/api/locale-write";
+import {
   internalError,
   jsonError,
   jsonSuccess,
@@ -57,7 +61,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const parsed = updateCommentSchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error);
 
-    const comment = await updateComment(parsedId.data, parsed.data);
+    const comment = await applyLocalizedPatch(
+      request,
+      "comments",
+      parsedId.data,
+      parsed.data,
+      updateComment,
+      getCommentById,
+    );
     if (!comment) return notFoundError("Comment not found");
     return jsonLocalizedSuccess(request, "comments", comment);
   } catch (error) {
@@ -77,6 +88,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
 
     const comment = await deleteComment(parsedId.data);
     if (!comment) return notFoundError("Comment not found");
+    applyLocalizedDelete("comments", comment.id);
     return jsonSuccess({ id: comment.id });
   } catch (error) {
     console.error("DELETE /api/comments/[id] failed:", error);

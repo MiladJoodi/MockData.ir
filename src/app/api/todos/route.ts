@@ -7,6 +7,7 @@ import {
   jsonLocalizedSuccess,
   validationError,
 } from "@/lib/api/response";
+import { applyLocalizedCreate } from "@/lib/api/locale-write";
 import {
   createTodoSchema,
   todoListQuerySchema,
@@ -46,6 +47,12 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) return validationError(parsed.error);
 
     const todo = await createTodo(parsed.data);
+    applyLocalizedCreate(
+      request,
+      "todos",
+      todo.id,
+      parsed.data as Record<string, unknown>,
+    );
     return jsonLocalizedSuccess(request, "todos", todo, { status: 201 });
   } catch (error) {
     console.error("POST /api/todos failed:", error);

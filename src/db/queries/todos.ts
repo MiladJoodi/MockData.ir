@@ -29,9 +29,11 @@ function buildFilters(query: TodoListQuery): SQL | undefined {
 
 function orderByClause(query: TodoListQuery) {
   const direction = query.order === "asc" ? asc : desc;
-  return query.sort === "title"
-    ? direction(todos.title)
-    : direction(todos.createdAt);
+  const primary =
+    query.sort === "title"
+      ? direction(todos.title)
+      : direction(todos.createdAt);
+  return [primary, direction(todos.id)] as const;
 }
 
 export async function listTodos(query: TodoListQuery) {
@@ -43,7 +45,7 @@ export async function listTodos(query: TodoListQuery) {
       .select()
       .from(todos)
       .where(where)
-      .orderBy(orderByClause(query))
+      .orderBy(...orderByClause(query))
       .limit(query.limit)
       .offset(offset),
     db.select({ value: count() }).from(todos).where(where),

@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { MOCK_PASSWORD } from "@/lib/auth/constants";
-import { useApiLocale, withApiLang } from "@/lib/api/use-api-locale";
+import { withApiLang } from "@/lib/api/use-api-locale";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { cn } from "@/lib/utils";
 
@@ -15,8 +15,7 @@ type AuthUser = {
 };
 
 export function AuthPreviewDemo() {
-  const locale = useApiLocale();
-  const { dict } = useUiLocale();
+  const { dict, locale } = useUiLocale();
   const isFa = locale === "fa";
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState(MOCK_PASSWORD);

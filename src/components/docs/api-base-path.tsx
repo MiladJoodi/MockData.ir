@@ -10,7 +10,7 @@ export function ApiBasePath({ path }: { path: string }) {
   const href = withApiLang(path, locale);
 
   return (
-    <div className="inline-flex max-w-full items-center gap-0.5 rounded-md border border-border bg-muted py-0.5 pe-0.5 ps-2.5 ltr-tech" dir="ltr">
+    <div className="inline-flex max-w-full items-center gap-1 ltr-tech" dir="ltr">
       <Link
         href={href}
         target="_blank"

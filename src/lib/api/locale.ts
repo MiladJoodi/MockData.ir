@@ -7,6 +7,7 @@ import { faPosts } from "@/lib/api/fa/posts";
 import { faProducts } from "@/lib/api/fa/products";
 import { faTodos } from "@/lib/api/fa/todos";
 import { faUsers } from "@/lib/api/fa/users";
+import { getFaRuntimeOverlay } from "@/lib/api/fa/runtime";
 import {
   type ApiLocale,
 } from "@/lib/api/locale-constants";
@@ -44,69 +45,66 @@ function applyOverlay<T extends Record<string, unknown>>(
   return { ...row, ...overlay };
 }
 
+function seedOverlay(
+  resource: LocaleResource,
+  row: Record<string, unknown>,
+): Record<string, unknown> | undefined {
+  switch (resource) {
+    case "users":
+    case "auth": {
+      const k = String(row.username ?? "");
+      return faUsers[k] as Record<string, unknown> | undefined;
+    }
+    case "posts": {
+      const k = String(row.title ?? "");
+      return faPosts[k] as Record<string, unknown> | undefined;
+    }
+    case "comments": {
+      const k = String(row.body ?? "");
+      return faComments[k] as Record<string, unknown> | undefined;
+    }
+    case "albums": {
+      const k = String(row.id ?? "");
+      return faAlbums[k] as Record<string, unknown> | undefined;
+    }
+    case "photos": {
+      const k = String(row.title ?? "");
+      return faPhotos[k] as Record<string, unknown> | undefined;
+    }
+    case "todos": {
+      const k = String(row.title ?? "");
+      return faTodos[k] as Record<string, unknown> | undefined;
+    }
+    case "products": {
+      const k = String(row.name ?? "");
+      return faProducts[k] as Record<string, unknown> | undefined;
+    }
+    case "notifications": {
+      const k = String(row.title ?? "");
+      return faNotifications[k] as Record<string, unknown> | undefined;
+    }
+    case "countries": {
+      const k = String(row.code ?? "");
+      return faCountries[k] as Record<string, unknown> | undefined;
+    }
+    default:
+      return undefined;
+  }
+}
+
 function localizeOne(
   resource: LocaleResource,
   row: Record<string, unknown>,
 ): Record<string, unknown> {
-  switch (resource) {
-    case "users":
-    case "auth": {
-      const key = String(row.username ?? "");
-      return applyOverlay(row, faUsers[key] as Record<string, unknown> | undefined);
-    }
-    case "posts": {
-      const key = String(row.title ?? "");
-      return applyOverlay(row, faPosts[key] as Record<string, unknown> | undefined);
-    }
-    case "comments": {
-      const key = String(row.body ?? "");
-      return applyOverlay(
-        row,
-        faComments[key] as Record<string, unknown> | undefined,
-      );
-    }
-    case "albums": {
-      const key = String(row.id ?? "");
-      return applyOverlay(
-        row,
-        faAlbums[key] as Record<string, unknown> | undefined,
-      );
-    }
-    case "photos": {
-      const key = String(row.title ?? "");
-      return applyOverlay(
-        row,
-        faPhotos[key] as Record<string, unknown> | undefined,
-      );
-    }
-    case "todos": {
-      const key = String(row.title ?? "");
-      return applyOverlay(row, faTodos[key] as Record<string, unknown> | undefined);
-    }
-    case "products": {
-      const key = String(row.name ?? "");
-      return applyOverlay(
-        row,
-        faProducts[key] as Record<string, unknown> | undefined,
-      );
-    }
-    case "notifications": {
-      const key = String(row.title ?? "");
-      return applyOverlay(
-        row,
-        faNotifications[key] as Record<string, unknown> | undefined,
-      );
-    }
-    case "countries": {
-      const key = String(row.code ?? "");
-      return applyOverlay(
-        row,
-        faCountries[key] as Record<string, unknown> | undefined,
-      );
-    }
-    default:
-      return row;
-  }
+  const withSeed = applyOverlay(row, seedOverlay(resource, row));
+  const id = row.id;
+  if (id == null) return withSeed;
+  const runtimeResource = resource === "auth" ? "users" : resource;
+  // Runtime edits (PATCH/POST ?lang=fa) win over seed overlays.
+  return applyOverlay(
+    withSeed,
+    getFaRuntimeOverlay(runtimeResource, id as string | number),
+  );
 }
 
 export function localizePayload(

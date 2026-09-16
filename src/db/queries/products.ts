@@ -28,10 +28,15 @@ function buildFilters(query: ProductListQuery): SQL | undefined {
 
 function orderByClause(query: ProductListQuery) {
   const direction = query.order === "asc" ? asc : desc;
-  if (query.sort === "name") return direction(products.name);
-  if (query.sort === "price") return direction(products.price);
-  if (query.sort === "stock") return direction(products.stock);
-  return direction(products.createdAt);
+  const primary =
+    query.sort === "name"
+      ? direction(products.name)
+      : query.sort === "price"
+        ? direction(products.price)
+        : query.sort === "stock"
+          ? direction(products.stock)
+          : direction(products.createdAt);
+  return [primary, direction(products.id)] as const;
 }
 
 export async function listProducts(query: ProductListQuery) {
@@ -43,7 +48,7 @@ export async function listProducts(query: ProductListQuery) {
       .select()
       .from(products)
       .where(where)
-      .orderBy(orderByClause(query))
+      .orderBy(...orderByClause(query))
       .limit(query.limit)
       .offset(offset),
     db.select({ value: count() }).from(products).where(where),

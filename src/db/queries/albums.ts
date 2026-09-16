@@ -27,12 +27,12 @@ function orderByClause(query: AlbumListQuery) {
   const direction = query.order === "asc" ? asc : desc;
   switch (query.sort) {
     case "title":
-      return direction(albums.title);
+      return [direction(albums.title), direction(albums.id)] as const;
     case "createdAt":
-      return direction(albums.createdAt);
+      return [direction(albums.createdAt), direction(albums.id)] as const;
     case "id":
     default:
-      return direction(albums.id);
+      return [direction(albums.id)] as const;
   }
 }
 
@@ -45,7 +45,7 @@ export async function listAlbums(query: AlbumListQuery) {
       .select()
       .from(albums)
       .where(where)
-      .orderBy(orderByClause(query))
+      .orderBy(...orderByClause(query))
       .limit(query.limit)
       .offset(offset),
     db.select({ value: count() }).from(albums).where(where),

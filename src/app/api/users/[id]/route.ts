@@ -6,6 +6,10 @@ import {
 } from "@/db/queries/users";
 import { applyMockControls } from "@/lib/api/mock-controls";
 import {
+  applyLocalizedDelete,
+  applyLocalizedPatch,
+} from "@/lib/api/locale-write";
+import {
   internalError,
   jsonError,
   jsonSuccess,
@@ -68,7 +72,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       return validationError(parsed.error);
     }
 
-    const user = await updateUser(parsedId.data, parsed.data);
+    const user = await applyLocalizedPatch(
+      request,
+      "users",
+      parsedId.data,
+      parsed.data,
+      updateUser,
+      getUserById,
+    );
     if (!user) {
       return notFoundError("User not found");
     }
@@ -96,6 +107,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
       return notFoundError("User not found");
     }
 
+    applyLocalizedDelete("users", user.id);
     return jsonSuccess({ id: user.id });
   } catch (error) {
     console.error("DELETE /api/users/[id] failed:", error);

@@ -24,13 +24,13 @@ export function ResponseViewer({ prettyJson }: ResponseViewerProps) {
       dir="ltr"
       className="code-pane ltr-tech min-w-0 overflow-hidden rounded-lg border border-[var(--response)]/35 bg-[var(--vscode-bg)] shadow-[0_12px_40px_-20px_rgb(0_0_0_/_0.8)]"
     >
-      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--vscode-border)] bg-[var(--response-bg)] px-3 py-2">
+      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--vscode-border)] bg-[var(--vscode-bg-elevated)] px-3 py-2">
         <div className="flex items-center gap-1.5" aria-hidden>
           <span className="size-2.5 rounded-full bg-[#ff5f56]" />
           <span className="size-2.5 rounded-full bg-[#ffbd2e]" />
           <span className="size-2.5 rounded-full bg-[#27c93f]" />
         </div>
-        <span className="font-mono text-[11px] text-[var(--response)]">
+        <span className="font-mono text-[11px] font-semibold text-[var(--response-fg)]">
           Response
         </span>
 
@@ -43,10 +43,10 @@ export function ResponseViewer({ prettyJson }: ResponseViewerProps) {
             type="button"
             onClick={() => setMode("pretty")}
             className={cn(
-              "rounded px-2.5 py-1 font-mono text-[10px] transition-colors",
+              "rounded px-2.5 py-1 font-mono text-[10px] font-medium transition-colors",
               mode === "pretty"
-                ? "bg-[var(--response)]/20 text-[var(--response)]"
-                : "text-[var(--vscode-fg)]/55 hover:text-[var(--vscode-fg)]",
+                ? "bg-[var(--response-fg)]/20 text-[var(--response-fg)]"
+                : "text-[var(--vscode-fg)]/70 hover:text-[var(--vscode-fg)]",
             )}
           >
             Pretty
@@ -55,10 +55,10 @@ export function ResponseViewer({ prettyJson }: ResponseViewerProps) {
             type="button"
             onClick={() => setMode("line")}
             className={cn(
-              "rounded px-2.5 py-1 font-mono text-[10px] transition-colors",
+              "rounded px-2.5 py-1 font-mono text-[10px] font-medium transition-colors",
               mode === "line"
-                ? "bg-[var(--response)]/20 text-[var(--response)]"
-                : "text-[var(--vscode-fg)]/55 hover:text-[var(--vscode-fg)]",
+                ? "bg-[var(--response-fg)]/20 text-[var(--response-fg)]"
+                : "text-[var(--vscode-fg)]/70 hover:text-[var(--vscode-fg)]",
             )}
           >
             Line
@@ -66,7 +66,7 @@ export function ResponseViewer({ prettyJson }: ResponseViewerProps) {
         </div>
         <CopyButton
           value={display}
-          className="text-[var(--vscode-fg)]/55 hover:bg-white/10 hover:text-[var(--vscode-fg)]"
+          className="text-[var(--vscode-fg)]/70 hover:bg-white/10 hover:text-[var(--vscode-fg)]"
         />
       </div>
 

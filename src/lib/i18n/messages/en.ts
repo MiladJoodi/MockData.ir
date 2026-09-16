@@ -41,6 +41,9 @@ export type Messages = {
     whatsNewSubtitle: string;
     latest: string;
     contact: string;
+    menu: string;
+    openMenu: string;
+    appearance: string;
     lightMode: string;
     darkMode: string;
     light: string;
@@ -173,6 +176,7 @@ export type Messages = {
     delete: string;
     save: string;
     saving: string;
+    deleting: string;
     cancel: string;
     fillSample: string;
     noRecords: string;
@@ -188,6 +192,7 @@ export type Messages = {
     token: string;
     user: string;
     loginFirst: string;
+    createdAt: string;
     fieldLabels: Record<string, string>;
     roleLabels: Record<string, string>;
   };
@@ -249,6 +254,9 @@ export const en: Messages = {
     whatsNewSubtitle: "Latest updates and features",
     latest: "Latest",
     contact: "Contact",
+    menu: "Menu",
+    openMenu: "Open menu",
+    appearance: "Appearance",
     lightMode: "Switch to light mode",
     darkMode: "Switch to dark mode",
     light: "Light",
@@ -406,12 +414,13 @@ export const en: Messages = {
     delete: "Delete",
     save: "Save",
     saving: "Saving…",
+    deleting: "Deleting…",
     cancel: "Cancel",
     fillSample: "Fill sample data",
     noRecords: "No records",
     loading: "Loading…",
-    confirmDelete: "Delete this record?",
-    confirmDeleteBody: "This cannot be undone.",
+    confirmDelete: "Delete?",
+    confirmDeleteBody: "This item will be permanently removed.",
     networkError: "Network error",
     authDemoPassword: "Demo password for every seeded user is",
     username: "Username",
@@ -421,6 +430,7 @@ export const en: Messages = {
     token: "Token",
     user: "User",
     loginFirst: "Login first to get a token",
+    createdAt: "Added",
     fieldLabels: {
       name: "Name",
       username: "Username",

@@ -6,8 +6,8 @@ import {
   type RequestExample,
 } from "@/components/docs/request-panel";
 import { ResourceDocsHeader } from "@/components/docs/resource-docs-header";
-import { TryExample } from "@/components/docs/try-example";
 import { apiResources } from "@/lib/catalog";
+import { actionLabels } from "@/lib/docs/action-labels";
 import { createResourceMetadata } from "@/lib/seo";
 
 const resource = apiResources.find((item) => item.id === "users")!;
@@ -73,7 +73,7 @@ const deleteExample = `{
 const requestExamples: RequestExample[] = [
   {
     id: "list",
-    label: "list",
+    label: actionLabels.list,
     method: "GET",
     fetchCode: `const res = await fetch('/api/users?limit=12');
 const payload = await res.json();
@@ -89,7 +89,7 @@ console.log(data.data, data.pagination);`,
   },
   {
     id: "one",
-    label: ":id",
+    label: actionLabels.get,
     method: "GET",
     fetchCode: `const res = await fetch('/api/users/7c9e6679-7425-40de-944b-e07fc1f90ae7');
 const payload = await res.json();
@@ -105,7 +105,7 @@ console.log(data.data);`,
   },
   {
     id: "create",
-    label: "create",
+    label: actionLabels.create,
     method: "POST",
     fetchCode: `const res = await fetch('/api/users', {
   method: 'POST',
@@ -125,7 +125,7 @@ console.log(data.data);`,
   },
   {
     id: "update",
-    label: "update",
+    label: actionLabels.update,
     method: "PATCH",
     fetchCode: `const res = await fetch('/api/users/7c9e6679-7425-40de-944b-e07fc1f90ae7', {
   method: 'PATCH',
@@ -151,7 +151,7 @@ console.log(data.data);`,
   },
   {
     id: "delete",
-    label: "delete",
+    label: actionLabels.delete,
     method: "DELETE",
     fetchCode: `const res = await fetch('/api/users/7c9e6679-7425-40de-944b-e07fc1f90ae7', {
   method: 'DELETE',
@@ -239,7 +239,6 @@ export default function UsersApiPage() {
                 },
               ]}
             />
-            <TryExample href="/api/users?role=member&sort=name&order=asc&limit=6" />
           </div>
         </section>
 

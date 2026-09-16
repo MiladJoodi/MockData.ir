@@ -10,6 +10,7 @@ import {
   jsonLocalizedSuccess,
   validationError,
 } from "@/lib/api/response";
+import { applyLocalizedCreate } from "@/lib/api/locale-write";
 import {
   createNotificationSchema,
   notificationListQuerySchema,
@@ -49,6 +50,12 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) return validationError(parsed.error);
 
     const notification = await createNotification(parsed.data);
+    applyLocalizedCreate(
+      request,
+      "notifications",
+      notification.id,
+      parsed.data as Record<string, unknown>,
+    );
     return jsonLocalizedSuccess(request, "notifications", notification, { status: 201 });
   } catch (error) {
     console.error("POST /api/notifications failed:", error);

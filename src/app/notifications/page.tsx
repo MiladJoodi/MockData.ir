@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ResourceApiDocs } from "@/components/docs/resource-api-docs";
 import { apiResources } from "@/lib/catalog";
+import { actionLabels } from "@/lib/docs/action-labels";
 import { withCommonListParams } from "@/lib/docs/query-params";
 import { createResourceMetadata } from "@/lib/seo";
 
@@ -47,7 +48,6 @@ export default function NotificationsApiPage() {
     <ResourceApiDocs
       resource={resource}
       description="User notifications with type and read flags."
-      tryHref="/api/notifications?read=false&limit=6"
       queryParams={withCommonListParams([
         {
           param: "search",
@@ -78,7 +78,7 @@ export default function NotificationsApiPage() {
       examples={[
         {
           id: "list",
-          label: "list",
+          label: actionLabels.list,
           method: "GET",
           fetchCode: `const res = await fetch('/api/notifications?read=false');
 const { data } = await res.json();`,
@@ -88,7 +88,7 @@ const { data } = await res.json();`,
         },
         {
           id: "create",
-          label: "create",
+          label: actionLabels.create,
           method: "POST",
           fetchCode: `await fetch('/api/notifications', {
   method: 'POST',

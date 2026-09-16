@@ -1,20 +1,18 @@
 "use client";
 
-import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { Eye } from "lucide-react";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import type { ReactNode } from "react";
 
 export function PreviewShell({
   title,
   basePath,
-  crumbs,
   children,
 }: {
   title: string;
   docsHref?: string;
   playgroundHref?: string;
   basePath: string;
-  crumbs: { name: string; href?: string; path: string }[];
   children: ReactNode;
 }) {
   const { dict } = useUiLocale();
@@ -22,10 +20,14 @@ export function PreviewShell({
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14">
       <header className="mb-8 space-y-3">
-        <Breadcrumbs items={crumbs} />
         <div className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-            {title}
+          <h1 className="inline-flex items-center gap-2.5 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
+            <Eye
+              className="size-6 shrink-0 text-muted-foreground sm:size-7"
+              strokeWidth={1.75}
+              aria-label={dict.common.preview}
+            />
+            <span>{title}</span>
           </h1>
           <p className="max-w-xl text-[14px] leading-6 text-muted-foreground">
             {dict.preview.blurb}{" "}

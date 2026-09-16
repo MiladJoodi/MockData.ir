@@ -7,6 +7,7 @@ import {
   jsonLocalizedSuccess,
   validationError,
 } from "@/lib/api/response";
+import { applyLocalizedCreate } from "@/lib/api/locale-write";
 import {
   albumListQuerySchema,
   createAlbumSchema,
@@ -46,6 +47,12 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) return validationError(parsed.error);
 
     const album = await createAlbum(parsed.data);
+    applyLocalizedCreate(
+      request,
+      "albums",
+      album.id,
+      parsed.data as Record<string, unknown>,
+    );
     return jsonLocalizedSuccess(request, "albums", album, { status: 201 });
   } catch (error) {
     console.error("POST /api/albums failed:", error);

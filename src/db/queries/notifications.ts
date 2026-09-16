@@ -38,9 +38,11 @@ function buildFilters(query: NotificationListQuery): SQL | undefined {
 
 function orderByClause(query: NotificationListQuery) {
   const direction = query.order === "asc" ? asc : desc;
-  return query.sort === "title"
-    ? direction(notifications.title)
-    : direction(notifications.createdAt);
+  const primary =
+    query.sort === "title"
+      ? direction(notifications.title)
+      : direction(notifications.createdAt);
+  return [primary, direction(notifications.id)] as const;
 }
 
 export async function listNotifications(query: NotificationListQuery) {
@@ -52,7 +54,7 @@ export async function listNotifications(query: NotificationListQuery) {
       .select()
       .from(notifications)
       .where(where)
-      .orderBy(orderByClause(query))
+      .orderBy(...orderByClause(query))
       .limit(query.limit)
       .offset(offset),
     db.select({ value: count() }).from(notifications).where(where),

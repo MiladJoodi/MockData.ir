@@ -27,11 +27,11 @@ function orderByClause(query: PhotoListQuery) {
   const direction = query.order === "asc" ? asc : desc;
   switch (query.sort) {
     case "title":
-      return direction(photos.title);
+      return [direction(photos.title), direction(photos.id)] as const;
     case "albumId":
-      return direction(photos.albumId);
+      return [direction(photos.albumId), direction(photos.id)] as const;
     default:
-      return direction(photos.createdAt);
+      return [direction(photos.createdAt), direction(photos.id)] as const;
   }
 }
 
@@ -44,7 +44,7 @@ export async function listPhotos(query: PhotoListQuery) {
       .select()
       .from(photos)
       .where(where)
-      .orderBy(orderByClause(query))
+      .orderBy(...orderByClause(query))
       .limit(query.limit)
       .offset(offset),
     db.select({ value: count() }).from(photos).where(where),

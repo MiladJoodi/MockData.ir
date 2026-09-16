@@ -20,21 +20,9 @@ export function PreviewPageClient({
   const { dict } = useUiLocale();
 
   if (kind === "auth") {
-    const title = `${dict.catalog.auth?.title ?? "Auth"} · ${dict.common.preview}`;
+    const title = dict.catalog.auth?.title ?? "Auth";
     return (
-      <PreviewShell
-        title={title}
-        basePath={basePath}
-        crumbs={[
-          { name: dict.common.home, href: "/", path: "/" },
-          {
-            name: dict.catalog.auth?.title ?? "Auth",
-            href: "/auth",
-            path: "/auth",
-          },
-          { name: dict.common.preview, path: "/preview/auth" },
-        ]}
-      >
+      <PreviewShell title={title} basePath={basePath}>
         <AuthPreviewDemo />
       </PreviewShell>
     );
@@ -43,15 +31,7 @@ export function PreviewPageClient({
   const cat = dict.catalog[resourceId];
   const name = cat?.title ?? resourceId;
   return (
-    <PreviewShell
-      title={`${name} · ${dict.common.preview}`}
-      basePath={basePath}
-      crumbs={[
-        { name: dict.common.home, href: "/", path: "/" },
-        { name: name, href: `/${resourceId}`, path: `/${resourceId}` },
-        { name: dict.common.preview, path: `/preview/${resourceId}` },
-      ]}
-    >
+    <PreviewShell title={name} basePath={basePath}>
       <ResourcePreviewDemo resourceId={resourceId as PreviewResourceId} />
     </PreviewShell>
   );

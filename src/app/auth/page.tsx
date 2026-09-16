@@ -10,6 +10,7 @@ import { ResourceDocsHeader } from "@/components/docs/resource-docs-header";
 import { ResponseViewer } from "@/components/docs/response-viewer";
 import { MOCK_PASSWORD } from "@/lib/auth/constants";
 import { apiResources } from "@/lib/catalog";
+import { actionLabels } from "@/lib/docs/action-labels";
 import { mockControlQueryParams } from "@/lib/docs/query-params";
 import { createResourceMetadata } from "@/lib/seo";
 
@@ -56,7 +57,7 @@ const meExample = `{
 const requestExamples: RequestExample[] = [
   {
     id: "login",
-    label: "login",
+    label: actionLabels.login,
     method: "POST",
     fetchCode: `const res = await fetch('/api/auth/login', {
   method: 'POST',
@@ -85,7 +86,7 @@ localStorage.setItem('token', data.data.token);
   },
   {
     id: "me",
-    label: "me",
+    label: actionLabels.me,
     method: "GET",
     fetchCode: `const token = localStorage.getItem('token');
 const res = await fetch('/api/auth/me', {
@@ -127,20 +128,6 @@ export default function AuthApiPage() {
               Query params
             </h2>
             <QueryParamsTable rows={mockControlQueryParams} />
-            <p className="text-[12px] leading-5 text-muted-foreground">
-              Persian user fields in the response: add{" "}
-              <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">
-                lang=fa
-              </code>
-              . See{" "}
-              <Link
-                href="/docs#language"
-                className="text-[var(--request)] hover:underline"
-              >
-                Docs · Language
-              </Link>
-              .
-            </p>
           </div>
 
           <div className="space-y-3 rounded-xl border border-border bg-card p-4 pt-4">

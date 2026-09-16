@@ -6,6 +6,10 @@ import {
 } from "@/db/queries/countries";
 import { applyMockControls } from "@/lib/api/mock-controls";
 import {
+  applyLocalizedDelete,
+  applyLocalizedPatch,
+} from "@/lib/api/locale-write";
+import {
   internalError,
   jsonError,
   jsonSuccess,
@@ -57,7 +61,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const parsed = updateCountrySchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error);
 
-    const country = await updateCountry(parsedId.data, parsed.data);
+    const country = await applyLocalizedPatch(
+      request,
+      "countries",
+      parsedId.data,
+      parsed.data,
+      updateCountry,
+      getCountryById,
+    );
     if (!country) return notFoundError("Country not found");
     return jsonLocalizedSuccess(request, "countries", country);
   } catch (error) {
@@ -77,6 +88,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
 
     const country = await deleteCountry(parsedId.data);
     if (!country) return notFoundError("Country not found");
+    applyLocalizedDelete("countries", country.id);
     return jsonSuccess({ id: country.id });
   } catch (error) {
     console.error("DELETE /api/countries/[id] failed:", error);

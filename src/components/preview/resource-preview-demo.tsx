@@ -7,8 +7,9 @@ import {
   type PreviewField,
   type PreviewResourceId,
 } from "@/lib/preview/resources";
-import { useApiLocale, withApiLang } from "@/lib/api/use-api-locale";
+import { withApiLang } from "@/lib/api/use-api-locale";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
+import { formatApiDate } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 
 type Row = Record<string, unknown> & { id: string | number };
@@ -108,8 +109,7 @@ export function ResourcePreviewDemo({
   resourceId: PreviewResourceId;
 }) {
   const config = previewResources[resourceId];
-  const locale = useApiLocale();
-  const { dict } = useUiLocale();
+  const { dict, locale } = useUiLocale();
   const isFa = locale === "fa";
 
   function fieldLabel(key: string, fallback: string) {
@@ -132,6 +132,22 @@ export function ResourcePreviewDemo({
     () => config.fields.filter((f) => f.column),
     [config.fields],
   );
+  const extraCols = useMemo(
+    () =>
+      columnFields.filter(
+        (f) =>
+          f.key !== config.titleKey &&
+          f.key !== config.subtitleKey &&
+          f.key !== config.imageKey,
+      ),
+    [
+      columnFields,
+      config.titleKey,
+      config.subtitleKey,
+      config.imageKey,
+    ],
+  );
+  const colCount = 4 + extraCols.length;
   const createFields = useMemo(
     () => config.fields.filter((f) => f.create),
     [config.fields],
@@ -147,7 +163,7 @@ export function ResourcePreviewDemo({
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Row | null>(null);
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState<Record<string, string>>(() =>
@@ -158,14 +174,20 @@ export function ResourcePreviewDemo({
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(
-    async (opts?: { silent?: boolean }) => {
+    async (opts?: { silent?: boolean; signal?: AbortSignal }) => {
       const key = cacheKey(config.id, locale, query.trim(), page);
       const cached = listCache.get(key);
       if (cached) {
         setRows(cached.rows);
         setPagination(cached.pagination);
-      } else if (!opts?.silent) {
-        setLoading(true);
+        if (!opts?.silent) setLoading(false);
+      } else {
+        // Drop previous-locale rows so EN/FA never flash mixed.
+        if (!opts?.silent) {
+          setRows([]);
+          setPagination(null);
+          setLoading(true);
+        }
       }
 
       setError(null);
@@ -178,8 +200,9 @@ export function ResourcePreviewDemo({
         });
         if (query.trim()) params.set("search", query.trim());
         const url = withApiLang(`${config.basePath}?${params}`, locale);
-        const res = await fetch(url);
+        const res = await fetch(url, { signal: opts?.signal });
         const payload = await res.json();
+        if (opts?.signal?.aborted) return;
         if (!res.ok) {
           setError(payload?.error?.message ?? "Failed to load");
           return;
@@ -189,17 +212,30 @@ export function ResourcePreviewDemo({
         listCache.set(key, { rows: nextRows, pagination: nextPagination });
         setRows(nextRows);
         setPagination(nextPagination);
-      } catch {
+      } catch (err) {
+        if (opts?.signal?.aborted) return;
+        if (err instanceof DOMException && err.name === "AbortError") return;
         setError(dict.preview.networkError);
       } finally {
-        setLoading(false);
+        if (!opts?.signal?.aborted) setLoading(false);
       }
     },
-    [config.basePath, config.id, config.order, config.sort, locale, page, query],
+    [
+      config.basePath,
+      config.id,
+      config.order,
+      config.sort,
+      dict.preview.networkError,
+      locale,
+      page,
+      query,
+    ],
   );
 
   useEffect(() => {
-    void load();
+    const controller = new AbortController();
+    void load({ signal: controller.signal });
+    return () => controller.abort();
   }, [load]);
 
   function invalidateCache() {
@@ -233,7 +269,7 @@ export function ResourcePreviewDemo({
   }
 
   async function fillSample() {
-    const sample = { ...config.sample() };
+    const sample = { ...config.sample(locale) };
     const relations = await resolveRelations(createFields, locale);
     Object.assign(sample, relations);
     const next = emptyForm(config.fields);
@@ -299,9 +335,14 @@ export function ResourcePreviewDemo({
           setError(payload?.error?.message ?? "Create failed");
           return;
         }
+        closePanel();
+        invalidateCache();
+        if (page !== 1) setPage(1);
+        else await load({ silent: true });
       } else if (editing) {
+        const editingId = editing.id;
         const res = await fetch(
-          withApiLang(`${config.basePath}/${editing.id}`, locale),
+          withApiLang(`${config.basePath}/${editingId}`, locale),
           {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
@@ -313,14 +354,25 @@ export function ResourcePreviewDemo({
           setError(payload?.error?.message ?? "Update failed");
           return;
         }
-      }
-      closePanel();
-      invalidateCache();
-      if (wasCreating) {
-        if (page !== 1) setPage(1);
-        else await load({ silent: true });
-      } else {
-        await load({ silent: true });
+        const updated = (payload?.data ?? null) as Row | null;
+        closePanel();
+        // Keep row position: merge in place (createdAt sort must not jump).
+        if (updated && updated.id != null) {
+          setRows((prev) => {
+            const next = prev.map((row) =>
+              row.id === editingId ? { ...row, ...updated } : row,
+            );
+            const key = cacheKey(config.id, locale, query.trim(), page);
+            const cached = listCache.get(key);
+            if (cached) {
+              listCache.set(key, { ...cached, rows: next });
+            }
+            return next;
+          });
+        } else {
+          invalidateCache();
+          await load({ silent: true });
+        }
       }
     } catch {
       setError(dict.preview.networkError);
@@ -382,40 +434,32 @@ export function ResourcePreviewDemo({
         )}
       >
         <div className="overflow-x-auto">
-          <table
-            className={cn(
-              "w-full table-fixed text-[13px] text-start",
-            )}
-          >
+          <table className="w-full min-w-[40rem] border-collapse text-[13px]">
             <thead
               className={cn(
-                "border-b border-border bg-muted text-[10px] tracking-wide text-muted-foreground",
+                "border-b border-border bg-muted text-[11px] text-muted-foreground",
                 isFa
                   ? "font-fa-label font-medium"
-                  : "font-mono uppercase",
+                  : "font-mono tracking-wide uppercase",
               )}
             >
               <tr>
-                <th className="w-12 px-3 py-2.5 font-medium">#</th>
-                <th className="px-4 py-2.5 font-medium">{resourceTitle}</th>
-                {columnFields
-                  .filter(
-                    (f) =>
-                      f.key !== config.titleKey &&
-                      f.key !== config.subtitleKey &&
-                      f.key !== config.imageKey,
-                  )
-                  .map((f) => (
-                    <th
-                      key={f.key}
-                      className="w-28 px-4 py-2.5 font-medium sm:w-36"
-                    >
-                      {fieldLabel(f.key, f.label)}
-                    </th>
-                  ))}
-                <th
-                  className="w-24 px-4 py-2.5 font-medium text-end"
-                >
+                <th className="w-12 px-3 py-2.5 text-start font-medium">#</th>
+                <th className="min-w-[10rem] px-3 py-2.5 text-start font-medium">
+                  {resourceTitle}
+                </th>
+                {extraCols.map((f) => (
+                  <th
+                    key={f.key}
+                    className="min-w-[6.5rem] px-3 py-2.5 text-start font-medium"
+                  >
+                    {fieldLabel(f.key, f.label)}
+                  </th>
+                ))}
+                <th className="min-w-[7.5rem] px-3 py-2.5 text-start font-medium whitespace-nowrap">
+                  {dict.preview.createdAt}
+                </th>
+                <th className="w-24 px-3 py-2.5 text-end font-medium">
                   {dict.common.actions}
                 </th>
               </tr>
@@ -424,8 +468,8 @@ export function ResourcePreviewDemo({
               {loading && rows.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={3 + columnFields.length}
-                    className="px-4 py-10 text-center text-muted-foreground"
+                    colSpan={colCount}
+                    className="px-3 py-10 text-center text-muted-foreground"
                   >
                     {dict.preview.loading}
                   </td>
@@ -434,8 +478,8 @@ export function ResourcePreviewDemo({
               {!loading && rows.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={3 + columnFields.length}
-                    className="px-4 py-10 text-center text-muted-foreground"
+                    colSpan={colCount}
+                    className="px-3 py-10 text-center text-muted-foreground"
                   >
                     {dict.preview.noRecords}
                   </td>
@@ -447,21 +491,20 @@ export function ResourcePreviewDemo({
                   config.imageKey && typeof row[config.imageKey] === "string"
                     ? String(row[config.imageKey])
                     : null;
-                const extraCols = columnFields.filter(
-                  (f) =>
-                    f.key !== config.titleKey &&
-                    f.key !== config.subtitleKey &&
-                    f.key !== config.imageKey,
-                );
+                const createdRaw = row.createdAt;
+                const createdLabel =
+                  typeof createdRaw === "string" && createdRaw
+                    ? formatApiDate(createdRaw, locale)
+                    : "—";
                 return (
                   <tr
                     key={String(row.id)}
                     className="border-b border-border last:border-0"
                   >
-                    <td className="px-3 py-3 font-mono text-[12px] text-muted-foreground tabular-nums">
+                    <td className="px-3 py-3 align-middle font-mono text-[12px] text-muted-foreground tabular-nums">
                       {rowNumber}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-3 align-middle">
                       <div className="flex min-w-0 items-center gap-3">
                         {image ? (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -491,15 +534,22 @@ export function ResourcePreviewDemo({
                     {extraCols.map((f) => (
                       <td
                         key={f.key}
-                        className="truncate px-4 py-3 text-muted-foreground"
+                        className="max-w-[10rem] truncate px-3 py-3 align-middle text-start text-muted-foreground"
                       >
                         {displayCell(f, row[f.key])}
                       </td>
                     ))}
-                    <td className="px-4 py-3">
-                      <div
-                        className="flex justify-end gap-1"
-                      >
+                    <td
+                      className={cn(
+                        "px-3 py-3 align-middle text-start text-[12px] whitespace-nowrap text-muted-foreground",
+                        isFa && "font-fa-label",
+                      )}
+                      dir={isFa ? "rtl" : "ltr"}
+                    >
+                      {createdLabel}
+                    </td>
+                    <td className="px-3 py-3 align-middle">
+                      <div className="flex justify-end gap-1">
                         <button
                           type="button"
                           onClick={() => openEdit(row)}
@@ -557,7 +607,10 @@ export function ResourcePreviewDemo({
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
           <form
             onSubmit={onSave}
-            className="max-h-[90vh] w-full max-w-md space-y-4 overflow-y-auto rounded-xl border border-border bg-card p-5 shadow-lg"
+            className={cn(
+              "max-h-[90vh] w-full max-w-md space-y-4 overflow-y-auto rounded-xl border border-border bg-card p-5 shadow-lg",
+              isFa && "font-fa-label",
+            )}
           >
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-[15px] font-semibold">
@@ -569,7 +622,7 @@ export function ResourcePreviewDemo({
                 type="button"
                 onClick={closePanel}
                 className="grid size-8 place-items-center rounded-md text-muted-foreground hover:bg-[var(--surface-hover)]"
-                aria-label="Close"
+                aria-label={dict.common.close}
               >
                 <X className="size-4" />
               </button>
@@ -600,7 +653,7 @@ export function ResourcePreviewDemo({
                         setForm((f) => ({ ...f, [field.key]: e.target.value }))
                       }
                       rows={3}
-                      className="w-full rounded-md border border-border bg-muted px-3 py-2 text-[13px] outline-none focus-visible:border-[var(--request)]/50"
+                      className="w-full resize-none rounded-md border border-border bg-muted px-3 py-2 text-[13px] outline-none focus-visible:border-[var(--request)]/50"
                     />
                   ) : field.type === "boolean" ? (
                     <select
@@ -674,15 +727,23 @@ export function ResourcePreviewDemo({
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
           <div
             role="alertdialog"
-            className="w-full max-w-sm space-y-4 rounded-xl border border-border bg-card p-5 shadow-lg"
+            className={cn(
+              "w-full max-w-sm space-y-4 rounded-xl border border-border bg-card p-5 shadow-lg",
+              isFa && "font-fa-label",
+            )}
           >
             <div className="space-y-1.5">
-              <h2 className="text-[15px] font-semibold">{dict.preview.confirmDelete}</h2>
+              <h2 className="text-[15px] font-semibold">
+                {dict.preview.confirmDelete}
+              </h2>
+              <p
+                className="truncate text-[14px] font-medium text-foreground"
+                dir="auto"
+              >
+                {cellText(deleteTarget[config.titleKey])}
+              </p>
               <p className="text-[13px] leading-6 text-muted-foreground">
-                {dict.preview.confirmDeleteBody}{" "}
-                <span className="font-medium text-foreground">
-                  {cellText(deleteTarget[config.titleKey])}
-                </span>
+                {dict.preview.confirmDeleteBody}
               </p>
             </div>
             <div className="flex justify-end gap-2">
@@ -700,10 +761,12 @@ export function ResourcePreviewDemo({
                 onClick={() => void confirmDelete()}
                 className="relative h-9 min-w-[5.5rem] rounded-md bg-[var(--delete)] px-3 text-[13px] font-semibold text-white disabled:opacity-50"
               >
-                <span className={cn(deleting && "invisible")}>{dict.preview.delete}</span>
+                <span className={cn(deleting && "invisible")}>
+                  {dict.preview.delete}
+                </span>
                 {deleting ? (
                   <span className="absolute inset-0 grid place-items-center">
-                    Deleting…
+                    {dict.preview.deleting}
                   </span>
                 ) : null}
               </button>

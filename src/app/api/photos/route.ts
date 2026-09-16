@@ -7,6 +7,7 @@ import {
   jsonLocalizedSuccess,
   validationError,
 } from "@/lib/api/response";
+import { applyLocalizedCreate } from "@/lib/api/locale-write";
 import {
   createPhotoSchema,
   photoListQuerySchema,
@@ -46,6 +47,12 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) return validationError(parsed.error);
 
     const photo = await createPhoto(parsed.data);
+    applyLocalizedCreate(
+      request,
+      "photos",
+      photo.id,
+      parsed.data as Record<string, unknown>,
+    );
     return jsonLocalizedSuccess(request, "photos", photo, { status: 201 });
   } catch (error) {
     console.error("POST /api/photos failed:", error);

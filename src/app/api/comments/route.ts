@@ -7,6 +7,7 @@ import {
   jsonLocalizedSuccess,
   validationError,
 } from "@/lib/api/response";
+import { applyLocalizedCreate } from "@/lib/api/locale-write";
 import {
   commentListQuerySchema,
   createCommentSchema,
@@ -46,6 +47,12 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) return validationError(parsed.error);
 
     const comment = await createComment(parsed.data);
+    applyLocalizedCreate(
+      request,
+      "comments",
+      comment.id,
+      parsed.data as Record<string, unknown>,
+    );
     return jsonLocalizedSuccess(request, "comments", comment, { status: 201 });
   } catch (error) {
     console.error("POST /api/comments failed:", error);

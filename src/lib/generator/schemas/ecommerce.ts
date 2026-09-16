@@ -1,0 +1,377 @@
+import { contentList } from "@/lib/generator/content";
+import {
+  createRng,
+  float,
+  fullName,
+  id,
+  imageUrl,
+  int,
+  isoDate,
+  isoDateFuture,
+  moneyAmount,
+  pick,
+  place,
+  postalCode,
+  slugify,
+  streetAddress,
+  takeFields,
+} from "@/lib/generator/helpers";
+import type { GeneratorTopic } from "@/lib/generator/types";
+import {
+  ShoppingBag,
+  Package,
+  Star,
+  Tags,
+  ShoppingCart,
+  TicketPercent,
+  CreditCard,
+  Truck,
+} from "lucide-react";
+
+const ORDER_STATUSES = {
+  en: ["pending", "processing", "shipped", "delivered", "cancelled"] as const,
+  fa: ["در انتظار", "در حال پردازش", "ارسال‌شده", "تحویل‌شده", "لغوشده"] as const,
+};
+const PAYMENT_STATUSES = {
+  en: ["paid", "pending", "failed", "refunded"] as const,
+  fa: ["پرداخت‌شده", "در انتظار", "ناموفق", "بازگشت‌شده"] as const,
+};
+const PAYMENT_METHODS = {
+  en: ["card", "paypal", "bank_transfer", "cash", "wallet"] as const,
+  fa: ["کارت", "پی‌پال", "کارت‌به‌کارت", "نقد", "کیف‌پول"] as const,
+};
+const CARRIERS = ["DHL", "FedEx", "UPS", "USPS", "Poste"] as const;
+const COUPON_TYPES = ["percent", "fixed"] as const;
+const SHIP_STATUSES = {
+  en: ["label_created", "in_transit", "out_for_delivery", "delivered"] as const,
+  fa: ["برچسب ساخته شد", "در مسیر", "آماده تحویل", "تحویل‌شده"] as const,
+};
+
+export const ecommerceTopics: GeneratorTopic[] = [
+  {
+    id: "products",
+    category: "ecommerce",
+    icon: ShoppingBag,
+    fields: [
+      { id: "name", default: true },
+      { id: "price", default: true },
+      { id: "image", default: true },
+      { id: "category", default: true },
+      { id: "id", default: false },
+      { id: "description", default: false },
+      { id: "brand", default: false },
+      { id: "stock", default: false },
+      { id: "rating", default: false },
+      { id: "currency", default: false },
+      { id: "sku", default: false },
+      { id: "discount", default: false },
+      { id: "colors", default: false },
+      { id: "createdAt", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const name = pick(rng, contentList("productNames", ctx.uiLocale));
+      const colors =
+        ctx.uiLocale === "fa"
+          ? ["مشکی", "سفید", "آبی", "نقره‌ای"]
+          : ["black", "white", "blue", "silver"];
+      const record: Record<string, unknown> = {
+        id: id("prd", ctx.index, rng),
+        name,
+        price: moneyAmount(rng, ctx.uiLocale, {
+          fa: [80_000, 25_000_000],
+          en: [10, 499],
+        }),
+        currency: ctx.pack.currency,
+        image: imageUrl(`prd-${ctx.seed}-${ctx.index}`),
+        category: pick(rng, contentList("productCategories", ctx.uiLocale)),
+        description:
+          ctx.uiLocale === "fa"
+            ? `${name} با کیفیت مناسب برای استفاده روزمره.`
+            : `A quality ${name.toLowerCase()} for everyday use.`,
+        brand: pick(rng, ctx.pack.companies),
+        stock: int(rng, 0, 250),
+        rating: float(rng, 3.2, 5, 1),
+        sku: `SKU-${int(rng, 10000, 99999)}`,
+        discount: int(rng, 0, 30),
+        colors: [pick(rng, colors), pick(rng, colors)],
+        createdAt: isoDate(rng, 300),
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "orders",
+    category: "ecommerce",
+    icon: Package,
+    fields: [
+      { id: "id", default: true },
+      { id: "customer", default: true },
+      { id: "items", default: true },
+      { id: "total", default: true },
+      { id: "status", default: true },
+      { id: "orderDate", default: false },
+      { id: "paymentStatus", default: false },
+      { id: "shippingAddress", default: false },
+      { id: "currency", default: false },
+      { id: "country", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const itemCount = int(rng, 1, 5);
+      const names = contentList("productNames", ctx.uiLocale);
+      const items = Array.from({ length: itemCount }, () => {
+        const price = moneyAmount(rng, ctx.uiLocale, {
+          fa: [50_000, 3_000_000],
+          en: [8, 120],
+        });
+        const qty = int(rng, 1, 3);
+        return {
+          name: pick(rng, names),
+          quantity: qty,
+          price,
+          total: price * qty,
+        };
+      });
+      const total = items.reduce((s, it) => s + it.total, 0);
+      const loc = place(ctx.pack, rng);
+      const street = streetAddress(ctx.pack, rng);
+      const postal = postalCode(ctx.pack, rng);
+      const shippingAddress =
+        ctx.uiLocale === "fa"
+          ? `${street}، ${loc.city}، ${loc.region}، ${ctx.pack.countryName}، ${postal}`
+          : `${street}, ${loc.city}, ${loc.region}, ${ctx.pack.countryName}, ${postal}`;
+      const record: Record<string, unknown> = {
+        id:
+          ctx.uiLocale === "fa"
+            ? String(10000 + ctx.index + int(rng, 0, 900))
+            : `ORD-${10000 + ctx.index + int(rng, 0, 50)}`,
+        customer: fullName(ctx.pack, rng),
+        items,
+        total,
+        currency: ctx.pack.currency,
+        status: pick(rng, ORDER_STATUSES[ctx.uiLocale]),
+        orderDate: isoDate(rng, 180),
+        paymentStatus: pick(rng, PAYMENT_STATUSES[ctx.uiLocale]),
+        shippingAddress,
+        country: ctx.pack.countryName,
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "reviews",
+    category: "ecommerce",
+    icon: Star,
+    fields: [
+      { id: "user", default: true },
+      { id: "rating", default: true },
+      { id: "comment", default: true },
+      { id: "date", default: true },
+      { id: "id", default: false },
+      { id: "product", default: false },
+      { id: "title", default: false },
+      { id: "verified", default: false },
+      { id: "helpful", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const titles =
+        ctx.uiLocale === "fa"
+          ? ["عالی", "ارزش خرید", "تقریباً کامل", "پیشنهاد می‌کنم", "خوب"]
+          : [
+              "Great product",
+              "Worth it",
+              "Almost perfect",
+              "Highly recommend",
+              "Good value",
+            ];
+      const record: Record<string, unknown> = {
+        id: id("rev", ctx.index, rng),
+        user: fullName(ctx.pack, rng),
+        rating: int(rng, 1, 5),
+        comment: pick(rng, contentList("reviewComments", ctx.uiLocale)),
+        date: isoDate(rng, 200),
+        product: pick(rng, contentList("productNames", ctx.uiLocale)),
+        title: pick(rng, titles),
+        verified: rng() > 0.35,
+        helpful: int(rng, 0, 80),
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "categories",
+    category: "ecommerce",
+    icon: Tags,
+    fields: [
+      { id: "name", default: true },
+      { id: "slug", default: true },
+      { id: "id", default: false },
+      { id: "description", default: false },
+      { id: "image", default: false },
+      { id: "parentCategory", default: false },
+      { id: "productCount", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const name = pick(rng, contentList("productCategories", ctx.uiLocale));
+      const parents =
+        ctx.uiLocale === "fa"
+          ? ["فروشگاه", "کاتالوگ", "ویژه", null]
+          : ["Shop", "Catalog", "Featured", null];
+      const record: Record<string, unknown> = {
+        id: id("cat", ctx.index, rng),
+        name,
+        slug: slugify(name) || `cat-${ctx.index}`,
+        description:
+          ctx.uiLocale === "fa"
+            ? `مرور محصولات ${name}.`
+            : `Browse ${name.toLowerCase()} products.`,
+        image: imageUrl(`cat-${ctx.index}`, 400, 300),
+        parentCategory: pick(rng, parents),
+        productCount: int(rng, 4, 220),
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "cart-items",
+    category: "ecommerce",
+    icon: ShoppingCart,
+    fields: [
+      { id: "product", default: true },
+      { id: "quantity", default: true },
+      { id: "price", default: true },
+      { id: "total", default: true },
+      { id: "image", default: true },
+      { id: "id", default: false },
+      { id: "discount", default: false },
+      { id: "sku", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const price = moneyAmount(rng, ctx.uiLocale, {
+        fa: [50_000, 4_000_000],
+        en: [5, 150],
+      });
+      const quantity = int(rng, 1, 4);
+      const discount = moneyAmount(rng, ctx.uiLocale, {
+        fa: [0, 200_000],
+        en: [0, 15],
+      });
+      const total = Math.max(0, price * quantity - discount);
+      const record: Record<string, unknown> = {
+        id: id("crt", ctx.index, rng),
+        product: pick(rng, contentList("productNames", ctx.uiLocale)),
+        quantity,
+        price,
+        total,
+        discount,
+        image: imageUrl(`crt-${ctx.seed}-${ctx.index}`, 200, 200),
+        sku: `SKU-${int(rng, 10000, 99999)}`,
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "coupons",
+    category: "ecommerce",
+    icon: TicketPercent,
+    fields: [
+      { id: "code", default: true },
+      { id: "discount", default: true },
+      { id: "type", default: true },
+      { id: "expiresAt", default: true },
+      { id: "id", default: false },
+      { id: "minimumOrder", default: false },
+      { id: "usageLimit", default: false },
+      { id: "active", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const type = pick(rng, COUPON_TYPES);
+      const codes = ["SAVE10", "WELCOME", "SPRING25", "FLASH15", "VIP20"];
+      const record: Record<string, unknown> = {
+        id: id("cpn", ctx.index, rng),
+        code: `${pick(rng, codes)}${int(rng, 1, 99)}`,
+        discount:
+          type === "percent"
+            ? int(rng, 5, 40)
+            : moneyAmount(rng, ctx.uiLocale, {
+                fa: [50_000, 500_000],
+                en: [5, 50],
+              }),
+        type,
+        expiresAt: isoDateFuture(rng, 180),
+        minimumOrder: moneyAmount(rng, ctx.uiLocale, {
+          fa: [100_000, 2_000_000],
+          en: [20, 100],
+        }),
+        usageLimit: int(rng, 50, 5000),
+        active: rng() > 0.2,
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "payments",
+    category: "ecommerce",
+    icon: CreditCard,
+    fields: [
+      { id: "amount", default: true },
+      { id: "currency", default: true },
+      { id: "status", default: true },
+      { id: "paymentMethod", default: true },
+      { id: "id", default: false },
+      { id: "transactionId", default: false },
+      { id: "date", default: false },
+      { id: "customer", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const record: Record<string, unknown> = {
+        id: id("pay", ctx.index, rng),
+        amount: moneyAmount(rng, ctx.uiLocale, {
+          fa: [50_000, 15_000_000],
+          en: [12, 899],
+        }),
+        currency: ctx.pack.currency,
+        status: pick(rng, PAYMENT_STATUSES[ctx.uiLocale]),
+        paymentMethod: pick(rng, PAYMENT_METHODS[ctx.uiLocale]),
+        transactionId: `txn_${int(rng, 100000, 999999)}`,
+        date: isoDate(rng, 120),
+        customer: fullName(ctx.pack, rng),
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "shipments",
+    category: "ecommerce",
+    icon: Truck,
+    fields: [
+      { id: "order", default: true },
+      { id: "carrier", default: true },
+      { id: "status", default: true },
+      { id: "trackingNumber", default: true },
+      { id: "id", default: false },
+      { id: "estimatedDelivery", default: false },
+      { id: "country", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const carrier = pick(rng, CARRIERS);
+      const record: Record<string, unknown> = {
+        id: id("shp", ctx.index, rng),
+        order: `ORD-${10000 + ctx.index}`,
+        carrier,
+        status: pick(rng, SHIP_STATUSES[ctx.uiLocale]),
+        trackingNumber: `${carrier.slice(0, 3).toUpperCase()}${int(rng, 1e9, 2e9)}`,
+        estimatedDelivery: isoDateFuture(rng, 14),
+        country: ctx.pack.countryName,
+      };
+      return takeFields(record, fields);
+    },
+  },
+];

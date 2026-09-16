@@ -14,6 +14,20 @@ export type SiteUpdate = {
 /** Newest first. User-facing features only. Prepend to resurface the badge. */
 export const siteUpdates: SiteUpdate[] = [
   {
+    id: "2026-09-17-generator",
+    date: "2026-09-17",
+    title: "Fake Data Generator",
+    summary:
+      "Generate realistic JSON for UI work — pick a type, fields, and quantity, then copy, download, or publish via Temporary API.",
+    details: [
+      "Open /generator for users, products, orders, jobs, and more.",
+      "Generate up to 1,000 records in the browser with useful default fields.",
+      "Create API reuses Temporary API (max 500 items / 64 KB per publish).",
+    ],
+    href: "/generator",
+    hrefLabel: "Open generator",
+  },
+  {
     id: "2026-09-16-temporary",
     date: "2026-09-16",
     title: "Temporary API",

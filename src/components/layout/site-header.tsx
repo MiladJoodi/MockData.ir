@@ -12,6 +12,7 @@ import {
   Sparkles,
   SquareTerminal,
   Sun,
+  WandSparkles,
   X,
 } from "lucide-react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
@@ -105,7 +106,7 @@ export function SiteHeader() {
             aria-label={dict.header.primaryNav}
             dir="ltr"
           >
-            {/* Physical left→right on mobile: playground, temporary, resources */}
+            {/* Physical left→right on mobile: playground, temporary, generator, resources */}
             <Link href="/playground" className={navLinkClass}>
               <SquareTerminal className="size-3.5" strokeWidth={2} aria-hidden />
               {dict.common.playground}
@@ -113,6 +114,10 @@ export function SiteHeader() {
             <Link href="/temporary" className={navLinkClass}>
               <Sparkles className="size-3.5" strokeWidth={2} aria-hidden />
               {dict.common.temporary}
+            </Link>
+            <Link href="/generator" className={navLinkClass}>
+              <WandSparkles className="size-3.5" strokeWidth={2} aria-hidden />
+              {dict.common.generator}
             </Link>
             <Link href="/#resources" className={navLinkClass}>
               {dict.home.resourcesTitle}
@@ -130,6 +135,10 @@ export function SiteHeader() {
             <Link href="/temporary" className={navLinkClass}>
               <Sparkles className="size-3.5" strokeWidth={2} aria-hidden />
               {dict.common.temporary}
+            </Link>
+            <Link href="/generator" className={navLinkClass}>
+              <WandSparkles className="size-3.5" strokeWidth={2} aria-hidden />
+              {dict.common.generator}
             </Link>
             <Link href="/#resources" className={navLinkClass}>
               {dict.home.resourcesTitle}

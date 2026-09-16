@@ -35,6 +35,7 @@ export type Messages = {
     networkError: string;
     temporary: string;
     temporaryBadge: string;
+    generator: string;
   };
   header: {
     primaryNav: string;
@@ -93,6 +94,7 @@ export type Messages = {
       intro: string;
       whatsNew: string;
       temporary: string;
+      generator: string;
       sharedData: string;
       language: string;
       resources: string;
@@ -109,6 +111,9 @@ export type Messages = {
     temporaryBullets: string[];
     temporaryLimitsTitle: string;
     temporaryLimitsBullets: string[];
+    generatorTitle: string;
+    generatorBody: string;
+    generatorBullets: string[];
     sharedDataTitle: string;
     sharedDataBody: string;
     languageTitle: string;
@@ -224,6 +229,70 @@ export type Messages = {
       AUTO_FIXED: string;
     };
   };
+  generator: {
+    title: string;
+    subtitle: string;
+    chooseType: string;
+    searchPlaceholder: string;
+    noTopics: string;
+    fieldsLegend: string;
+    moreFields: string;
+    lessFields: string;
+    optionalFields: string;
+    records: string;
+    customQty: string;
+    country: string;
+    countrySearch: string;
+    selectPlaceholder: string;
+    outputMode: string;
+    modePayload: string;
+    modeApi: string;
+    modePayloadHint: string;
+    modeApiHint: string;
+    jsonType: string;
+    viewJson: string;
+    viewType: string;
+    generate: string;
+    generating: string;
+    generateAgain: string;
+    refresh: string;
+    generated: string;
+    download: string;
+    createApi: string;
+    createSuccess: string;
+    createBlockedArray: string;
+    createBlockedSize: string;
+    openTemporary: string;
+    emptyTitle: string;
+    emptyBody: string;
+    duration1h: string;
+    duration6h: string;
+    duration12h: string;
+    duration24h: string;
+    countries: Record<string, string>;
+    categories: Record<string, string>;
+    fields: Record<string, string>;
+    topics: Record<
+      string,
+      {
+        name: string;
+        description: string;
+        preview?: { line1: string; line2: string; line3?: string };
+      }
+    >;
+    errors: {
+      pickTopic: string;
+      INVALID_TOPIC: string;
+      INVALID_FIELDS: string;
+      INVALID_QUANTITY: string;
+      INVALID_COUNTRY: string;
+      GENERATE_FAILED: string;
+      DOWNLOAD_FAILED: string;
+      CREATE_FAILED: string;
+      LIMIT_REACHED: string;
+      RATE_LIMITED: string;
+    };
+  };
   preview: {
     docs: string;
     playground: string;
@@ -307,6 +376,7 @@ export const en: Messages = {
     networkError: "Network error",
     temporary: "Temporary API",
     temporaryBadge: "Instant",
+    generator: "Generator",
   },
   header: {
     primaryNav: "Primary",
@@ -375,6 +445,7 @@ export const en: Messages = {
       intro: "Introduction",
       whatsNew: "What's new",
       temporary: "Temporary API",
+      generator: "Fake Data Generator",
       sharedData: "Shared data",
       language: "Language",
       resources: "Resources",
@@ -404,6 +475,14 @@ export const en: Messages = {
       "JSON payload max 64 KB.",
       "Max nesting depth 8; arrays up to 500 items; objects up to 200 keys.",
       "Same global /api rate limit still applies (about 60 requests per IP per minute).",
+    ],
+    generatorTitle: "Fake Data Generator",
+    generatorBody:
+      "Generate realistic JSON for UI work without writing fixtures by hand. Pick a data type, choose fields and quantity, then copy, download, or publish via Temporary API.",
+    generatorBullets: [
+      "Open /generator — users, products, orders, jobs, and more.",
+      "Generate up to 1,000 records in the browser (no backend call).",
+      "Create API reuses Temporary API limits (max 500 items / 64 KB per publish).",
     ],
     sharedDataTitle: "Shared data",
     sharedDataBody:
@@ -540,6 +619,375 @@ export const en: Messages = {
       AUTO_FIXED: "Trailing commas or unsafe keys were removed.",
     },
   },
+  generator: {
+    title: "Fake Data Generator",
+    subtitle: "Generate realistic data for your frontend projects.",
+    chooseType: "Data types",
+    searchPlaceholder: "Search data…",
+    noTopics: "No matching data types.",
+    fieldsLegend: "Fields",
+    moreFields: "More fields",
+    lessFields: "Hide optional",
+    optionalFields: "Optional fields",
+    records: "Records",
+    customQty: "Custom",
+    country: "Country",
+    countrySearch: "Search countries…",
+    selectPlaceholder: "Choose a data type…",
+    outputMode: "Output shape",
+    modePayload: "POST body",
+    modeApi: "API record",
+    modePayloadHint: "No id or timestamps — ready to POST as a create body.",
+    modeApiHint: "Includes id, createdAt, and updatedAt like a stored API row.",
+    jsonType: "JSON",
+    viewJson: "JSON",
+    viewType: "TS",
+    generate: "Generate {n} records",
+    generating: "Generating {n} records…",
+    generateAgain: "Generate again",
+    refresh: "Regenerate",
+    generated: "Generated {n} records",
+    download: "Download",
+    createApi: "Create API",
+    createSuccess: "Temporary API created.",
+    createBlockedArray:
+      "Temporary API allows up to 500 records. Lower the quantity to publish.",
+    createBlockedSize:
+      "This JSON is too large for Temporary API (64 KB). Lower the quantity or remove fields.",
+    openTemporary: "Manage on Temporary",
+    emptyTitle: "Choose a data type",
+    emptyBody: "Pick something above to start generating realistic data.",
+    duration1h: "1h",
+    duration6h: "6h",
+    duration12h: "12h",
+    duration24h: "24h",
+    countries: {
+      all: "All countries",
+      IR: "Iran",
+      DE: "Germany",
+      US: "United States",
+      GB: "United Kingdom",
+      FR: "France",
+      NL: "Netherlands",
+      JP: "Japan",
+      CA: "Canada",
+    },
+    categories: {
+      people: "People",
+      ecommerce: "E-commerce",
+      content: "Content",
+      media: "Media",
+      business: "Business",
+      location: "Location",
+    },
+    fields: {
+      id: "id",
+      name: "Name",
+      username: "Username",
+      email: "Email",
+      avatar: "Avatar",
+      phone: "Phone",
+      company: "Company",
+      location: "Location",
+      age: "Age",
+      role: "Role",
+      jobTitle: "Job title",
+      department: "Department",
+      bio: "Bio",
+      website: "Website",
+      createdAt: "Created at",
+      updatedAt: "Updated at",
+      hiredAt: "Hired at",
+      ordersCount: "Orders count",
+      totalSpent: "Total spent",
+      postsCount: "Posts count",
+      price: "Price",
+      image: "Image",
+      category: "Category",
+      description: "Description",
+      brand: "Brand",
+      stock: "Stock",
+      rating: "Rating",
+      sku: "SKU",
+      colors: "Colors",
+      orderId: "Order ID",
+      customer: "Customer",
+      items: "Items",
+      total: "Total",
+      status: "Status",
+      orderDate: "Order date",
+      paymentStatus: "Payment status",
+      shippingAddress: "Shipping address",
+      user: "User",
+      comment: "Comment",
+      post: "Post",
+      date: "Date",
+      product: "Product",
+      title: "Title",
+      verified: "Verified",
+      helpful: "Helpful votes",
+      slug: "Slug",
+      parentCategory: "Parent category",
+      productCount: "Product count",
+      quantity: "Quantity",
+      discount: "Discount",
+      code: "Code",
+      type: "Type",
+      expiresAt: "Expires at",
+      minimumOrder: "Minimum order",
+      usageLimit: "Usage limit",
+      active: "Active",
+      amount: "Amount",
+      currency: "Currency",
+      paymentMethod: "Payment method",
+      transactionId: "Transaction ID",
+      order: "Order",
+      carrier: "Carrier",
+      trackingNumber: "Tracking number",
+      estimatedDelivery: "Estimated delivery",
+      body: "Body",
+      author: "Author",
+      tags: "Tags",
+      publishedAt: "Published at",
+      likes: "Likes",
+      views: "Views",
+      replies: "Replies",
+      attachments: "Attachments",
+      actionUrl: "Action URL",
+      sender: "Sender",
+      receiver: "Receiver",
+      message: "Message",
+      read: "Read",
+      artist: "Artist",
+      cover: "Cover",
+      year: "Year",
+      genre: "Genre",
+      tracks: "Tracks",
+      album: "Album",
+      duration: "Duration",
+      poster: "Poster",
+      director: "Director",
+      language: "Language",
+      plays: "Plays",
+      label: "Label",
+      pages: "Pages",
+      isbn: "ISBN",
+      instructor: "Instructor",
+      level: "Level",
+      lessons: "Lessons",
+      students: "Students",
+      employees: "Employees",
+      logo: "Logo",
+      industry: "Industry",
+      salary: "Salary",
+      experience: "Experience",
+      remote: "Remote",
+      founded: "Founded",
+      postedAt: "Posted at",
+      capacity: "Capacity",
+      capital: "Capital",
+      flag: "Flag",
+      region: "State / Province / Region",
+      population: "Population",
+      street: "Street",
+      postalCode: "Postal code",
+      latitude: "Latitude",
+      longitude: "Longitude",
+      country: "Country",
+      city: "City",
+    },
+    topics: {
+      users: {
+        name: "Users",
+        description: "People profiles for apps and dashboards",
+        preview: {
+          line1: "Sarah Johnson",
+          line2: "@sarahj · sarah@mail.test",
+          line3: "Berlin",
+        },
+      },
+      customers: {
+        name: "Customers",
+        description: "Shoppers and account contacts",
+        preview: {
+          line1: "Alex Rivera",
+          line2: "alex@demo.dev",
+          line3: "+1 415 555 0199",
+        },
+      },
+      employees: {
+        name: "Employees",
+        description: "Team members with roles and departments",
+        preview: {
+          line1: "Maya Chen",
+          line2: "Frontend Developer",
+          line3: "Engineering · Acme",
+        },
+      },
+      authors: {
+        name: "Authors",
+        description: "Writers and content creators",
+        preview: {
+          line1: "Jordan Lee",
+          line2: "Writes about product craft.",
+        },
+      },
+      products: {
+        name: "Products",
+        description: "Store products and pricing",
+        preview: {
+          line1: "Wireless Headphones",
+          line2: "€89.99 · Electronics",
+          line3: "★★★★☆",
+        },
+      },
+      orders: {
+        name: "Orders",
+        description: "Checkout orders with items and status",
+        preview: {
+          line1: "Order #10482",
+          line2: "3 items · €129.90",
+          line3: "Delivered",
+        },
+      },
+      reviews: {
+        name: "Reviews",
+        description: "Ratings and customer feedback",
+        preview: {
+          line1: "★★★★★ Great product",
+          line2: "Really useful and easy to use.",
+        },
+      },
+      categories: {
+        name: "Categories",
+        description: "Product catalog groups",
+        preview: { line1: "Electronics", line2: "electronics" },
+      },
+      "cart-items": {
+        name: "Cart items",
+        description: "Line items in a shopping cart",
+        preview: { line1: "Smart Watch", line2: "2 × $129 · $258" },
+      },
+      coupons: {
+        name: "Coupons",
+        description: "Discount codes and rules",
+        preview: { line1: "WELCOME10", line2: "10% · expires 2026-12-01" },
+      },
+      payments: {
+        name: "Payments",
+        description: "Payment attempts and methods",
+        preview: { line1: "$84.50 USD", line2: "card · paid" },
+      },
+      shipments: {
+        name: "Shipments",
+        description: "Carriers and tracking status",
+        preview: { line1: "ORD-10482 · DHL", line2: "In transit" },
+      },
+      posts: {
+        name: "Posts",
+        description: "Blog and feed posts",
+        preview: { line1: "Designing for speed", line2: "By Ava Chen" },
+      },
+      comments: {
+        name: "Comments",
+        description: "Replies on posts and products",
+        preview: {
+          line1: "This helped a lot — thanks!",
+          line2: "Liam · 12 likes",
+        },
+      },
+      messages: {
+        name: "Messages",
+        description: "Inbox-style conversations",
+        preview: {
+          line1: "Can you review the latest draft?",
+          line2: "Sara → Amir",
+        },
+      },
+      notifications: {
+        name: "Notifications",
+        description: "In-app alerts and digests",
+        preview: { line1: "New comment", line2: "info · 2h ago" },
+      },
+      albums: {
+        name: "Albums",
+        description: "Music albums with cover art",
+        preview: {
+          line1: "Random Access Memories",
+          line2: "Daft Punk",
+          line3: "2013 · 13 tracks",
+        },
+      },
+      songs: {
+        name: "Songs",
+        description: "Tracks with duration and artist",
+        preview: { line1: "Midnight Drive", line2: "3:42 · Electronic" },
+      },
+      movies: {
+        name: "Movies",
+        description: "Films with posters and ratings",
+        preview: { line1: "Night Circuit", line2: "2021 · ★ 8.2" },
+      },
+      books: {
+        name: "Books",
+        description: "Titles with authors and covers",
+        preview: { line1: "Designing Interfaces", line2: "Jordan Lee · 2019" },
+      },
+      companies: {
+        name: "Companies",
+        description: "Organizations and industries",
+        preview: { line1: "Acme Corp", line2: "Technology · New York" },
+      },
+      jobs: {
+        name: "Jobs",
+        description: "Job listings with location and type",
+        preview: {
+          line1: "Frontend Developer",
+          line2: "Google · Berlin · Full-time",
+        },
+      },
+      courses: {
+        name: "Courses",
+        description: "Learning content and instructors",
+        preview: { line1: "React Fundamentals", line2: "Intermediate · 12h" },
+      },
+      events: {
+        name: "Events",
+        description: "Meetups and conferences",
+        preview: { line1: "Frontend Meetup", line2: "Berlin · Workshop" },
+      },
+      countries: {
+        name: "Countries",
+        description: "Country names, codes, and flags",
+        preview: { line1: "Germany", line2: "DE · Berlin" },
+      },
+      cities: {
+        name: "Cities",
+        description: "Cities with region and country",
+        preview: { line1: "Munich", line2: "Germany · Bavaria" },
+      },
+      addresses: {
+        name: "Addresses",
+        description: "Consistent street-level addresses",
+        preview: {
+          line1: "12 Hauptstraße",
+          line2: "Munich, Bavaria, Germany",
+        },
+      },
+    },
+    errors: {
+      pickTopic: "Choose a data type first.",
+      INVALID_TOPIC: "Unknown data type.",
+      INVALID_FIELDS: "Select at least one field.",
+      INVALID_QUANTITY: "Quantity must be between 1 and 1000.",
+      INVALID_COUNTRY: "Invalid country.",
+      GENERATE_FAILED: "Could not generate data. Try again.",
+      DOWNLOAD_FAILED: "Download failed. Try again.",
+      CREATE_FAILED: "Could not create Temporary API.",
+      LIMIT_REACHED: "Temporary API limit reached (5 active). Delete one first.",
+      RATE_LIMITED: "Too many creates. Try again later.",
+    },
+  },
   preview: {
     docs: "Docs",
     playground: "Playground",
@@ -608,6 +1056,18 @@ export const en: Messages = {
     },
   },
   changelog: {
+    "2026-09-17-generator": {
+      title: "Fake Data Generator",
+      teaser: "Realistic JSON in seconds",
+      hint: "/generator — pick a type, generate, copy or Create API",
+      summary:
+        "Generate realistic JSON for UI work — pick a type, fields, and quantity, then copy, download, or publish via Temporary API.",
+      details: [
+        "Open /generator for users, products, orders, jobs, and more.",
+        "Generate up to 1,000 records in the browser with useful default fields.",
+        "Create API reuses Temporary API (max 500 items / 64 KB per publish).",
+      ],
+    },
     "2026-09-16-temporary": {
       title: "Temporary API",
       teaser: "Your JSON, short-lived URL",

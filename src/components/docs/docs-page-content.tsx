@@ -48,6 +48,7 @@ export function DocsPageContent() {
     ["#intro", d.toc.intro],
     ["#whats-new", d.toc.whatsNew],
     ["#temporary", d.toc.temporary],
+    ["#generator", d.toc.generator],
     ["#shared-data", d.toc.sharedData],
     ["#language", d.toc.language],
     ["#resources", d.toc.resources],
@@ -157,6 +158,46 @@ export function DocsPageContent() {
                 <li key={bullet}>{bullet}</li>
               ))}
             </ul>
+          </section>
+
+          <section id="generator" className="scroll-mt-20 space-y-4">
+            <h2
+              className={cn(
+                "text-xl font-semibold tracking-tight",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.generatorTitle}
+            </h2>
+            <p
+              className={cn(
+                "text-[14px] leading-6 text-muted-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.generatorBody}
+            </p>
+            <ul
+              className={cn(
+                "list-inside list-disc space-y-1.5 text-[14px] leading-6 text-muted-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.generatorBullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
+            </ul>
+            <p>
+              <Link
+                href="/generator"
+                className={cn(
+                  "text-[14px] font-medium text-foreground underline-offset-2 hover:underline",
+                  isFa && "font-fa-label",
+                )}
+              >
+                {dict.common.generator}
+              </Link>
+            </p>
           </section>
 
           <section id="shared-data" className="scroll-mt-20 space-y-4">

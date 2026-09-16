@@ -1,0 +1,484 @@
+"use client";
+
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { Loader2, WandSparkles } from "lucide-react";
+import { FieldSelector } from "@/components/generator/field-selector";
+import { GeneratedResult } from "@/components/generator/generated-result";
+import { QuantityAndModeRow } from "@/components/generator/quantity-and-mode-row";
+import { SamplePreviewCard } from "@/components/generator/sample-preview-card";
+import { TopicPicker } from "@/components/generator/topic-picker";
+import { useUiLocale } from "@/components/providers/ui-locale-provider";
+import { GENERATOR_MAX_RECORDS } from "@/lib/generator/constants";
+import { generateBatchChunked, clampQuantity } from "@/lib/generator/generate";
+import { getGeneratorTopic } from "@/lib/generator/registry";
+import {
+  fieldsForMode,
+  adjustFieldsForMode,
+  visibleFieldsForMode,
+  type GeneratorOutputMode,
+} from "@/lib/generator/modes";
+import {
+  loadGeneratorSession,
+  saveGeneratorSession,
+} from "@/lib/generator/session-state";
+import {
+  TEMPORARY_LIMITS,
+  type TemporaryDuration,
+} from "@/lib/temporary/limits";
+import { validateTemporaryJson } from "@/lib/temporary/validate-json";
+import {
+  upsertStoredTemporaryApi,
+  type StoredTemporaryApi,
+} from "@/lib/temporary/client-store";
+import { cn } from "@/lib/utils";
+
+export function GeneratorPageContent() {
+  const { dict, locale } = useUiLocale();
+  const t = dict.generator;
+  const isFa = locale === "fa";
+
+  const initial = loadGeneratorSession();
+  const [topicId, setTopicId] = useState<string | null>(initial.topicId);
+  const [mode, setMode] = useState<GeneratorOutputMode>(initial.mode);
+  const [fields, setFields] = useState<Set<string>>(
+    () => new Set(initial.fields),
+  );
+  const [quantity, setQuantity] = useState(initial.quantity);
+  const [generating, setGenerating] = useState(false);
+  const [progress, setProgress] = useState<number | null>(null);
+  const [records, setRecords] = useState<Record<string, unknown>[] | null>(
+    initial.records,
+  );
+  const [error, setError] = useState<string | null>(initial.error);
+  const [status, setStatus] = useState<string | null>(initial.status);
+  const [duration, setDuration] = useState<TemporaryDuration>(initial.duration);
+  const [creating, setCreating] = useState(false);
+  const [createdUrl, setCreatedUrl] = useState<string | null>(
+    initial.createdUrl,
+  );
+  const [, startTransition] = useTransition();
+
+  useEffect(() => {
+    saveGeneratorSession({
+      topicId,
+      mode,
+      fields: [...fields],
+      quantity,
+      records,
+      duration,
+      createdUrl,
+      status,
+      error,
+    });
+  }, [
+    topicId,
+    mode,
+    fields,
+    quantity,
+    records,
+    duration,
+    createdUrl,
+    status,
+    error,
+  ]);
+
+  const topic = topicId ? getGeneratorTopic(topicId) : undefined;
+  const visibleFields = topic ? visibleFieldsForMode(topic, mode) : [];
+
+  function selectTopic(id: string) {
+    const next = getGeneratorTopic(id);
+    if (!next) return;
+    setTopicId(id);
+    setFields(fieldsForMode(next, mode));
+    setRecords(null);
+    setCreatedUrl(null);
+    setError(null);
+    setStatus(null);
+  }
+
+  function selectMode(nextMode: GeneratorOutputMode) {
+    setMode(nextMode);
+    if (topic) {
+      setFields((prev) => adjustFieldsForMode(topic, prev, nextMode));
+    }
+  }
+
+  function toggleField(id: string) {
+    setFields((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        if (next.size <= 1) return next;
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  async function onGenerate() {
+    if (!topicId) {
+      setError(t.errors.pickTopic);
+      return;
+    }
+    setGenerating(true);
+    setError(null);
+    setStatus(null);
+    setCreatedUrl(null);
+    setProgress(0);
+    try {
+      const result = await generateBatchChunked(
+        {
+          topicId,
+          fields: [...fields],
+          quantity: clampQuantity(quantity),
+          country: isFa ? "IR" : "all",
+          uiLocale: isFa ? "fa" : "en",
+        },
+        (done, total) => setProgress(done / total),
+      );
+      if (!result.ok) {
+        setError(t.errors[result.error] ?? t.errors.GENERATE_FAILED);
+        setRecords(null);
+        return;
+      }
+      startTransition(() => {
+        setRecords(result.data);
+      });
+      setStatus(null);
+    } catch {
+      setError(t.errors.GENERATE_FAILED);
+      setRecords(null);
+    } finally {
+      setGenerating(false);
+      setProgress(null);
+    }
+  }
+
+  const jsonText = useMemo(
+    () => (records ? JSON.stringify(records, null, 2) : ""),
+    [records],
+  );
+
+  const createGate = useMemo(() => {
+    if (!records) return { ok: false as const, reason: null };
+    if (records.length > TEMPORARY_LIMITS.maxArrayLength) {
+      return { ok: false as const, reason: t.createBlockedArray };
+    }
+    const validation = validateTemporaryJson(jsonText);
+    if (!validation.ok) {
+      const code = validation.issues[0]?.code;
+      if (code === "TOO_LARGE") {
+        return { ok: false as const, reason: t.createBlockedSize };
+      }
+      if (code === "ARRAY_TOO_LONG") {
+        return { ok: false as const, reason: t.createBlockedArray };
+      }
+      return { ok: false as const, reason: t.errors.CREATE_FAILED };
+    }
+    return { ok: true as const, reason: null };
+  }, [records, jsonText, t]);
+
+  function onDownload() {
+    if (!records || !topicId) return;
+    try {
+      const blob = new Blob([jsonText], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${topicId}-${records.length}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setError(t.errors.DOWNLOAD_FAILED);
+    }
+  }
+
+  async function onCreateApi() {
+    if (!records || !createGate.ok) return;
+    setCreating(true);
+    setError(null);
+    setStatus(null);
+    try {
+      const res = await fetch("/api/temporary", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ json: jsonText, duration }),
+      });
+      const payload = await res.json().catch(() => null);
+      if (!res.ok) {
+        const code = payload?.error?.code as string | undefined;
+        if (code === "LIMIT_REACHED") {
+          setError(t.errors.LIMIT_REACHED);
+          return;
+        }
+        if (code === "RATE_LIMITED") {
+          setError(t.errors.RATE_LIMITED);
+          return;
+        }
+        if (code === "TOO_LARGE" || code === "ARRAY_TOO_LONG") {
+          setError(t.createBlockedSize);
+          return;
+        }
+        setError(t.errors.CREATE_FAILED);
+        return;
+      }
+      const created = payload.data as StoredTemporaryApi & {
+        manageToken: string;
+      };
+      upsertStoredTemporaryApi({
+        publicId: created.publicId,
+        name: created.name,
+        url: created.url,
+        createdAt: created.createdAt,
+        expiresAt: created.expiresAt,
+        manageToken: created.manageToken,
+      });
+      setCreatedUrl(created.url);
+      setStatus(t.createSuccess);
+    } catch {
+      setError(t.errors.CREATE_FAILED);
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  const qtyLabel = quantity.toLocaleString(isFa ? "fa-IR" : "en-US");
+  const generateLabel = t.generate.replace("{n}", qtyLabel);
+  const generatingLabel = t.generating.replace("{n}", qtyLabel);
+
+  const fieldLabels = useMemo(() => {
+    if (topic?.id === "orders") {
+      return {
+        ...t.fields,
+        id: isFa ? "کد سفارش" : "Order code",
+      };
+    }
+    return t.fields;
+  }, [topic?.id, t.fields, isFa]);
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
+      <header className="mb-8 space-y-2">
+        <div className="flex items-center gap-2">
+          <WandSparkles
+            className="size-5 text-muted-foreground"
+            strokeWidth={1.75}
+            aria-hidden
+          />
+          <h1
+            className={cn(
+              "text-2xl font-semibold tracking-[-0.03em] sm:text-3xl",
+              isFa && "font-fa-label",
+            )}
+          >
+            {t.title}
+          </h1>
+        </div>
+        <p
+          className={cn(
+            "max-w-2xl text-[15px] leading-7 text-muted-foreground",
+            isFa && "font-fa-label",
+          )}
+        >
+          {t.subtitle}
+        </p>
+      </header>
+
+      <div className="space-y-6 pb-24 md:pb-0">
+        <TopicPicker
+          value={topicId}
+          onChange={selectTopic}
+          topicLabels={t.topics}
+          categoryLabels={t.categories}
+          placeholder={t.selectPlaceholder}
+          searchPlaceholder={t.searchPlaceholder}
+          label={t.chooseType}
+          isFa={isFa}
+        />
+
+        {topic ? (
+          <SamplePreviewCard
+            topicId={topic.id}
+            topicName={t.topics[topic.id]?.name ?? topic.id}
+            selectedFields={fields}
+            fieldLabels={fieldLabels}
+            fieldOrder={visibleFields.map((f) => f.id)}
+            isFa={isFa}
+          />
+        ) : (
+          <div
+            className={cn(
+              "rounded-2xl border border-dashed border-border px-4 py-10 text-center",
+              isFa && "font-fa-label",
+            )}
+          >
+            <p className="text-[15px] font-medium text-foreground">
+              {t.emptyTitle}
+            </p>
+            <p className="mt-1 text-[13px] text-muted-foreground">
+              {t.emptyBody}
+            </p>
+          </div>
+        )}
+
+        {topic ? (
+          <section className="space-y-5 rounded-2xl border border-border bg-card p-4 sm:p-5">
+            <FieldSelector
+              fields={visibleFields}
+              selected={fields}
+              onToggle={toggleField}
+              fieldLabels={fieldLabels}
+              legend={t.fieldsLegend}
+              isFa={isFa}
+            />
+            <QuantityAndModeRow
+              quantity={quantity}
+              onQuantityChange={(n) => setQuantity(clampQuantity(n))}
+              mode={mode}
+              onModeChange={selectMode}
+              recordsLabel={t.records}
+              customLabel={t.customQty}
+              modeLabel={t.outputMode}
+              modePayload={t.modePayload}
+              modeApi={t.modeApi}
+              modeHint={
+                mode === "payload" ? t.modePayloadHint : t.modeApiHint
+              }
+              isFa={isFa}
+            />
+            <div className="hidden md:block">
+              <GenerateButton
+                label={generating ? generatingLabel : generateLabel}
+                loading={generating}
+                progress={progress}
+                onClick={onGenerate}
+                isFa={isFa}
+                fullWidth
+              />
+            </div>
+          </section>
+        ) : null}
+
+        {error ? (
+          <p
+            className={cn(
+              "text-[13px] text-red-600 dark:text-red-400",
+              isFa && "font-fa-label",
+            )}
+            role="alert"
+          >
+            {error}
+          </p>
+        ) : null}
+
+        {records ? (
+          <GeneratedResult
+            count={records.length}
+            records={records}
+            topicId={topicId ?? "data"}
+            topicLabel={t.topics[topicId ?? ""]?.name ?? topicId ?? "data"}
+            isFa={isFa}
+            copyLabel={dict.common.copy}
+            downloadLabel={t.download}
+            createApiLabel={t.createApi}
+            viewJsonLabel={t.viewJson}
+            viewTypeLabel={t.viewType}
+            creating={creating}
+            createDisabled={!createGate.ok}
+            createBlockedReason={createGate.reason}
+            duration={duration}
+            onDurationChange={setDuration}
+            durationLabels={{
+              "1h": t.duration1h,
+              "6h": t.duration6h,
+              "12h": t.duration12h,
+              "24h": t.duration24h,
+            }}
+            onDownload={onDownload}
+            onCreateApi={onCreateApi}
+            createdUrl={createdUrl}
+            openTemporaryLabel={t.openTemporary}
+            generatedLabel={t.generated.replace(
+              "{n}",
+              records.length.toLocaleString(isFa ? "fa-IR" : "en-US"),
+            )}
+            statusMessage={status}
+          />
+        ) : null}
+      </div>
+
+      {topic ? (
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-[var(--header-bg)] p-3 backdrop-blur-md md:hidden">
+          <GenerateButton
+            label={generating ? generatingLabel : generateLabel}
+            loading={generating}
+            progress={progress}
+            onClick={onGenerate}
+            isFa={isFa}
+            fullWidth
+          />
+        </div>
+      ) : null}
+
+      <p className="sr-only" aria-live="polite">
+        {generating
+          ? generatingLabel
+          : records
+            ? t.generated.replace("{n}", String(records.length))
+            : ""}
+      </p>
+      <p className="sr-only">max {GENERATOR_MAX_RECORDS}</p>
+    </div>
+  );
+}
+
+function GenerateButton({
+  label,
+  loading,
+  progress,
+  onClick,
+  isFa,
+  fullWidth,
+}: {
+  label: string;
+  loading: boolean;
+  progress: number | null;
+  onClick: () => void;
+  isFa: boolean;
+  fullWidth?: boolean;
+}) {
+  return (
+    <div className={cn("space-y-1.5", fullWidth && "w-full")}>
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={loading}
+        className={cn(
+          "inline-flex items-center justify-center gap-2 rounded-md bg-[var(--request-fill)] px-4 py-2.5 text-[14px] font-semibold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40",
+          fullWidth && "w-full",
+          isFa && "font-fa-label",
+        )}
+      >
+        {loading ? (
+          <Loader2 className="size-4 animate-spin" aria-hidden />
+        ) : (
+          <WandSparkles className="size-4" aria-hidden />
+        )}
+        {label}
+      </button>
+      {loading && progress !== null ? (
+        <div
+          className="h-1 overflow-hidden rounded-full bg-border"
+          aria-hidden
+        >
+          <div
+            className="h-full bg-foreground/70 transition-[width] duration-200"
+            style={{ width: `${Math.round(progress * 100)}%` }}
+          />
+        </div>
+      ) : null}
+    </div>
+  );
+}

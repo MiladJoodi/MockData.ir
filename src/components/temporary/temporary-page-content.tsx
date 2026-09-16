@@ -524,7 +524,7 @@ export function TemporaryPageContent() {
                   setDuration(e.target.value as TemporaryDuration)
                 }
                 className={cn(
-                  "h-10 w-full appearance-none rounded-lg border border-border bg-background pe-9 ps-3 text-[14px] outline-none transition-colors focus:border-foreground/35",
+                  "h-10 w-full appearance-none rounded-lg border border-border bg-white pe-9 ps-3 text-[14px] outline-none transition-colors focus:border-foreground/35 dark:bg-background",
                   isFa && "font-fa-label",
                 )}
               >

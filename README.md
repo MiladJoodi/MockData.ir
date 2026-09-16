@@ -8,6 +8,7 @@ Hit live endpoints, get predictable seeded responses, try auth flows, then wire 
 
 - **10 live resources** — Auth, Users, Posts, Comments, Albums, Photos, Todos, Products, Notifications, Countries
 - **Temporary API** — paste your own JSON and get a short-lived public REST URL (`/api/t/…`), no account, up to 5 live at a time
+- **Fake Data Generator** — pick a type, fields, and quantity at `/generator`, then copy, download, or publish via Temporary API
 - **Full CRUD** — list, create, read, update, delete with pagination, search, and filters
 - **Persian data** — add `?lang=fa` for Iranian names and copy (English is default)
 - **Docs + Playground** — per-resource docs, live examples, and an in-browser request runner
@@ -48,6 +49,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/docs` | Platform guide (requests, errors, rate limit, reset) |
 | `/playground` | Try live requests in the browser |
 | `/temporary` | Paste JSON → short-lived public REST URL |
+| `/generator` | Generate realistic fake JSON (copy / download / Create API) |
 | `/users`, `/posts`, … | Per-resource docs |
 | `/contact` | Contact form |
 | `/api/…` | Live JSON APIs (seeded resources) |

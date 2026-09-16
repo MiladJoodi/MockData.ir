@@ -34,7 +34,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
             return (
               <li key={`${item.path}-${item.name}`} className="flex items-center">
                 {index > 0 ? (
-                  <span className="mx-2 text-border" aria-hidden>
+                  <span className="mx-2 text-muted-foreground/55" aria-hidden>
                     /
                   </span>
                 ) : null}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { DocsWhatsNew } from "@/components/docs/docs-whats-new";
 import { ResetSeedPanel } from "@/components/docs/reset-seed-panel";
 import { VsCodeBlock } from "@/components/docs/vscode-block";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
@@ -58,6 +59,7 @@ export default function DocsPage() {
             </p>
             {[
               ["#intro", "Introduction"],
+              ["#whats-new", "What's new"],
               ["#shared-data", "Shared data"],
               ["#language", "Language"],
               ["#resources", "Resources"],
@@ -109,6 +111,15 @@ export default function DocsPage() {
               .
             </p>
           </header>
+
+          <section id="whats-new" className="scroll-mt-20 space-y-4">
+            <h2 className="text-xl font-semibold tracking-tight">What&apos;s new</h2>
+            <p className="text-[14px] leading-6 text-muted-foreground">
+              Features shipped for builders, newest first. Click a card to expand
+              details. The same list is under the bell icon in the header.
+            </p>
+            <DocsWhatsNew />
+          </section>
 
           <section id="shared-data" className="scroll-mt-20 space-y-4">
             <h2 className="text-xl font-semibold tracking-tight">Shared data</h2>

@@ -84,9 +84,33 @@ function tokenizeJs(code: string): Token[] {
   return tokens;
 }
 
+function tokenizeTypes(code: string): Token[] {
+  const tokens: Token[] = [];
+  const re =
+    /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|(\b(?:string|number|integer|boolean|null|unknown|Array)\b)|(\b[A-Za-z_$][\w$]*\b)(?=\s*\??:)|([{}()\[\]<>|:?,])/g;
+  let last = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = re.exec(code))) {
+    if (match.index > last) {
+      tokens.push({ type: "plain", value: code.slice(last, match.index) });
+    }
+    if (match[1]) tokens.push({ type: "comment", value: match[1] });
+    else if (match[2]) tokens.push({ type: "keyword", value: match[2] });
+    else if (match[3]) tokens.push({ type: "property", value: match[3] });
+    else if (match[4]) tokens.push({ type: "punctuation", value: match[4] });
+    last = match.index + match[0].length;
+  }
+
+  if (last < code.length) {
+    tokens.push({ type: "plain", value: code.slice(last) });
+  }
+  return tokens;
+}
+
 export function highlightCode(
   code: string,
-  language: "json" | "javascript" | "bash" = "json",
+  language: "json" | "javascript" | "bash" | "types" = "json",
   options?: { persianStrings?: boolean },
 ): ReactNode {
   const tokens =
@@ -94,7 +118,9 @@ export function highlightCode(
       ? tokenizeJson(code)
       : language === "javascript"
         ? tokenizeJs(code)
-        : [{ type: "plain" as const, value: code }];
+        : language === "types"
+          ? tokenizeTypes(code)
+          : [{ type: "plain" as const, value: code }];
 
   return tokens.map((token, index) =>
     createElement(

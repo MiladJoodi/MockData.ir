@@ -190,6 +190,8 @@ export const fa: Messages = {
     loadError: "Could not load options",
     emptyResponse: "No response yet",
     startHint: "Pick a resource and send a request.",
+    types: "تایپ",
+    json: "JSON",
   },
   preview: {
     docs: "مستندات",

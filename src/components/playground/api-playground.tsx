@@ -16,6 +16,7 @@ import {
   type PlaygroundResourceId,
 } from "@/lib/playground";
 import { highlightCode } from "@/lib/syntax";
+import { typesFromResponseText } from "@/lib/json-types";
 import { cn } from "@/lib/utils";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
@@ -590,6 +591,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
   const [queryLang, setQueryLang] = useState<"en" | "fa">("en");
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [methodOpen, setMethodOpen] = useState(false);
+  const [responseView, setResponseView] = useState<"json" | "types">("json");
   const methodMenuRef = useRef<HTMLDivElement>(null);
 
   const [token, setToken] = useState("");
@@ -603,6 +605,11 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
 
   const responseSnap = responsesByResource[resource] ?? EMPTY_RESPONSE;
   const responseText = responseSnap.text;
+  const typesText = useMemo(
+    () => typesFromResponseText(responseText),
+    [responseText],
+  );
+  const responseDisplay = responseView === "types" ? typesText : responseText;
   const status = responseSnap.status;
   const ms = responseSnap.ms;
   const lastUrl = responseSnap.lastUrl;
@@ -2229,8 +2236,38 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
                 {ms}ms
               </span>
             ) : null}
+            <div
+              className="flex items-center rounded border border-[var(--vscode-border)] bg-[var(--vscode-bg)] p-0.5"
+              role="group"
+              aria-label="Response view"
+            >
+              <button
+                type="button"
+                onClick={() => setResponseView("json")}
+                className={cn(
+                  "rounded px-2.5 py-1 font-mono text-[10px] font-medium transition-colors",
+                  responseView === "json"
+                    ? "bg-[var(--response)]/20 text-[var(--response)]"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {dict.playground.json}
+              </button>
+              <button
+                type="button"
+                onClick={() => setResponseView("types")}
+                className={cn(
+                  "rounded px-2.5 py-1 font-mono text-[10px] font-medium transition-colors",
+                  responseView === "types"
+                    ? "bg-[var(--response)]/20 text-[var(--response)]"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {dict.playground.types}
+              </button>
+            </div>
           </div>
-          <CopyButton value={responseText} label="Copy response" />
+          <CopyButton value={responseDisplay} label="Copy response" />
         </div>
         {absoluteLastUrl ? (
           <div className="mb-1 flex min-w-0 items-center gap-2 px-2">
@@ -2252,15 +2289,17 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
             dir="ltr"
           >
             <code className="grid min-w-0">
-              {responseText.split("\n").map((line, index) => (
+              {responseDisplay.split("\n").map((line, index) => (
                 <span key={index} className="flex min-w-0">
                   <span className="sticky left-0 w-10 shrink-0 select-none bg-[var(--vscode-bg)] pr-3 text-right text-[var(--vscode-line)]">
                     {index + 1}
                   </span>
                   <span className="min-w-0 flex-1 break-all pr-4 whitespace-pre-wrap">
-                    {highlightCode(line.length ? line : " ", "json", {
-                      persianStrings: responseIsFa || apiLocale === "fa",
-                    })}
+                    {responseView === "types"
+                      ? highlightCode(line.length ? line : " ", "types")
+                      : highlightCode(line.length ? line : " ", "json", {
+                          persianStrings: responseIsFa || apiLocale === "fa",
+                        })}
                   </span>
                 </span>
               ))}

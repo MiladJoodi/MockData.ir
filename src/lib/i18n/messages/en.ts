@@ -164,6 +164,8 @@ export type Messages = {
     loadError: string;
     emptyResponse: string;
     startHint: string;
+    types: string;
+    json: string;
   };
   preview: {
     docs: string;
@@ -402,6 +404,8 @@ export const en: Messages = {
     loadError: "Could not load picker options",
     emptyResponse: "No response yet",
     startHint: "Pick a resource and send a request to get started.",
+    types: "Types",
+    json: "JSON",
   },
   preview: {
     docs: "Docs",

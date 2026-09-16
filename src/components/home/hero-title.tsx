@@ -49,7 +49,7 @@ export function HeroTitle({ className }: { className?: string }) {
   return (
     <h1
       className={cn(
-        "text-5xl leading-[0.92] font-semibold tracking-[-0.05em] sm:text-7xl",
+        "max-w-full text-5xl leading-[0.92] font-semibold tracking-[-0.05em] sm:text-7xl",
         className,
       )}
       dir="ltr"

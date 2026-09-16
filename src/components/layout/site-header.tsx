@@ -101,11 +101,7 @@ export function SiteHeader() {
           {brand}
 
           <nav
-            className={cn(
-              "flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto",
-              /* FA mobile: links fill from the physical left. */
-              isFa && "max-md:justify-start max-md:[direction:ltr]",
-            )}
+            className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto"
             aria-label={dict.header.primaryNav}
           >
             <Link href="/playground" className={navLinkClass}>

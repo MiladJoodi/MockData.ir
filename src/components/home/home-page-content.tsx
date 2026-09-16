@@ -39,13 +39,13 @@ export function HomePageContent() {
   ] as const;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pt-16 pb-24 sm:px-6 sm:pt-24">
+    <div className="mx-auto max-w-6xl overflow-x-clip px-4 pt-16 pb-24 sm:px-6 sm:pt-24">
       <JsonLd data={websiteJsonLd()} />
       <JsonLd data={softwareApplicationJsonLd()} />
       <JsonLd data={organizationJsonLd()} />
 
-      <section className="mb-24 flex flex-col items-center text-center">
-        <HeroTitle />
+      <section className="mb-24 flex max-w-full flex-col items-center overflow-x-clip text-center">
+        <HeroTitle className="max-w-full" />
         <p className="mt-5 max-w-xl text-[15px] leading-7 text-foreground/75 sm:text-[16px] sm:leading-8">
           {dict.home.tagline}
         </p>

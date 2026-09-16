@@ -101,7 +101,26 @@ export function SiteHeader() {
           {brand}
 
           <nav
-            className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto"
+            className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto md:hidden"
+            aria-label={dict.header.primaryNav}
+            dir="ltr"
+          >
+            {/* Physical left→right on mobile: playground, temporary, resources */}
+            <Link href="/playground" className={navLinkClass}>
+              <SquareTerminal className="size-3.5" strokeWidth={2} aria-hidden />
+              {dict.common.playground}
+            </Link>
+            <Link href="/temporary" className={navLinkClass}>
+              <Sparkles className="size-3.5" strokeWidth={2} aria-hidden />
+              {dict.common.temporary}
+            </Link>
+            <Link href="/#resources" className={navLinkClass}>
+              {dict.home.resourcesTitle}
+            </Link>
+          </nav>
+
+          <nav
+            className="hidden min-w-0 flex-1 items-center gap-0.5 overflow-x-auto md:flex"
             aria-label={dict.header.primaryNav}
           >
             <Link href="/playground" className={navLinkClass}>
@@ -115,10 +134,7 @@ export function SiteHeader() {
             <Link href="/#resources" className={navLinkClass}>
               {dict.home.resourcesTitle}
             </Link>
-            <Link
-              href="/docs"
-              className={cn(navLinkClass, "hidden md:inline-flex")}
-            >
+            <Link href="/docs" className={navLinkClass}>
               {dict.common.docs}
             </Link>
           </nav>

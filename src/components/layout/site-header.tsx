@@ -1,29 +1,35 @@
+"use client";
+
 import Link from "next/link";
 import { Mail } from "lucide-react";
-import { ApiLocaleToggle } from "@/components/layout/api-locale-toggle";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { UpdatesMenu } from "@/components/layout/updates-menu";
+import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { cn } from "@/lib/utils";
 
-const links = [
-  { href: "/playground", label: "Playground", featured: true },
-  { href: "/docs", label: "Docs" },
-] as const;
-
 export function SiteHeader() {
+  const { dict } = useUiLocale();
+
+  const links = [
+    { href: "/playground", label: dict.common.playground, featured: true },
+    { href: "/docs", label: dict.common.docs },
+  ] as const;
+
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-[var(--header-bg)] backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-5 sm:px-6">
         <Link
           href="/"
-          className="shrink-0 text-[15px] font-semibold tracking-tight text-foreground select-none"
+          className="shrink-0 text-[15px] font-semibold tracking-tight text-foreground ltr-tech"
+          dir="ltr"
         >
           MockData.ir
         </Link>
 
         <nav
           className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto sm:gap-1"
-          aria-label="Primary"
+          aria-label={dict.header.primaryNav}
         >
           {links.map((link) => {
             const featured = "featured" in link && link.featured;
@@ -50,14 +56,14 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="ml-auto flex shrink-0 items-center gap-2">
-          <ApiLocaleToggle />
+        <div className="ms-auto flex shrink-0 items-center gap-2">
+          <LanguageSwitcher />
           <UpdatesMenu />
           <ThemeToggle />
           <Link
             href="/contact"
-            aria-label="Contact"
-            title="Contact"
+            aria-label={dict.header.contact}
+            title={dict.header.contact}
             className="grid size-9 shrink-0 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground"
           >
             <Mail className="size-4" strokeWidth={1.75} />

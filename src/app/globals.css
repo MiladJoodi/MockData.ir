@@ -104,7 +104,7 @@
   --response: #0b6b63;
   --response-bg: rgb(11 107 99 / 0.12);
 
-  --get: #0b6b63;
+  --get: #0d9488;
   --post: #1d4ed8;
   --patch: #7c3d0e;
   --delete: #b91c1c;
@@ -151,7 +151,7 @@
   --response: #4ec9b0;
   --response-bg: rgb(78 201 176 / 0.08);
 
-  --get: #4ec9b0;
+  --get: #2dd4bf;
   --post: #569cd6;
   --patch: #dcdcaa;
   --delete: #f14c4c;
@@ -171,6 +171,60 @@
   }
   html {
     @apply font-sans;
+  }
+  html.font-fa {
+    font-family: var(--font-vazirmatn), var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+  html.font-fa code,
+  html.font-fa kbd,
+  html.font-fa pre,
+  html.font-fa .font-mono {
+    font-family: var(--font-jetbrains), ui-monospace, monospace;
+  }
+
+  .ltr-tech {
+    direction: ltr;
+    text-align: left;
+    unicode-bidi: isolate;
+  }
+
+  /* Persian UI labels (even when page is English, or inside .font-mono / pre) */
+  .font-fa-label,
+  html.font-fa .font-fa-label {
+    font-family: var(--font-vazirmatn), var(--font-plex-sans), ui-sans-serif, system-ui,
+      sans-serif !important;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  /* Thin, quiet scrollbars — code panes and any .code-scroll */
+  .code-scroll,
+  .code-pane,
+  .code-pane * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 0.16) transparent;
+  }
+  .code-scroll::-webkit-scrollbar,
+  .code-pane::-webkit-scrollbar,
+  .code-pane *::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  .code-scroll::-webkit-scrollbar-track,
+  .code-pane::-webkit-scrollbar-track,
+  .code-pane *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .code-scroll::-webkit-scrollbar-thumb,
+  .code-pane::-webkit-scrollbar-thumb,
+  .code-pane *::-webkit-scrollbar-thumb {
+    background: rgb(255 255 255 / 0.16);
+    border-radius: 999px;
+  }
+  .code-scroll::-webkit-scrollbar-thumb:hover,
+  .code-pane::-webkit-scrollbar-thumb:hover,
+  .code-pane *::-webkit-scrollbar-thumb:hover {
+    background: rgb(255 255 255 / 0.28);
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -193,5 +247,118 @@
   .dark ::selection {
     background: rgb(255 176 32 / 0.35);
     color: #fff;
+  }
+}
+
+@keyframes hero-letter-in {
+  0% {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(72%) rotateX(48deg) scale(0.94);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) rotateX(0) scale(1);
+  }
+}
+
+@keyframes hero-sheen {
+  0% {
+    transform: translateX(-130%) skewX(-18deg);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateX(130%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+@keyframes hero-rule {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0.9;
+  }
+}
+
+.hero-title-stage {
+  perspective: 900px;
+  transform-style: preserve-3d;
+}
+
+.hero-letter-mask {
+  transform-style: preserve-3d;
+}
+
+.hero-title-play .hero-letter-face {
+  transform-origin: 50% 100%;
+  animation: hero-letter-in 0.92s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--hero-i) * 58ms + 80ms);
+}
+
+.hero-title-sheen {
+  pointer-events: none;
+  position: absolute;
+  inset: -8% -12%;
+  display: none;
+  background: linear-gradient(
+    105deg,
+    transparent 32%,
+    color-mix(in oklab, var(--primary) 42%, transparent) 48%,
+    transparent 64%
+  );
+  mix-blend-mode: soft-light;
+}
+
+.hero-title-play .hero-title-sheen {
+  display: block;
+  animation: hero-sheen 0.95s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation-delay: calc(var(--hero-n) * 58ms + 420ms);
+}
+
+.hero-title-rule {
+  pointer-events: none;
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 0.02em;
+  height: 1px;
+  transform-origin: center;
+  background: color-mix(in oklab, var(--primary) 55%, transparent);
+  opacity: 0;
+}
+
+.hero-title-play .hero-title-rule {
+  animation: hero-rule 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--hero-n) * 58ms + 280ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-title-play .hero-letter-face,
+  .hero-title-play .hero-title-sheen,
+  .hero-title-play .hero-title-rule {
+    animation: none !important;
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+
+  .hero-title-play .hero-title-sheen,
+  .hero-title-play .hero-title-rule {
+    display: none;
   }
 }

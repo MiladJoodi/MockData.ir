@@ -9,7 +9,7 @@ export type { QueryParamRow };
 export function QueryParamsTable({ rows }: { rows: QueryParamRow[] }) {
   return (
     <div className="overflow-hidden rounded-lg border border-border bg-card">
-      <table className="w-full text-left text-[13px]">
+      <table className="w-full text-start text-[13px]">
         <thead className="border-b border-border bg-muted">
           <tr className="font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
             <th className="px-3 py-2 font-medium">Param</th>

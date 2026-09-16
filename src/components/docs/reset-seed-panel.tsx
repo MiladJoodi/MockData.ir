@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useUiLocale } from "@/components/providers/ui-locale-provider";
 
 export function ResetSeedPanel() {
+  const { dict } = useUiLocale();
+  const p = dict.docs.resetPanel;
   const [key, setKey] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">(
     "idle",
@@ -12,14 +15,10 @@ export function ResetSeedPanel() {
   async function onReset() {
     if (!key.trim()) {
       setStatus("error");
-      setMessage("Enter the admin secret first.");
+      setMessage(p.needSecret);
       return;
     }
-      if (
-      !window.confirm(
-        "This wipes seed tables and reloads default data. Continue?",
-      )
-    ) {
+    if (!window.confirm(p.confirm)) {
       return;
     }
 
@@ -55,25 +54,23 @@ export function ResetSeedPanel() {
       setStatus("ok");
       const d = body.data;
       setMessage(
-        `Reset complete — users ${d?.users ?? "?"}, posts ${d?.posts ?? "?"}, products ${d?.products ?? "?"}, notifications ${d?.notifications ?? "?"}, countries ${d?.countries ?? "?"}.`,
+        `${p.donePrefix} — users ${d?.users ?? "?"}, posts ${d?.posts ?? "?"}, products ${d?.products ?? "?"}, notifications ${d?.notifications ?? "?"}, countries ${d?.countries ?? "?"}.`,
       );
     } catch {
       setStatus("error");
-      setMessage("Network error. Is the server running?");
+      setMessage(p.networkError);
     }
   }
 
   return (
     <div className="space-y-3 rounded-xl border border-border bg-card p-4">
-      <p className="text-[13px] leading-6 text-muted-foreground">
-        Enter the admin secret to wipe and reload default seed data.
-      </p>
+      <p className="text-[13px] leading-6 text-muted-foreground">{p.intro}</p>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
           type="password"
           value={key}
           onChange={(e) => setKey(e.target.value)}
-          placeholder="Admin secret"
+          placeholder={p.placeholder}
           autoComplete="off"
           className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 font-mono text-[13px] outline-none focus:border-[var(--request)]/50"
         />
@@ -83,7 +80,7 @@ export function ResetSeedPanel() {
           disabled={status === "loading"}
           className="rounded-md border border-[var(--delete)]/40 bg-[var(--delete)]/10 px-3 py-2 text-[13px] font-semibold text-[var(--delete)] transition-colors hover:bg-[var(--delete)]/20 disabled:opacity-50"
         >
-          {status === "loading" ? "Resetting…" : "Reset seed"}
+          {status === "loading" ? p.resetting : p.button}
         </button>
       </div>
       {message ? (

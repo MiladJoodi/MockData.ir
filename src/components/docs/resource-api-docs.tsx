@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Eye } from "lucide-react";
 import { ApiBasePath } from "@/components/docs/api-base-path";
@@ -14,6 +16,7 @@ import {
 import { ResponseViewer } from "@/components/docs/response-viewer";
 import { TryExample } from "@/components/docs/try-example";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import type { ApiResource } from "@/lib/catalog";
 
 type Props = {
@@ -22,7 +25,6 @@ type Props = {
   tryHref: string;
   examples: RequestExample[];
   queryParams?: QueryParamRow[];
-  /** Fallback response when examples don't include their own `responseJson`. */
   responseJson?: string;
 };
 
@@ -34,16 +36,20 @@ export function ResourceApiDocs({
   queryParams,
   responseJson,
 }: Props) {
+  const { dict } = useUiLocale();
   const examplesHaveResponses = examples.some((ex) => Boolean(ex.responseJson));
+  const cat = dict.catalog[resource.id];
+  const title = cat?.title ?? resource.title;
+  const blurb = cat?.summary ?? description;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <header className="mb-10 space-y-4 border-b border-border pb-8">
         <Breadcrumbs
           items={[
-            { name: "Home", href: "/", path: "/" },
-            { name: "Docs", href: "/docs", path: "/docs" },
-            { name: resource.title, path: resource.href },
+            { name: dict.common.home, href: "/", path: "/" },
+            { name: dict.common.docs, href: "/docs", path: "/docs" },
+            { name: title, path: resource.href },
           ]}
         />
 
@@ -51,12 +57,12 @@ export function ResourceApiDocs({
           <div>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                {resource.title}
+                {title}
               </h1>
               <LiveBadge />
             </div>
             <p className="mt-3 max-w-xl text-[14px] leading-6 text-muted-foreground">
-              {description}
+              {blurb}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -66,19 +72,22 @@ export function ResourceApiDocs({
               className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/40 px-3 py-1.5 text-[12px] hover:border-[var(--request)]/40"
             >
               <Eye className="size-3.5" strokeWidth={1.75} aria-hidden />
-              Preview
+              {dict.resourceDocs.preview}
             </Link>
             <Link
               href={`/playground?resource=${resource.id}`}
               className="rounded-md border border-border bg-muted/40 px-3 py-1.5 text-[12px] hover:border-[var(--request)]/40"
             >
-              Playground
+              {dict.resourceDocs.playground}
             </Link>
           </div>
         </div>
       </header>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-10">
+      <div
+        className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-10"
+        dir="ltr"
+      >
         <section className="space-y-3">
           <h2 className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
             Endpoints
@@ -92,7 +101,7 @@ export function ResourceApiDocs({
               </h2>
               <QueryParamsTable rows={queryParams} />
               <p className="text-[12px] leading-5 text-muted-foreground">
-                Persian text: add{" "}
+                For Persian sample data, add{" "}
                 <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">
                   lang=fa
                 </code>
@@ -101,7 +110,7 @@ export function ResourceApiDocs({
                   href="/docs#language"
                   className="text-[var(--request)] hover:underline"
                 >
-                  Docs · Language
+                  Language
                 </Link>
                 .
               </p>
@@ -110,7 +119,7 @@ export function ResourceApiDocs({
 
           <TryExample href={tryHref} />
         </section>
-        <section className="space-y-5">
+        <section className="min-w-0 space-y-5">
           <RequestPanel examples={examples} />
           {!examplesHaveResponses && responseJson ? (
             <ResponseViewer prettyJson={responseJson} />

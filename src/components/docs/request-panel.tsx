@@ -44,11 +44,11 @@ export function RequestPanel({ examples }: RequestPanelProps) {
         : active.curlCode;
 
   return (
-    <div className="space-y-5">
-      <div className="overflow-hidden rounded-lg border border-[var(--request)]/40 bg-[var(--request-bg)] p-1">
+    <div className="min-w-0 space-y-5">
+      <div className="min-w-0 overflow-hidden rounded-lg border border-[var(--request)]/40 bg-[var(--request-bg)] p-1">
         <div className="mb-1 space-y-2 px-2 pt-1.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="font-mono text-[11px] font-semibold tracking-wide text-[var(--request)] uppercase">
+            <span className="font-mono text-[11px] font-semibold tracking-wide text-[#8f6b09] uppercase dark:text-[#ffb020]">
               Request
             </span>
             <div
@@ -65,9 +65,10 @@ export function RequestPanel({ examples }: RequestPanelProps) {
                   onClick={() => setLang(item)}
                   className={cn(
                     "rounded px-2.5 py-1 font-mono text-[10px] transition-colors",
+                    /* Always on dark vscode chrome — use amber, not theme --request */
                     lang === item
-                      ? "bg-[var(--request)]/20 text-[var(--request)]"
-                      : "text-[var(--request)]/55 hover:text-[var(--request)]",
+                      ? "bg-[#ffb020]/20 text-[#ffb020]"
+                      : "text-[#d4d4d4]/70 hover:text-[#ffb020]",
                   )}
                 >
                   {item}
@@ -89,16 +90,14 @@ export function RequestPanel({ examples }: RequestPanelProps) {
                 aria-selected={active.id === ex.id}
                 onClick={() => setActiveId(ex.id)}
                 className={cn(
-                  "rounded border px-2 py-1 font-mono text-[10px] transition-colors",
+                  "rounded border px-2 py-1 font-mono text-[10px] font-semibold transition-colors",
+                  methodColor[ex.method],
                   active.id === ex.id
-                    ? "border-[var(--request)]/40 bg-[var(--request)]/15 text-foreground"
-                    : "border-transparent text-muted-foreground hover:bg-[var(--request)]/10 hover:text-foreground",
+                    ? "border-[var(--request)]/40 bg-[var(--request)]/15"
+                    : "border-transparent hover:bg-[var(--request)]/10",
                 )}
               >
-                <span className={cn("font-semibold", methodColor[ex.method])}>
-                  {ex.method}
-                </span>{" "}
-                <span className="text-muted-foreground">{ex.label}</span>
+                {ex.label}
               </button>
             ))}
           </div>

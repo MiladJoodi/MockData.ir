@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ApiPlayground } from "@/components/playground/api-playground";
-import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { PlaygroundPageContent } from "@/components/playground/playground-page-content";
 import { parsePlaygroundResource } from "@/lib/playground";
 import { createPageMetadata } from "@/lib/seo";
 
@@ -22,38 +20,5 @@ export default async function PlaygroundPage({
   const params = await searchParams;
   const initialResource = parsePlaygroundResource(params.resource);
 
-  return (
-    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14">
-      <header className="mb-8 space-y-3">
-        <Breadcrumbs
-          items={[
-            { name: "Home", href: "/", path: "/" },
-            { name: "Playground", path: "/playground" },
-          ]}
-        />
-        <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-          Playground
-        </h1>
-        <p className="max-w-xl text-[14px] leading-6 text-muted-foreground">
-          Choose a resource and action. Pick a related record when needed —
-          path and body fill in automatically. Login · Correct stores the token
-          for Me. Use header{" "}
-          <span className="font-medium text-foreground">EN | FA</span> to append{" "}
-          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
-            lang=fa
-          </code>{" "}
-          for Persian data (
-          <Link href="/docs#language" className="text-[var(--request)] hover:underline">
-            docs
-          </Link>
-          ). Changes hit the shared demo database and reset daily in production.
-        </p>
-      </header>
-
-      <ApiPlayground
-        key={initialResource}
-        initialResource={initialResource}
-      />
-    </div>
-  );
+  return <PlaygroundPageContent initialResource={initialResource} />;
 }

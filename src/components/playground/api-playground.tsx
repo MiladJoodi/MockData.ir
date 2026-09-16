@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { ChevronDown } from "lucide-react";
 import { CopyButton } from "@/components/docs/copy-button";
+import { HighlightedJsonEditor } from "@/components/playground/highlighted-json-editor";
+import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { MOCK_PASSWORD } from "@/lib/auth/constants";
 import {
   API_LOCALE_EVENT,
@@ -12,6 +14,7 @@ import {
 import {
   type PlaygroundResourceId,
 } from "@/lib/playground";
+import { highlightCode } from "@/lib/syntax";
 import { cn } from "@/lib/utils";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
@@ -58,7 +61,7 @@ const authActions: { id: AuthAction; label: string; method: HttpMethod }[] = [
 ];
 
 const crudActions: { id: CrudAction; label: string; method: HttpMethod }[] = [
-  { id: "list", label: "List", method: "GET" },
+  { id: "list", label: "Get list", method: "GET" },
   { id: "get", label: "Get one", method: "GET" },
   { id: "create", label: "Create", method: "POST" },
   { id: "update", label: "Update", method: "PATCH" },
@@ -521,11 +524,28 @@ function buildRequest(input: {
   return { method: "GET", path: "/api/users", body: "" };
 }
 
+type ResponseSnap = {
+  text: string;
+  status: number | null;
+  ms: number | null;
+  lastUrl: string | null;
+  isFa: boolean;
+};
+
+const EMPTY_RESPONSE: ResponseSnap = {
+  text: "// Pick a resource + action, then Send",
+  status: null,
+  ms: null,
+  lastUrl: null,
+  isFa: false,
+};
+
 type PlaygroundProps = {
   initialResource?: ResourceId;
 };
 
 export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
+  const { dict, locale: uiLocale } = useUiLocale();
   const [resource, setResource] = useState<ResourceId>(initialResource);
   const [action, setAction] = useState<ActionId>(
     initialResource === "auth" ? "login" : "list",
@@ -562,18 +582,23 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
   const [limit, setLimit] = useState(3);
   const [search, setSearch] = useState("");
   const [optionsOpen, setOptionsOpen] = useState(false);
+  const [methodOpen, setMethodOpen] = useState(false);
+  const methodMenuRef = useRef<HTMLDivElement>(null);
 
   const [token, setToken] = useState("");
-  const [status, setStatus] = useState<number | null>(null);
-  const [ms, setMs] = useState<number | null>(null);
-  const [lastUrl, setLastUrl] = useState<string | null>(null);
-  const [responseText, setResponseText] = useState(
-    "// Pick a resource + action, then Send",
-  );
-  const [responseIsFa, setResponseIsFa] = useState(false);
+  const [responsesByResource, setResponsesByResource] = useState<
+    Partial<Record<ResourceId, ResponseSnap>>
+  >({});
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [apiLocale, setApiLocale] = useState<ApiLocale>("en");
+
+  const responseSnap = responsesByResource[resource] ?? EMPTY_RESPONSE;
+  const responseText = responseSnap.text;
+  const status = responseSnap.status;
+  const ms = responseSnap.ms;
+  const lastUrl = responseSnap.lastUrl;
+  const responseIsFa = responseSnap.isFa;
 
   useEffect(() => {
     try {
@@ -592,6 +617,24 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
     window.addEventListener(API_LOCALE_EVENT, onLocale);
     return () => window.removeEventListener(API_LOCALE_EVENT, onLocale);
   }, []);
+
+  useEffect(() => {
+    if (!methodOpen) return;
+    function onPointerDown(e: MouseEvent) {
+      if (!methodMenuRef.current?.contains(e.target as Node)) {
+        setMethodOpen(false);
+      }
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setMethodOpen(false);
+    }
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [methodOpen]);
 
   const selectedUser = useMemo(
     () => users.find((u) => u.id === userId) ?? users[0] ?? null,
@@ -816,7 +859,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
           }
         }
       } catch {
-        if (!cancelled) setError("Could not load picker options");
+        if (!cancelled) setError(dict.playground.loadError);
       } finally {
         if (!cancelled) setLoadingOptions(false);
       }
@@ -911,7 +954,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
   function send() {
     setError(null);
     const requestUrl = path.trim();
-    setLastUrl(requestUrl);
+    const resourceKey = resource;
     startTransition(async () => {
       const started = performance.now();
       try {
@@ -938,13 +981,20 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
           /* keep raw */
         }
 
-        setStatus(res.status);
-        setMs(elapsed);
-        setResponseText(pretty || "(empty body)");
-        setResponseIsFa(
+        const isFa =
           res.headers.get("content-language") === "fa" ||
-            /"font"\s*:/.test(pretty),
-        );
+          /"font"\s*:/.test(pretty);
+
+        setResponsesByResource((prev) => ({
+          ...prev,
+          [resourceKey]: {
+            text: pretty || "(empty body)",
+            status: res.status,
+            ms: elapsed,
+            lastUrl: requestUrl,
+            isFa,
+          },
+        }));
 
         if (requestUrl.includes("/api/auth/login") && res.ok) {
           try {
@@ -959,7 +1009,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
         if (
           res.ok &&
           (action === "create" || action === "update" || action === "delete") &&
-          resource !== "auth"
+          resourceKey !== "auth"
         ) {
           const listUrls: Partial<Record<ResourceId, string>> = {
             users: "/api/users?limit=50&sort=name&order=asc",
@@ -972,20 +1022,20 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
             notifications: "/api/notifications?limit=50&sort=title&order=asc",
             countries: "/api/countries?limit=50&sort=name&order=asc",
           };
-          const listUrl = listUrls[resource];
+          const listUrl = listUrls[resourceKey];
           if (listUrl) {
             const listRes = await fetch(listUrl);
             const payload = await listRes.json();
             const rows = (payload.data ?? []) as Record<string, unknown>[];
-            if (resource === "users") {
+            if (resourceKey === "users") {
               const next = rows as unknown as UserOption[];
               setUsers(next);
               if (!next.some((u) => u.id === userId) && next[0]) setUserId(next[0].id);
-            } else if (resource === "posts") {
+            } else if (resourceKey === "posts") {
               const next = rows as unknown as PostOption[];
               setPosts(next);
               if (!next.some((p) => p.id === postId) && next[0]) setPostId(next[0].id);
-            } else if (resource === "comments") {
+            } else if (resourceKey === "comments") {
               const next = rows.map((c) => ({
                 id: String(c.id),
                 label: String(c.name ?? c.id),
@@ -994,7 +1044,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
               if (!next.some((c) => c.id === commentId) && next[0]) {
                 setCommentId(next[0].id);
               }
-            } else if (resource === "albums") {
+            } else if (resourceKey === "albums") {
               const next = rows.map((a) => ({
                 id: String(a.id),
                 label: String(a.title ?? a.id),
@@ -1003,7 +1053,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
               if (!next.some((a) => a.id === albumId) && next[0]) {
                 setAlbumId(next[0].id);
               }
-            } else if (resource === "photos") {
+            } else if (resourceKey === "photos") {
               const next = rows.map((p) => ({
                 id: String(p.id),
                 label: String(p.title ?? p.id),
@@ -1012,7 +1062,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
               if (!next.some((p) => p.id === photoId) && next[0]) {
                 setPhotoId(next[0].id);
               }
-            } else if (resource === "todos") {
+            } else if (resourceKey === "todos") {
               const next = rows.map((t) => ({
                 id: String(t.id),
                 label: String(t.title ?? t.id),
@@ -1021,7 +1071,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
               if (!next.some((t) => t.id === todoId) && next[0]) {
                 setTodoId(next[0].id);
               }
-            } else if (resource === "products") {
+            } else if (resourceKey === "products") {
               const next = rows.map((p) => ({
                 id: String(p.id),
                 label: String(p.name ?? p.id),
@@ -1030,7 +1080,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
               if (!next.some((p) => p.id === productId) && next[0]) {
                 setProductId(next[0].id);
               }
-            } else if (resource === "notifications") {
+            } else if (resourceKey === "notifications") {
               const next = rows.map((n) => ({
                 id: String(n.id),
                 label: String(n.title ?? n.id),
@@ -1039,7 +1089,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
               if (!next.some((n) => n.id === notificationId) && next[0]) {
                 setNotificationId(next[0].id);
               }
-            } else if (resource === "countries") {
+            } else if (resourceKey === "countries") {
               const next = rows.map((c) => ({
                 id: String(c.id),
                 label: `${String(c.name ?? c.id)}${c.code ? ` (${String(c.code)})` : ""}`,
@@ -1052,11 +1102,17 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
           }
         }
       } catch (err) {
-        setStatus(null);
-        setMs(null);
+        setResponsesByResource((prev) => ({
+          ...prev,
+          [resourceKey]: {
+            text: "// Request failed",
+            status: null,
+            ms: null,
+            lastUrl: requestUrl,
+            isFa: false,
+          },
+        }));
         setError(err instanceof Error ? err.message : "Request failed");
-        setResponseText("// Request failed");
-        setResponseIsFa(false);
       }
     });
   }
@@ -1064,13 +1120,20 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
       <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2.5 sm:px-4">
-        <span className="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
-          Resource
+        <span
+          className={cn(
+            "text-[11px] tracking-wide text-muted-foreground",
+            uiLocale === "fa"
+              ? "font-fa-label font-medium"
+              : "font-mono tracking-[0.14em] uppercase",
+          )}
+        >
+          {dict.playground.resource}
         </span>
         <div
           className="flex flex-wrap gap-1.5"
           role="tablist"
-          aria-label="API resource"
+          aria-label={dict.playground.resource}
         >
           {resources.map((item) => (
             <button
@@ -1081,18 +1144,19 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
               onClick={() => switchResource(item.id)}
               className={cn(
                 "rounded-md border px-2.5 py-1 text-[12px] font-medium transition-colors",
+                uiLocale === "fa" && "font-fa-label",
                 resource === item.id
                   ? "border-[var(--request)]/45 bg-[var(--request)]/15 text-foreground"
                   : "border-border text-muted-foreground hover:border-[var(--request)]/35 hover:text-foreground",
               )}
             >
-              {item.label}
+              {dict.catalog[item.id]?.title ?? item.label}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="space-y-3 border-b border-border p-3 sm:p-4">
+      <div className="space-y-3 border-b border-border p-3 sm:p-4" dir="ltr">
         <div className="space-y-1.5">
           <p className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
             Action
@@ -1106,15 +1170,13 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
                 aria-selected={action === item.id}
                 onClick={() => switchAction(item.id)}
                 className={cn(
-                  "rounded-md border px-2.5 py-1 font-mono text-[11px] transition-colors",
+                  "rounded-md border px-2.5 py-1 font-mono text-[11px] font-semibold transition-colors",
+                  methodColor[item.method],
                   action === item.id
-                    ? "border-[var(--request)]/45 bg-[var(--request)]/15 text-foreground"
-                    : "border-border text-muted-foreground hover:border-[var(--request)]/35 hover:text-foreground",
+                    ? "border-[var(--request)]/45 bg-[var(--request)]/15"
+                    : "border-border hover:border-[var(--request)]/35",
                 )}
               >
-                <span className={cn("font-semibold", methodColor[item.method])}>
-                  {item.method}
-                </span>{" "}
                 {item.label}
               </button>
             ))}
@@ -1481,38 +1543,93 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
                 <p className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
                   Password
                 </p>
-                <div className="flex h-9 overflow-hidden rounded-md border border-border bg-muted p-0.5">
+                <div
+                  className="overflow-hidden rounded-md border border-border bg-muted"
+                  role="radiogroup"
+                  aria-label="Demo password"
+                >
                   <button
                     type="button"
+                    role="radio"
+                    aria-checked={loginOk}
                     onClick={() => {
                       setLoginOk(true);
                       setManual(false);
                     }}
                     className={cn(
-                      "flex-1 rounded px-2 font-mono text-[11px] transition-colors",
+                      "flex w-full items-center gap-2 border-b border-border px-2.5 py-2 text-start transition-colors",
                       loginOk
-                        ? "bg-[var(--get)]/20 text-[var(--get)]"
-                        : "text-muted-foreground hover:text-foreground",
+                        ? "bg-[var(--get)]/15"
+                        : "hover:bg-[var(--surface-hover)]",
                     )}
                   >
-                    Correct
+                    <span
+                      className={cn(
+                        "grid size-3.5 shrink-0 place-items-center rounded-full border",
+                        loginOk
+                          ? "border-[var(--get)] bg-[var(--get)]"
+                          : "border-muted-foreground/40",
+                      )}
+                      aria-hidden
+                    >
+                      {loginOk ? (
+                        <span className="size-1.5 rounded-full bg-white" />
+                      ) : null}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-mono text-[12px] text-foreground">
+                        password
+                      </span>
+                      <span className="block text-[10px] text-muted-foreground">
+                        Correct — login returns a Bearer token
+                      </span>
+                    </span>
                   </button>
                   <button
                     type="button"
+                    role="radio"
+                    aria-checked={!loginOk}
                     onClick={() => {
                       setLoginOk(false);
                       setManual(false);
                     }}
                     className={cn(
-                      "flex-1 rounded px-2 font-mono text-[11px] transition-colors",
+                      "flex w-full items-center gap-2 px-2.5 py-2 text-start transition-colors",
                       !loginOk
-                        ? "bg-[var(--delete)]/20 text-[var(--delete)]"
-                        : "text-muted-foreground hover:text-foreground",
+                        ? "bg-[var(--delete)]/12"
+                        : "hover:bg-[var(--surface-hover)]",
                     )}
                   >
-                    Wrong
+                    <span
+                      className={cn(
+                        "grid size-3.5 shrink-0 place-items-center rounded-full border",
+                        !loginOk
+                          ? "border-[var(--delete)] bg-[var(--delete)]"
+                          : "border-muted-foreground/40",
+                      )}
+                      aria-hidden
+                    >
+                      {!loginOk ? (
+                        <span className="size-1.5 rounded-full bg-white" />
+                      ) : null}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-mono text-[12px] text-foreground">
+                        wrong
+                      </span>
+                      <span className="block text-[10px] text-muted-foreground">
+                        Incorrect — API responds 401
+                      </span>
+                    </span>
                   </button>
                 </div>
+                <p className="text-[11px] leading-4 text-muted-foreground">
+                  Every seeded user uses{" "}
+                  <code className="rounded bg-muted px-1 font-mono text-[10px]">
+                    password
+                  </code>
+                  . This only fills the login body — then hit Send.
+                </p>
               </div>
             ) : (
               <div className="flex items-end">
@@ -1525,27 +1642,58 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
         ) : null}
 
         <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
-          <label className="sr-only" htmlFor="playground-method">
-            Method
-          </label>
-          <select
-            id="playground-method"
-            value={method}
-            onChange={(e) => {
-              setMethod(e.target.value as HttpMethod);
-              setManual(true);
-            }}
-            className={cn(
-              "h-10 shrink-0 cursor-pointer rounded-md border border-border bg-muted px-2.5 font-mono text-[13px] font-semibold outline-none focus-visible:border-[var(--request)]/50",
-              methodColor[method],
-            )}
-          >
-            {methods.map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
+          <div ref={methodMenuRef} className="relative shrink-0">
+            <label className="sr-only" htmlFor="playground-method">
+              Method
+            </label>
+            <button
+              id="playground-method"
+              type="button"
+              aria-haspopup="listbox"
+              aria-expanded={methodOpen}
+              onClick={() => setMethodOpen((open) => !open)}
+              className={cn(
+                "inline-flex h-10 items-center gap-1.5 rounded-md border border-border bg-muted px-2.5 font-mono text-[13px] font-semibold outline-none focus-visible:border-[var(--request)]/50",
+                methodColor[method],
+              )}
+            >
+              {method}
+              <ChevronDown
+                className={cn(
+                  "size-3.5 text-muted-foreground transition-transform",
+                  methodOpen && "rotate-180",
+                )}
+                aria-hidden
+              />
+            </button>
+            {methodOpen ? (
+              <ul
+                role="listbox"
+                aria-label="HTTP method"
+                className="absolute top-[calc(100%+4px)] start-0 z-30 min-w-full overflow-hidden rounded-md border border-border bg-card py-1 shadow-lg"
+              >
+                {methods.map((m) => (
+                  <li key={m} role="option" aria-selected={method === m}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMethod(m);
+                        setManual(true);
+                        setMethodOpen(false);
+                      }}
+                      className={cn(
+                        "flex w-full items-center px-3 py-1.5 font-mono text-[13px] font-semibold transition-colors hover:bg-[var(--surface-hover)]",
+                        methodColor[m],
+                        method === m && "bg-[var(--surface-hover)]",
+                      )}
+                    >
+                      {m}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
 
           <label className="sr-only" htmlFor="playground-path">
             Path
@@ -1558,8 +1706,9 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
               setManual(true);
             }}
             spellCheck={false}
-            className="h-10 min-w-0 flex-1 rounded-md border border-border bg-muted px-3 font-mono text-[13px] text-foreground outline-none focus-visible:border-[var(--request)]/50"
+            className="h-10 min-w-0 flex-1 rounded-md border border-border bg-muted px-3 font-mono text-[13px] text-foreground outline-none focus-visible:border-[var(--request)]/50 ltr-tech"
             placeholder="/api/users"
+            dir="ltr"
           />
 
           <button
@@ -1583,7 +1732,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
             type="button"
             onClick={send}
             disabled={pending || !path.trim()}
-            className="h-10 w-[6.5rem] shrink-0 rounded-md bg-[var(--request)] text-[13px] font-semibold text-black transition-opacity disabled:opacity-50"
+            className="h-10 w-[6.5rem] shrink-0 rounded-md bg-[var(--request)] text-[13px] font-semibold text-white transition-opacity disabled:opacity-50"
           >
             {pending ? "Sending…" : "Send"}
           </button>
@@ -1734,16 +1883,14 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
                 </button>
               ) : null}
             </div>
-            <textarea
+            <HighlightedJsonEditor
               id="playground-body"
               value={body}
-              onChange={(e) => {
-                setBody(e.target.value);
+              onChange={(next) => {
+                setBody(next);
                 setManual(true);
               }}
-              spellCheck={false}
               rows={8}
-              className="w-full resize-y rounded-md border border-border bg-[var(--vscode-bg)] px-3 py-2.5 font-mono text-[12px] leading-5 text-[var(--vscode-fg)] outline-none focus-visible:border-[var(--request)]/50"
             />
           </div>
         ) : null}
@@ -1753,7 +1900,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
         ) : null}
       </div>
 
-      <div className="bg-[var(--response-bg)] p-1">
+      <div className="bg-[var(--response-bg)] p-1" dir="ltr">
         <div className="mb-1 flex flex-wrap items-center justify-between gap-2 px-2 pt-1.5">
           <div className="flex min-w-0 flex-wrap items-center gap-3">
             <span className="font-mono text-[11px] font-semibold tracking-wide text-[var(--response)] uppercase">
@@ -1786,17 +1933,27 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
             <CopyButton value={absoluteLastUrl} label="Copy request URL" />
           </div>
         ) : null}
-        <pre
-          className={cn(
-            "max-h-[420px] overflow-auto rounded-lg border border-[var(--vscode-border)] bg-[var(--vscode-bg)] p-4 text-[12px] leading-5 text-[var(--vscode-fg)]",
-            responseIsFa
-              ? "font-[family-name:var(--font-vazirmatn)]"
-              : "font-mono",
-          )}
-          dir={responseIsFa ? "auto" : undefined}
-        >
-          {responseText}
-        </pre>
+        <div className="code-pane overflow-hidden rounded-lg border border-[var(--vscode-border)] bg-[var(--vscode-bg)]">
+          <pre
+            className="code-scroll max-h-[420px] overflow-auto p-0 font-mono text-[12.5px] leading-6"
+            dir="ltr"
+          >
+            <code className="grid min-w-0">
+              {responseText.split("\n").map((line, index) => (
+                <span key={index} className="flex min-w-0">
+                  <span className="sticky left-0 w-10 shrink-0 select-none bg-[var(--vscode-bg)] pr-3 text-right text-[var(--vscode-line)]">
+                    {index + 1}
+                  </span>
+                  <span className="min-w-0 flex-1 break-all pr-4 whitespace-pre-wrap">
+                    {highlightCode(line.length ? line : " ", "json", {
+                      persianStrings: responseIsFa || apiLocale === "fa",
+                    })}
+                  </span>
+                </span>
+              ))}
+            </code>
+          </pre>
+        </div>
       </div>
     </div>
   );

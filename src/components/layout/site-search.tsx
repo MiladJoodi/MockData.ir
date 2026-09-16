@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { searchResources } from "@/lib/catalog";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { cn } from "@/lib/utils";
@@ -22,12 +23,17 @@ type SiteSearchProps = {
 
 export function SiteSearch({ large = false, autofocus = false }: SiteSearchProps) {
   const router = useRouter();
+  const { locale, dict } = useUiLocale();
+  const isFa = locale === "fa";
   const inputId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
   const debounced = useDebouncedValue(value, 160);
-  const results = useMemo(() => searchResources(debounced), [debounced]);
+  const results = useMemo(
+    () => searchResources(debounced, dict.catalog),
+    [debounced, dict.catalog],
+  );
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -66,12 +72,12 @@ export function SiteSearch({ large = false, autofocus = false }: SiteSearchProps
     <div ref={rootRef} className="relative w-full">
       <form onSubmit={onSubmit} role="search">
         <label htmlFor={inputId} className="sr-only">
-          Search APIs and endpoints
+          {dict.home.searchLabel}
         </label>
         <div className="relative">
           <Search
             className={cn(
-              "pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground",
+              "pointer-events-none absolute top-1/2 start-3 -translate-y-1/2 text-muted-foreground",
               large ? "size-4" : "size-3.5",
             )}
             aria-hidden
@@ -87,64 +93,92 @@ export function SiteSearch({ large = false, autofocus = false }: SiteSearchProps
               setOpen(true);
             }}
             onFocus={() => setOpen(true)}
-            placeholder={large ? "Search resources or endpoints…" : "Search…"}
+            placeholder={
+              large ? dict.home.searchPlaceholder : dict.common.searchPlaceholder
+            }
             className={cn(
               "w-full border border-border bg-card text-foreground outline-none transition-[border-color,box-shadow] placeholder:text-muted-foreground/60 focus:border-[var(--request)]/60 focus:ring-2 focus:ring-[var(--request)]/20",
               large
-                ? "h-12 rounded-lg pr-4 pl-10 text-[15px]"
-                : "h-9 rounded-md pr-3 pl-9 text-[13px]",
+                ? "h-12 rounded-lg pe-4 ps-10 text-[15px]"
+                : "h-9 rounded-md pe-3 ps-9 text-[13px]",
+              isFa && "font-fa-label",
             )}
+            dir={isFa ? "rtl" : "ltr"}
           />
         </div>
       </form>
 
       {open && debounced.trim() ? (
         <div
-          className="absolute top-[calc(100%+6px)] right-0 left-0 z-[100] overflow-hidden rounded-lg border border-border bg-card shadow-2xl shadow-black/20 dark:shadow-black/50"
+          className="absolute top-[calc(100%+6px)] inset-inline-0 z-[100] overflow-hidden rounded-lg border border-border bg-card shadow-2xl shadow-black/20 dark:shadow-black/50"
           role="listbox"
         >
           {results.length === 0 ? (
-            <p className="px-3 py-3.5 text-[13px] text-muted-foreground">
-              No matches. Try posts, users, or GET.
+            <p
+              className={cn(
+                "px-3 py-3.5 text-[13px] text-muted-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
+              {dict.common.noResults}
             </p>
           ) : (
             <ul className="max-h-80 overflow-auto py-1">
-              {results.map(({ resource, matches }) => (
-                <li key={resource.id}>
-                  <Link
-                    href={resource.href}
-                    className="block px-3 py-2 hover:bg-[var(--surface-hover)]"
-                    onClick={() => setOpen(false)}
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-[13px] font-semibold">
-                        {resource.title}
-                      </span>
-                      <span className="text-[11px] text-muted-foreground">
-                        {resource.category}
-                      </span>
-                    </div>
-                    <p className="mt-0.5 font-mono text-[11px] text-[var(--request)]">
-                      {resource.basePath}
-                    </p>
-                  </Link>
-                  {matches.slice(0, 3).map((endpoint) => (
+              {results.map(({ resource, matches }) => {
+                const cat = dict.catalog[resource.id];
+                return (
+                  <li key={resource.id}>
                     <Link
-                      key={`${resource.id}-${endpoint.path}`}
                       href={resource.href}
-                      className="flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--surface-hover)]"
+                      className="block px-3 py-2 hover:bg-[var(--surface-hover)]"
                       onClick={() => setOpen(false)}
                     >
-                      <span className="w-10 shrink-0 font-mono text-[10px] font-medium text-[var(--get)]">
-                        {endpoint.methods.split(/[\s/]/)[0]}
-                      </span>
-                      <span className="truncate font-mono text-[11px] text-muted-foreground">
-                        {endpoint.path}
-                      </span>
+                      <div className="flex items-center justify-between gap-3">
+                        <span
+                          className={cn(
+                            "text-[13px] font-semibold",
+                            isFa && "font-fa-label",
+                          )}
+                        >
+                          {cat?.title ?? resource.title}
+                        </span>
+                        <span
+                          className="shrink-0 font-mono text-[11px] text-[var(--request)] ltr-tech"
+                          dir="ltr"
+                        >
+                          {resource.basePath}
+                        </span>
+                      </div>
+                      {cat?.summary ? (
+                        <p
+                          className={cn(
+                            "mt-0.5 line-clamp-1 text-[11px] text-muted-foreground",
+                            isFa && "font-fa-label",
+                          )}
+                        >
+                          {cat.summary}
+                        </p>
+                      ) : null}
                     </Link>
-                  ))}
-                </li>
-              ))}
+                    {matches.slice(0, 3).map((endpoint) => (
+                      <Link
+                        key={`${resource.id}-${endpoint.path}`}
+                        href={resource.href}
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--surface-hover)]"
+                        onClick={() => setOpen(false)}
+                        dir="ltr"
+                      >
+                        <span className="w-10 shrink-0 font-mono text-[10px] font-medium text-[var(--get)]">
+                          {endpoint.methods.split(/[\s/]/)[0]}
+                        </span>
+                        <span className="truncate font-mono text-[11px] text-muted-foreground">
+                          {endpoint.path}
+                        </span>
+                      </Link>
+                    ))}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

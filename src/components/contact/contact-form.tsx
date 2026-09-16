@@ -9,14 +9,15 @@ import {
   useTransition,
 } from "react";
 import { ChevronDown } from "lucide-react";
+import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import {
-  contactTopicLabels,
   contactTopics,
   type ContactInput,
 } from "@/lib/validations/contact";
 import { cn } from "@/lib/utils";
 
 export function ContactForm() {
+  const { dict } = useUiLocale();
   const topicListId = useId();
   const topicRootRef = useRef<HTMLDivElement>(null);
   const [name, setName] = useState("");
@@ -45,13 +46,17 @@ export function ContactForm() {
     };
   }, []);
 
+  function topicLabel(value: ContactInput["topic"]) {
+    return dict.contact.topics[value] ?? value;
+  }
+
   function onSubmit(event: FormEvent) {
     event.preventDefault();
     setError(null);
     setDone(false);
 
     if (!topic) {
-      setError("Please choose what you need.");
+      setError(dict.contact.chooseTopic);
       return;
     }
 
@@ -66,7 +71,7 @@ export function ContactForm() {
 
         if (!res.ok) {
           setError(
-            payload?.error?.message ?? "Could not send message. Try again.",
+            payload?.error?.message ?? dict.common.networkError,
           );
           return;
         }
@@ -77,7 +82,7 @@ export function ContactForm() {
         setTopic("other");
         setMessage("");
       } catch {
-        setError("Network error. Try again.");
+        setError(dict.common.networkError);
       }
     });
   }
@@ -90,7 +95,7 @@ export function ContactForm() {
             htmlFor="contact-name"
             className="block text-[13px] font-medium text-foreground"
           >
-            Name
+            {dict.contact.name}
           </label>
           <input
             id="contact-name"
@@ -108,7 +113,7 @@ export function ContactForm() {
             htmlFor="contact-email"
             className="block text-[13px] font-medium text-foreground"
           >
-            Email
+            {dict.contact.email}
           </label>
           <input
             id="contact-email"
@@ -119,7 +124,8 @@ export function ContactForm() {
             required
             maxLength={255}
             autoComplete="email"
-            className="h-10 w-full rounded-md border border-border bg-card px-3 text-[14px] outline-none focus-visible:border-[var(--request)]/50"
+            dir="ltr"
+            className="h-10 w-full rounded-md border border-border bg-card px-3 text-[14px] outline-none focus-visible:border-[var(--request)]/50 ltr-tech"
           />
         </div>
       </div>
@@ -129,7 +135,7 @@ export function ContactForm() {
           id={`${topicListId}-label`}
           className="block text-[13px] font-medium text-foreground"
         >
-          What do you need?
+          {dict.contact.pickTopic}
         </span>
         <div className="relative">
           <button
@@ -139,11 +145,9 @@ export function ContactForm() {
             aria-expanded={topicOpen}
             aria-labelledby={`${topicListId}-label`}
             onClick={() => setTopicOpen((open) => !open)}
-            className="flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-border bg-card px-3 text-left text-[14px] outline-none focus-visible:border-[var(--request)]/50"
+            className="flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-border bg-card px-3 text-start text-[14px] outline-none focus-visible:border-[var(--request)]/50"
           >
-            <span>
-              {contactTopicLabels[topic]}
-            </span>
+            <span>{topicLabel(topic)}</span>
             <ChevronDown
               className={cn(
                 "size-4 shrink-0 text-muted-foreground transition-transform",
@@ -157,7 +161,7 @@ export function ContactForm() {
             <ul
               role="listbox"
               aria-labelledby={`${topicListId}-label`}
-              className="absolute top-[calc(100%+4px)] right-0 left-0 z-20 overflow-hidden rounded-md border border-border bg-card py-1 shadow-lg"
+              className="absolute top-[calc(100%+4px)] inset-inline-0 z-20 overflow-hidden rounded-md border border-border bg-card py-1 shadow-lg"
             >
               {contactTopics.map((value) => (
                 <li key={value} role="none">
@@ -170,11 +174,11 @@ export function ContactForm() {
                       setTopicOpen(false);
                     }}
                     className={cn(
-                      "flex w-full cursor-pointer px-3 py-2 text-left text-[14px] transition-colors hover:bg-[var(--surface-hover)]",
+                      "flex w-full cursor-pointer px-3 py-2 text-start text-[14px] transition-colors hover:bg-[var(--surface-hover)]",
                       topic === value && "bg-[var(--request)]/10 text-[var(--request)]",
                     )}
                   >
-                    {contactTopicLabels[value]}
+                    {topicLabel(value)}
                   </button>
                 </li>
               ))}
@@ -189,7 +193,7 @@ export function ContactForm() {
           htmlFor="contact-message"
           className="block text-[13px] font-medium text-foreground"
         >
-          Message
+          {dict.contact.message}
         </label>
         <textarea
           id="contact-message"
@@ -208,9 +212,7 @@ export function ContactForm() {
         <p className="text-[13px] text-[var(--delete)]">{error}</p>
       ) : null}
       {done ? (
-        <p className="text-[13px] text-[var(--get)]">
-          Message sent. We’ll get back to you soon.
-        </p>
+        <p className="text-[13px] text-[var(--get)]">{dict.contact.success}</p>
       ) : null}
 
       <button
@@ -221,7 +223,7 @@ export function ContactForm() {
           pending && "opacity-50",
         )}
       >
-        {pending ? "Sending…" : "Send message"}
+        {pending ? dict.contact.sending : dict.contact.send}
       </button>
     </form>
   );

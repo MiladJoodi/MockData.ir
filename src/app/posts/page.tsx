@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Eye } from "lucide-react";
-import { ApiBasePath } from "@/components/docs/api-base-path";
 import { EndpointTable } from "@/components/docs/endpoint-table";
-import { LiveBadge } from "@/components/docs/live-badge";
 import { QueryParamsTable } from "@/components/docs/query-params-table";
 import {
   RequestPanel,
   type RequestExample,
 } from "@/components/docs/request-panel";
+import { ResourceDocsHeader } from "@/components/docs/resource-docs-header";
 import { TryExample } from "@/components/docs/try-example";
-import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { apiResources } from "@/lib/catalog";
 import { createResourceMetadata } from "@/lib/seo";
 
@@ -166,51 +162,13 @@ await axios.delete('/api/posts/7c9e6679-7425-40de-944b-e07fc1f90ae7');`,
 export default function PostsApiPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
-      <header className="mb-10 space-y-4 border-b border-border pb-8">
-        <Breadcrumbs
-          items={[
-            { name: "Home", href: "/", path: "/" },
-            { name: "Docs", href: "/docs", path: "/docs" },
-            { name: "Posts", path: "/posts" },
-          ]}
-        />
+      <ResourceDocsHeader
+        resourceId="posts"
+        basePath={resource.basePath}
+        href="/posts"
+      />
 
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                Posts
-              </h1>
-              <LiveBadge />
-            </div>
-            <p className="mt-3 max-w-xl text-[14px] leading-6 text-muted-foreground">
-              Blog-style mock posts with author{" "}
-              <code className="rounded bg-muted px-1 font-mono text-[12px]">
-                userId
-              </code>
-              , tags, and a published flag.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <ApiBasePath path={resource.basePath} />
-            <Link
-              href="/preview/posts"
-              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/40 px-3 py-1.5 text-[12px] hover:border-[var(--request)]/40"
-            >
-              <Eye className="size-3.5" strokeWidth={1.75} aria-hidden />
-              Preview
-            </Link>
-            <Link
-              href="/playground?resource=posts"
-              className="rounded-md border border-border bg-muted/40 px-3 py-1.5 text-[12px] hover:border-[var(--request)]/40"
-            >
-              Playground
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-10">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-10" dir="ltr">
         <section className="space-y-3">
           <h2 className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
             Endpoints
@@ -279,7 +237,7 @@ export default function PostsApiPage() {
           </div>
         </section>
 
-        <section className="space-y-5">
+        <section className="min-w-0 space-y-5">
           <RequestPanel examples={requestExamples} />
         </section>
       </div>

@@ -87,6 +87,7 @@ function tokenizeJs(code: string): Token[] {
 export function highlightCode(
   code: string,
   language: "json" | "javascript" | "bash" = "json",
+  options?: { persianStrings?: boolean },
 ): ReactNode {
   const tokens =
     language === "json"
@@ -100,7 +101,10 @@ export function highlightCode(
       "span",
       {
         key: `${token.type}-${index}`,
-        className: tokenClass[token.type],
+        className:
+          options?.persianStrings && token.type === "string"
+            ? `${tokenClass[token.type]} font-fa-label`
+            : tokenClass[token.type],
       },
       token.value,
     ),

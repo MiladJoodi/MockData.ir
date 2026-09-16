@@ -3,15 +3,15 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import {
-  formatUpdateDate,
-  siteUpdates,
-  type SiteUpdate,
-} from "@/lib/changelog";
+import { useUiLocale } from "@/components/providers/ui-locale-provider";
+import { siteUpdates, type SiteUpdate } from "@/lib/changelog";
+import { formatUiDate } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 
 export function DocsWhatsNew() {
+  const { locale, dict } = useUiLocale();
   const [openId, setOpenId] = useState<string | null>(null);
+  const isFa = locale === "fa";
 
   function toggle(item: SiteUpdate) {
     setOpenId((current) => (current === item.id ? null : item.id));
@@ -22,6 +22,11 @@ export function DocsWhatsNew() {
       {siteUpdates.map((item, index) => {
         const isLatest = index === 0;
         const isOpen = openId === item.id;
+        const copy = dict.changelog[item.id] ?? {
+          title: item.title,
+          summary: item.summary,
+          details: item.details,
+        };
 
         return (
           <li key={item.id}>
@@ -37,21 +42,39 @@ export function DocsWhatsNew() {
                 type="button"
                 onClick={() => toggle(item)}
                 aria-expanded={isOpen}
-                className="flex w-full items-start gap-3 text-left"
+                className="flex w-full items-start gap-3 text-start"
               >
                 <div className="min-w-0 flex-1">
-                  <div className="mb-1 flex flex-wrap items-center gap-2">
-                    <h3 className="text-[14px] font-semibold text-foreground">
-                      {item.title}
+                  <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                    <h3
+                      className={cn(
+                        "text-[14px] font-semibold text-foreground",
+                        isFa && "font-fa-label",
+                      )}
+                    >
+                      {copy.title}
                     </h3>
                     {isLatest ? (
-                      <span className="rounded bg-[var(--request-bg)] px-1.5 py-0.5 font-mono text-[10px] font-medium tracking-wide text-[var(--request)] uppercase">
-                        New
+                      <span
+                        className={cn(
+                          "rounded bg-[var(--request-bg)] px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-[var(--request)]",
+                          isFa
+                            ? "font-fa-label"
+                            : "font-mono uppercase",
+                        )}
+                      >
+                        {dict.common.new}
                       </span>
                     ) : null}
-                    <span className="font-mono text-[11px] text-muted-foreground">
-                      {formatUpdateDate(item.date)}
-                    </span>
+                    <time
+                      dateTime={item.date}
+                      className={cn(
+                        "text-[11px] text-muted-foreground",
+                        isFa ? "font-fa-label" : "font-mono",
+                      )}
+                    >
+                      {formatUiDate(item.date, locale)}
+                    </time>
                   </div>
                   <p
                     className={cn(
@@ -59,9 +82,10 @@ export function DocsWhatsNew() {
                       isOpen
                         ? "text-[14px] text-foreground/85"
                         : "text-[13px] text-muted-foreground",
+                      isFa && "font-fa-label",
                     )}
                   >
-                    {item.summary}
+                    {copy.summary}
                   </p>
                 </div>
                 <ChevronDown
@@ -83,13 +107,13 @@ export function DocsWhatsNew() {
               >
                 <div className="overflow-hidden">
                   <ul className="space-y-2 border-t border-border/70 pt-4 text-[13px] leading-6 text-muted-foreground">
-                    {item.details.map((line) => (
+                    {copy.details.map((line) => (
                       <li key={line} className="flex gap-2">
                         <span
                           aria-hidden
                           className="mt-2 size-1 shrink-0 rounded-full bg-[var(--request)]/70"
                         />
-                        <span>{line}</span>
+                        <span className={cn(isFa && "font-fa-label")}>{line}</span>
                       </li>
                     ))}
                   </ul>
@@ -100,7 +124,7 @@ export function DocsWhatsNew() {
                         className="text-[13px] font-medium text-[var(--request)] underline-offset-2 hover:underline"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {item.hrefLabel ?? "Learn more"} →
+                        {dict.common.learnMore} →
                       </Link>
                     </p>
                   ) : null}

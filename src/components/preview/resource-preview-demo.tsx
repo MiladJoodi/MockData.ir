@@ -8,6 +8,7 @@ import {
   type PreviewResourceId,
 } from "@/lib/preview/resources";
 import { useApiLocale, withApiLang } from "@/lib/api/use-api-locale";
+import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { cn } from "@/lib/utils";
 
 type Row = Record<string, unknown> & { id: string | number };
@@ -108,7 +109,25 @@ export function ResourcePreviewDemo({
 }) {
   const config = previewResources[resourceId];
   const locale = useApiLocale();
+  const { dict } = useUiLocale();
   const isFa = locale === "fa";
+
+  function fieldLabel(key: string, fallback: string) {
+    return dict.preview.fieldLabels[key] ?? fallback;
+  }
+
+  function roleLabel(value: string) {
+    return dict.preview.roleLabels[value] ?? value;
+  }
+
+  function displayCell(field: PreviewField, value: unknown) {
+    if (field.key === "role" && typeof value === "string") {
+      return roleLabel(value);
+    }
+    return cellText(value);
+  }
+
+  const resourceTitle = dict.catalog[config.id]?.title ?? config.title;
   const columnFields = useMemo(
     () => config.fields.filter((f) => f.column),
     [config.fields],
@@ -171,7 +190,7 @@ export function ResourcePreviewDemo({
         setRows(nextRows);
         setPagination(nextPagination);
       } catch {
-        setError("Network error");
+        setError(dict.preview.networkError);
       } finally {
         setLoading(false);
       }
@@ -247,7 +266,7 @@ export function ResourcePreviewDemo({
       invalidateCache();
       await load({ silent: true });
     } catch {
-      setError("Network error");
+      setError(dict.preview.networkError);
     } finally {
       setDeleting(false);
     }
@@ -304,7 +323,7 @@ export function ResourcePreviewDemo({
         await load({ silent: true });
       }
     } catch {
-      setError("Network error");
+      setError(dict.preview.networkError);
     } finally {
       setSaving(false);
     }
@@ -330,14 +349,14 @@ export function ResourcePreviewDemo({
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search…"
+            placeholder={dict.preview.search}
             className="box-border h-9 min-w-0 flex-1 rounded-md border border-border bg-muted px-3 text-[13px] outline-none focus-visible:border-[var(--request)]/50"
           />
           <button
             type="submit"
             className="box-border h-9 shrink-0 rounded-md border border-border bg-card px-3 text-[13px] font-medium hover:bg-[var(--surface-hover)]"
           >
-            Search
+            {dict.preview.search}
           </button>
         </form>
         <button
@@ -346,7 +365,7 @@ export function ResourcePreviewDemo({
           className="box-border inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-md bg-[var(--request)] px-3 text-[13px] font-semibold text-white"
         >
           <Plus className="size-3.5" aria-hidden />
-          New
+          {dict.common.new}
         </button>
       </div>
 
@@ -359,20 +378,26 @@ export function ResourcePreviewDemo({
       <div
         className={cn(
           "overflow-hidden rounded-xl border border-border bg-card",
-          isFa && "font-[family-name:var(--font-vazirmatn)]",
+          isFa && "font-fa-label",
         )}
       >
         <div className="overflow-x-auto">
           <table
             className={cn(
-              "w-full table-fixed text-[13px]",
-              isFa ? "text-right" : "text-left",
+              "w-full table-fixed text-[13px] text-start",
             )}
           >
-            <thead className="border-b border-border bg-muted font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
+            <thead
+              className={cn(
+                "border-b border-border bg-muted text-[10px] tracking-wide text-muted-foreground",
+                isFa
+                  ? "font-fa-label font-medium"
+                  : "font-mono uppercase",
+              )}
+            >
               <tr>
                 <th className="w-12 px-3 py-2.5 font-medium">#</th>
-                <th className="px-4 py-2.5 font-medium">{config.title}</th>
+                <th className="px-4 py-2.5 font-medium">{resourceTitle}</th>
                 {columnFields
                   .filter(
                     (f) =>
@@ -385,16 +410,13 @@ export function ResourcePreviewDemo({
                       key={f.key}
                       className="w-28 px-4 py-2.5 font-medium sm:w-36"
                     >
-                      {f.label}
+                      {fieldLabel(f.key, f.label)}
                     </th>
                   ))}
                 <th
-                  className={cn(
-                    "w-24 px-4 py-2.5 font-medium",
-                    isFa ? "text-left" : "text-right",
-                  )}
+                  className="w-24 px-4 py-2.5 font-medium text-end"
                 >
-                  Actions
+                  {dict.common.actions}
                 </th>
               </tr>
             </thead>
@@ -405,7 +427,7 @@ export function ResourcePreviewDemo({
                     colSpan={3 + columnFields.length}
                     className="px-4 py-10 text-center text-muted-foreground"
                   >
-                    Loading…
+                    {dict.preview.loading}
                   </td>
                 </tr>
               ) : null}
@@ -415,7 +437,7 @@ export function ResourcePreviewDemo({
                     colSpan={3 + columnFields.length}
                     className="px-4 py-10 text-center text-muted-foreground"
                   >
-                    No records
+                    {dict.preview.noRecords}
                   </td>
                 </tr>
               ) : null}
@@ -454,7 +476,7 @@ export function ResourcePreviewDemo({
                             )}
                           />
                         ) : null}
-                        <div className={cn("min-w-0 flex-1 overflow-hidden", isFa && "text-right")}>
+                        <div className="min-w-0 flex-1 overflow-hidden text-start">
                           <p className="truncate font-medium text-foreground">
                             {cellText(row[config.titleKey])}
                           </p>
@@ -471,21 +493,18 @@ export function ResourcePreviewDemo({
                         key={f.key}
                         className="truncate px-4 py-3 text-muted-foreground"
                       >
-                        {cellText(row[f.key])}
+                        {displayCell(f, row[f.key])}
                       </td>
                     ))}
                     <td className="px-4 py-3">
                       <div
-                        className={cn(
-                          "flex gap-1",
-                          isFa ? "justify-start" : "justify-end",
-                        )}
+                        className="flex justify-end gap-1"
                       >
                         <button
                           type="button"
                           onClick={() => openEdit(row)}
                           className="grid size-8 place-items-center rounded-md text-muted-foreground hover:bg-[var(--surface-hover)] hover:text-foreground"
-                          aria-label="Edit"
+                          aria-label={dict.preview.edit}
                         >
                           <Pencil className="size-3.5" />
                         </button>
@@ -493,7 +512,7 @@ export function ResourcePreviewDemo({
                           type="button"
                           onClick={() => setDeleteTarget(row)}
                           className="grid size-8 place-items-center rounded-md text-muted-foreground hover:bg-[var(--delete)]/10 hover:text-[var(--delete)]"
-                          aria-label="Delete"
+                          aria-label={dict.preview.delete}
                         >
                           <Trash2 className="size-3.5" />
                         </button>
@@ -542,7 +561,9 @@ export function ResourcePreviewDemo({
           >
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-[15px] font-semibold">
-                {creating ? `Create ${config.title.slice(0, -1) || config.title}` : "Edit"}
+                {creating
+                  ? `${dict.preview.create} ${resourceTitle}`
+                  : dict.preview.edit}
               </h2>
               <button
                 type="button"
@@ -561,14 +582,16 @@ export function ResourcePreviewDemo({
                 className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md border border-border bg-muted px-3 text-[12px] font-medium hover:bg-[var(--surface-hover)]"
               >
                 <Sparkles className="size-3.5" aria-hidden />
-                Fill sample data
+                {dict.preview.fillSample}
               </button>
             ) : null}
 
             <div className="grid gap-3">
               {activeFields.map((field) => (
                 <label key={field.key} className="space-y-1 text-[12px]">
-                  <span className="text-muted-foreground">{field.label}</span>
+                  <span className="text-muted-foreground">
+                    {fieldLabel(field.key, field.label)}
+                  </span>
                   {field.type === "textarea" ? (
                     <textarea
                       required={field.required}
@@ -600,7 +623,9 @@ export function ResourcePreviewDemo({
                     >
                       {field.options?.map((opt) => (
                         <option key={opt.value} value={opt.value}>
-                          {opt.label}
+                          {field.key === "role"
+                            ? roleLabel(opt.value)
+                            : opt.label}
                         </option>
                       ))}
                     </select>
@@ -626,17 +651,17 @@ export function ResourcePreviewDemo({
                 onClick={closePanel}
                 className="h-9 rounded-md border border-border px-3 text-[13px] hover:bg-[var(--surface-hover)] disabled:opacity-50"
               >
-                Cancel
+                {dict.preview.cancel}
               </button>
               <button
                 type="submit"
                 disabled={saving}
                 className="relative h-9 min-w-[5.5rem] rounded-md bg-[var(--request)] px-3 text-[13px] font-semibold text-white disabled:opacity-80"
               >
-                <span className={cn(saving && "invisible")}>Save</span>
+                <span className={cn(saving && "invisible")}>{dict.preview.save}</span>
                 {saving ? (
                   <span className="absolute inset-0 grid place-items-center">
-                    Saving…
+                    {dict.preview.saving}
                   </span>
                 ) : null}
               </button>
@@ -652,13 +677,12 @@ export function ResourcePreviewDemo({
             className="w-full max-w-sm space-y-4 rounded-xl border border-border bg-card p-5 shadow-lg"
           >
             <div className="space-y-1.5">
-              <h2 className="text-[15px] font-semibold">Delete?</h2>
+              <h2 className="text-[15px] font-semibold">{dict.preview.confirmDelete}</h2>
               <p className="text-[13px] leading-6 text-muted-foreground">
-                Remove{" "}
+                {dict.preview.confirmDeleteBody}{" "}
                 <span className="font-medium text-foreground">
                   {cellText(deleteTarget[config.titleKey])}
-                </span>{" "}
-                from the shared demo database.
+                </span>
               </p>
             </div>
             <div className="flex justify-end gap-2">
@@ -668,7 +692,7 @@ export function ResourcePreviewDemo({
                 onClick={() => setDeleteTarget(null)}
                 className="h-9 rounded-md border border-border px-3 text-[13px] hover:bg-[var(--surface-hover)] disabled:opacity-50"
               >
-                Cancel
+                {dict.preview.cancel}
               </button>
               <button
                 type="button"
@@ -676,7 +700,7 @@ export function ResourcePreviewDemo({
                 onClick={() => void confirmDelete()}
                 className="relative h-9 min-w-[5.5rem] rounded-md bg-[var(--delete)] px-3 text-[13px] font-semibold text-white disabled:opacity-50"
               >
-                <span className={cn(deleting && "invisible")}>Delete</span>
+                <span className={cn(deleting && "invisible")}>{dict.preview.delete}</span>
                 {deleting ? (
                   <span className="absolute inset-0 grid place-items-center">
                     Deleting…

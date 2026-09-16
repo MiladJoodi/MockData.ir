@@ -251,27 +251,57 @@ export const plannedResources: {
   },
 ];
 
-export function searchResources(query: string): {
+/** Normalize Latin + Persian for search (ye/kaf variants, ZWNJ). */
+function normalizeSearch(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/ي/g, "ی")
+    .replace(/ك/g, "ک")
+    .replace(/\u200c/g, "")
+    .replace(/\s+/g, " ");
+}
+
+export type SearchLocaleLabels = Record<
+  string,
+  { title?: string; summary?: string }
+>;
+
+export function searchResources(
+  query: string,
+  labels?: SearchLocaleLabels,
+): {
   resource: ApiResource;
   matches: ApiResource["endpoints"];
 }[] {
-  const q = query.trim().toLowerCase();
+  const q = normalizeSearch(query);
   if (!q) return [];
 
   return apiResources
     .map((resource) => {
-      const resourceHit =
-        resource.title.toLowerCase().includes(q) ||
-        resource.category.toLowerCase().includes(q) ||
-        resource.basePath.toLowerCase().includes(q) ||
-        resource.summary.toLowerCase().includes(q);
+      const local = labels?.[resource.id];
+      const haystacks = [
+        resource.id,
+        resource.title,
+        resource.category,
+        resource.basePath,
+        resource.summary,
+        local?.title,
+        local?.summary,
+      ]
+        .filter(Boolean)
+        .map((s) => normalizeSearch(String(s)));
 
-      const matches = resource.endpoints.filter(
-        (endpoint) =>
-          endpoint.path.toLowerCase().includes(q) ||
-          endpoint.methods.toLowerCase().includes(q) ||
-          (endpoint.note?.toLowerCase().includes(q) ?? false),
-      );
+      const resourceHit = haystacks.some((h) => h.includes(q));
+
+      const matches = resource.endpoints.filter((endpoint) => {
+        const parts = [
+          endpoint.path,
+          endpoint.methods,
+          endpoint.note ?? "",
+        ].map((s) => normalizeSearch(s));
+        return parts.some((p) => p.includes(q));
+      });
 
       if (resourceHit || matches.length > 0) {
         return {

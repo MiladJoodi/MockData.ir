@@ -23,8 +23,9 @@ export function VsCodeBlock({
 
   return (
     <div
+      dir="ltr"
       className={cn(
-        "overflow-hidden rounded-lg border border-[var(--vscode-border)] bg-[var(--vscode-bg)] shadow-[0_12px_40px_-20px_rgb(0_0_0_/_0.8)]",
+        "code-pane ltr-tech min-w-0 overflow-hidden rounded-lg border border-[var(--vscode-border)] bg-[var(--vscode-bg)] shadow-[0_12px_40px_-20px_rgb(0_0_0_/_0.8)]",
         className,
       )}
     >
@@ -49,17 +50,17 @@ export function VsCodeBlock({
         />
       </div>
 
-      <div className="overflow-x-auto">
-        <pre className="min-w-full p-0 font-mono text-[12.5px] leading-6">
-          <code className="grid">
+      <div className="code-scroll max-w-full overflow-x-auto">
+        <pre className="m-0 min-w-0 max-w-full p-0 font-mono text-[12.5px] leading-6">
+          <code className="grid min-w-0">
             {lines.map((line, index) => (
-              <span key={index} className="flex">
+              <span key={index} className="flex min-w-0">
                 {showLineNumbers ? (
                   <span className="sticky left-0 w-10 shrink-0 select-none bg-[var(--vscode-bg)] pr-3 text-right text-[var(--vscode-line)]">
                     {index + 1}
                   </span>
                 ) : null}
-                <span className="flex-1 pr-4 whitespace-pre">
+                <span className="min-w-0 flex-1 break-all pr-4 whitespace-pre-wrap">
                   {highlightCode(line.length ? line : " ", language)}
                 </span>
               </span>

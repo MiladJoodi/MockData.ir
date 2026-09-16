@@ -9,18 +9,19 @@ export function TryExample({ href }: { href: string }) {
   const resolved = withApiLang(href, locale);
 
   return (
-    <div className="flex min-w-0 items-center gap-0.5">
+    <div className="flex min-w-0 items-center gap-0.5" dir="ltr">
       <span className="shrink-0 text-[11px] text-muted-foreground">Try:</span>
       <Link
         href={resolved}
         target="_blank"
         rel="noreferrer"
         title={resolved}
-        className="min-w-0 truncate font-mono text-[11px] text-[var(--request)] underline-offset-2 hover:underline"
+        className="min-w-0 truncate font-mono text-[11px] text-[var(--request)] underline-offset-2 hover:underline ltr-tech"
+        dir="ltr"
       >
         {resolved}
       </Link>
-      <CopyButton value={resolved} label="Copy example URL" />
+      <CopyButton value={resolved} label="Copy" />
     </div>
   );
 }

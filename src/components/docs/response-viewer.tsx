@@ -20,7 +20,10 @@ export function ResponseViewer({ prettyJson }: ResponseViewerProps) {
   const lines = display.split("\n");
 
   return (
-    <div className="overflow-hidden rounded-lg border border-[var(--response)]/35 bg-[var(--vscode-bg)] shadow-[0_12px_40px_-20px_rgb(0_0_0_/_0.8)]">
+    <div
+      dir="ltr"
+      className="code-pane ltr-tech min-w-0 overflow-hidden rounded-lg border border-[var(--response)]/35 bg-[var(--vscode-bg)] shadow-[0_12px_40px_-20px_rgb(0_0_0_/_0.8)]"
+    >
       <div className="flex flex-wrap items-center gap-2 border-b border-[var(--vscode-border)] bg-[var(--response-bg)] px-3 py-2">
         <div className="flex items-center gap-1.5" aria-hidden>
           <span className="size-2.5 rounded-full bg-[#ff5f56]" />
@@ -32,7 +35,7 @@ export function ResponseViewer({ prettyJson }: ResponseViewerProps) {
         </span>
 
         <div
-          className="ml-auto flex items-center rounded border border-[var(--vscode-border)] bg-[var(--vscode-bg)] p-0.5"
+          className="ms-auto flex items-center rounded border border-[var(--vscode-border)] bg-[var(--vscode-bg)] p-0.5"
           role="group"
           aria-label="Response format"
         >
@@ -67,9 +70,9 @@ export function ResponseViewer({ prettyJson }: ResponseViewerProps) {
         />
       </div>
 
-      <div className="overflow-x-auto">
-        <pre className="min-w-full p-0 font-mono text-[12.5px] leading-6">
-          <code className="grid">
+      <div className="code-scroll max-w-full overflow-x-auto">
+        <pre className="m-0 min-w-0 max-w-full p-0 font-mono text-[12.5px] leading-6">
+          <code className="grid min-w-0">
             {lines.map((line, index) => (
               <span key={index} className="flex min-w-0">
                 {mode === "pretty" ? (
@@ -79,8 +82,10 @@ export function ResponseViewer({ prettyJson }: ResponseViewerProps) {
                 ) : null}
                 <span
                   className={cn(
-                    "flex-1 pr-4",
-                    mode === "line" ? "px-4 py-3 whitespace-pre-wrap break-all" : "whitespace-pre",
+                    "min-w-0 flex-1 break-all pr-4",
+                    mode === "line"
+                      ? "px-4 py-3 whitespace-pre-wrap"
+                      : "whitespace-pre-wrap",
                   )}
                 >
                   {highlightCode(line.length ? line : " ", "json")}

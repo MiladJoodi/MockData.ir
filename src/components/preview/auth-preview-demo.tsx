@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { MOCK_PASSWORD } from "@/lib/auth/constants";
 import { useApiLocale, withApiLang } from "@/lib/api/use-api-locale";
+import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { cn } from "@/lib/utils";
 
 type AuthUser = {
@@ -15,6 +16,7 @@ type AuthUser = {
 
 export function AuthPreviewDemo() {
   const locale = useApiLocale();
+  const { dict } = useUiLocale();
   const isFa = locale === "fa";
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState(MOCK_PASSWORD);
@@ -63,7 +65,7 @@ export function AuthPreviewDemo() {
       });
       const payload = await res.json();
       if (!res.ok) {
-        setError(payload?.error?.message ?? "Login failed");
+        setError(payload?.error?.message ?? dict.common.networkError);
         setToken("");
         setUser(null);
         return;
@@ -71,7 +73,7 @@ export function AuthPreviewDemo() {
       setToken(payload.data?.token ?? "");
       setUser(payload.data?.user ?? null);
     } catch {
-      setError("Network error");
+      setError(dict.preview.networkError);
     } finally {
       setPending(false);
     }
@@ -79,7 +81,7 @@ export function AuthPreviewDemo() {
 
   async function onMe() {
     if (!token) {
-      setError("Login first to get a token");
+      setError(dict.preview.loginFirst);
       return;
     }
     setPending(true);
@@ -90,12 +92,12 @@ export function AuthPreviewDemo() {
       });
       const payload = await res.json();
       if (!res.ok) {
-        setError(payload?.error?.message ?? "Me failed");
+        setError(payload?.error?.message ?? dict.common.networkError);
         return;
       }
       setUser(payload.data ?? null);
     } catch {
-      setError("Network error");
+      setError(dict.preview.networkError);
     } finally {
       setPending(false);
     }
@@ -111,32 +113,32 @@ export function AuthPreviewDemo() {
         )}
       >
         <p className="text-[13px] text-muted-foreground">
-          Demo password for every seeded user is{" "}
-          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
+          {dict.preview.authDemoPassword}{" "}
+          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px] ltr-tech" dir="ltr">
             {MOCK_PASSWORD}
           </code>
           .
         </p>
         <label className="block space-y-1 text-[12px]">
-          <span className="text-muted-foreground">Username</span>
+          <span className="text-muted-foreground">{dict.preview.username}</span>
           <input
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             disabled={loadingUser}
             dir="ltr"
             autoComplete="username"
-            className="h-9 w-full rounded-md border border-border bg-muted px-3 font-mono text-[13px] outline-none focus-visible:border-[var(--request)]/50 disabled:opacity-60"
+            className="h-9 w-full rounded-md border border-border bg-muted px-3 font-mono text-[13px] outline-none focus-visible:border-[var(--request)]/50 disabled:opacity-60 ltr-tech"
           />
         </label>
         <label className="block space-y-1 text-[12px]">
-          <span className="text-muted-foreground">Password</span>
+          <span className="text-muted-foreground">{dict.preview.password}</span>
           <input
             type="text"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             dir="ltr"
             autoComplete="current-password"
-            className="h-9 w-full rounded-md border border-border bg-muted px-3 font-mono text-[13px] outline-none focus-visible:border-[var(--request)]/50"
+            className="h-9 w-full rounded-md border border-border bg-muted px-3 font-mono text-[13px] outline-none focus-visible:border-[var(--request)]/50 ltr-tech"
           />
         </label>
         <div className="flex flex-wrap gap-2 pt-1">
@@ -145,7 +147,7 @@ export function AuthPreviewDemo() {
             disabled={pending || loadingUser || !username}
             className="relative h-9 min-w-[5.5rem] rounded-md bg-[var(--request)] px-3 text-[13px] font-semibold text-white disabled:opacity-80"
           >
-            <span className={cn(pending && "invisible")}>Login</span>
+            <span className={cn(pending && "invisible")}>{dict.preview.login}</span>
             {pending ? (
               <span className="absolute inset-0 grid place-items-center">
                 …
@@ -156,9 +158,9 @@ export function AuthPreviewDemo() {
             type="button"
             disabled={pending}
             onClick={() => void onMe()}
-            className="h-9 rounded-md border border-border px-3 text-[13px] hover:bg-[var(--surface-hover)] disabled:opacity-50"
+            className="h-9 rounded-md border border-border px-3 text-[13px] hover:bg-[var(--surface-hover)] disabled:opacity-50 ltr-tech"
           >
-            GET /me
+            {dict.preview.getMe}
           </button>
         </div>
       </form>
@@ -172,9 +174,9 @@ export function AuthPreviewDemo() {
       {token ? (
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="mb-1 font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
-            Token
+            {dict.preview.token}
           </p>
-          <code className="block break-all font-mono text-[11px] text-[var(--request)]">
+          <code className="block break-all font-mono text-[11px] text-[var(--request)] ltr-tech" dir="ltr">
             {token}
           </code>
         </div>
@@ -188,10 +190,10 @@ export function AuthPreviewDemo() {
           )}
         >
           <p className="mb-2 font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
-            User
+            {dict.preview.user}
           </p>
           <p className="font-medium">{user.name}</p>
-          <p className="text-muted-foreground" dir="ltr">
+          <p className="text-muted-foreground ltr-tech" dir="ltr">
             @{user.username} · {user.email} · {user.role}
           </p>
         </div>

@@ -3,6 +3,8 @@ import { IBM_Plex_Sans, JetBrains_Mono, Vazirmatn } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { UiLocaleProvider } from "@/components/providers/ui-locale-provider";
+import { getServerUiLocale } from "@/lib/i18n/server";
 import {
   DEFAULT_DESCRIPTION,
   SITE_NAME,
@@ -71,25 +73,43 @@ const themeInitScript = `(() => {
   } catch (_) {}
 })();`;
 
-export default function RootLayout({
+const localeInitScript = `(() => {
+  try {
+    const key = 'mockdata-ui-locale';
+    const stored = localStorage.getItem(key);
+    const locale = stored === 'fa' ? 'fa' : 'en';
+    const root = document.documentElement;
+    root.lang = locale === 'fa' ? 'fa' : 'en';
+    root.dir = locale === 'fa' ? 'rtl' : 'ltr';
+    root.classList.toggle('font-fa', locale === 'fa');
+  } catch (_) {}
+})();`;
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialLocale = await getServerUiLocale();
+
   return (
     <html
-      lang="en"
-      className={`${plexSans.variable} ${jetbrains.variable} ${vazirmatn.variable} h-full`}
+      lang={initialLocale === "fa" ? "fa" : "en"}
+      dir={initialLocale === "fa" ? "rtl" : "ltr"}
+      className={`${plexSans.variable} ${jetbrains.variable} ${vazirmatn.variable} h-full${initialLocale === "fa" ? " font-fa" : ""}`}
       suppressHydrationWarning
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script dangerouslySetInnerHTML={{ __html: localeInitScript }} />
       </head>
       <body className="flex min-h-full flex-col">
-        <ThemeProvider>
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-        </ThemeProvider>
+        <UiLocaleProvider initialLocale={initialLocale}>
+          <ThemeProvider>
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+          </ThemeProvider>
+        </UiLocaleProvider>
         <Analytics />
       </body>
     </html>

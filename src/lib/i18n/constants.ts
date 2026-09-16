@@ -9,5 +9,5 @@ export function isUiLocale(value: unknown): value is UiLocale {
 }
 
 export function parseUiLocale(value: string | null | undefined): UiLocale {
-  return value === "fa" ? "fa" : "en";
+  return value === "en" ? "en" : "fa";
 }

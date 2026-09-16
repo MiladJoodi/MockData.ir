@@ -100,6 +100,7 @@
   /* UI accents (theme-aware) */
   --token: #0a5fad;
   --request: #8f6b09;
+  --request-fill: #8f6b09;
   --request-bg: rgb(143 107 9 / 0.12);
   --response: #0f766e;
   --response-bg: rgb(15 118 110 / 0.14);
@@ -149,6 +150,7 @@
   --sidebar-ring: #ffb020;
 
   --request: #ffb020;
+  --request-fill: #9a6b12;
   --request-bg: rgb(255 176 32 / 0.08);
   --response: #4ec9b0;
   --response-bg: rgb(78 201 176 / 0.08);

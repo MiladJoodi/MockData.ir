@@ -64,9 +64,7 @@ const themeInitScript = `(() => {
   try {
     const key = 'mockdata-theme';
     const stored = localStorage.getItem(key);
-    const theme = stored === 'light' || stored === 'dark'
-      ? stored
-      : (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    const theme = stored === 'light' || stored === 'dark' ? stored : 'light';
     const root = document.documentElement;
     root.classList.toggle('dark', theme === 'dark');
     root.style.colorScheme = theme;
@@ -77,7 +75,7 @@ const localeInitScript = `(() => {
   try {
     const key = 'mockdata-ui-locale';
     const stored = localStorage.getItem(key);
-    const locale = stored === 'fa' ? 'fa' : 'en';
+    const locale = stored === 'en' ? 'en' : 'fa';
     const root = document.documentElement;
     root.lang = locale === 'fa' ? 'fa' : 'en';
     root.dir = locale === 'fa' ? 'rtl' : 'ltr';

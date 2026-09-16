@@ -1715,7 +1715,7 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
               type="button"
               onClick={send}
               disabled={pending || !path.trim()}
-              className="h-11 min-h-11 flex-1 rounded-md bg-[var(--request)] px-4 text-[13px] font-semibold text-white transition-opacity disabled:opacity-50 md:w-[6.5rem] md:flex-none"
+              className="h-11 min-h-11 flex-1 rounded-md bg-[var(--request-fill)] px-4 text-[13px] font-semibold text-white transition-opacity disabled:opacity-50 md:w-[6.5rem] md:flex-none"
             >
               {pending ? "Sending…" : "Send"}
             </button>
@@ -2236,36 +2236,6 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
                 {ms}ms
               </span>
             ) : null}
-            <div
-              className="flex items-center rounded border border-[var(--vscode-border)] bg-[var(--vscode-bg)] p-0.5"
-              role="group"
-              aria-label="Response view"
-            >
-              <button
-                type="button"
-                onClick={() => setResponseView("json")}
-                className={cn(
-                  "rounded px-2.5 py-1 font-mono text-[10px] font-medium transition-colors",
-                  responseView === "json"
-                    ? "bg-[var(--response)]/20 text-[var(--response)]"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {dict.playground.json}
-              </button>
-              <button
-                type="button"
-                onClick={() => setResponseView("types")}
-                className={cn(
-                  "rounded px-2.5 py-1 font-mono text-[10px] font-medium transition-colors",
-                  responseView === "types"
-                    ? "bg-[var(--response)]/20 text-[var(--response)]"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {dict.playground.types}
-              </button>
-            </div>
           </div>
           <CopyButton value={responseDisplay} label="Copy response" />
         </div>
@@ -2284,6 +2254,46 @@ export function ApiPlayground({ initialResource = "users" }: PlaygroundProps) {
           </div>
         ) : null}
         <div className="code-pane overflow-hidden rounded-lg border border-[var(--vscode-border)] bg-[var(--vscode-bg)]">
+          <div className="flex items-center gap-2 border-b border-[var(--vscode-border)] bg-[var(--vscode-bg-elevated)] px-3 py-2">
+            <div className="flex items-center gap-1.5" aria-hidden>
+              <span className="size-2.5 rounded-full bg-[#ff5f56]" />
+              <span className="size-2.5 rounded-full bg-[#ffbd2e]" />
+              <span className="size-2.5 rounded-full bg-[#27c93f]" />
+            </div>
+            <span className="font-mono text-[11px] font-semibold text-[var(--response-fg)]">
+              {responseView === "types" ? "TS" : "JSON"}
+            </span>
+            <div
+              className="ms-auto flex items-center rounded border border-[var(--vscode-border)] bg-[var(--vscode-bg)] p-0.5"
+              role="group"
+              aria-label="Response view"
+            >
+              <button
+                type="button"
+                onClick={() => setResponseView("json")}
+                className={cn(
+                  "rounded px-2.5 py-1 font-mono text-[10px] font-medium transition-colors",
+                  responseView === "json"
+                    ? "bg-[var(--response-fg)]/20 text-[var(--response-fg)]"
+                    : "text-[var(--vscode-fg)]/70 hover:text-[var(--vscode-fg)]",
+                )}
+              >
+                JSON
+              </button>
+              <button
+                type="button"
+                onClick={() => setResponseView("types")}
+                className={cn(
+                  "rounded px-2.5 py-1 font-mono text-[10px] font-medium transition-colors",
+                  responseView === "types"
+                    ? "bg-[var(--response-fg)]/20 text-[var(--response-fg)]"
+                    : "text-[var(--vscode-fg)]/70 hover:text-[var(--vscode-fg)]",
+                )}
+              >
+                TS
+              </button>
+            </div>
+          </div>
           <pre
             className="code-scroll max-h-[420px] overflow-auto p-0 font-mono text-[12.5px] leading-6"
             dir="ltr"

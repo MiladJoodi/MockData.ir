@@ -5,5 +5,6 @@ export * from "./notifications";
 export * from "./photos";
 export * from "./posts";
 export * from "./products";
+export * from "./temporary-apis";
 export * from "./todos";
 export * from "./users";

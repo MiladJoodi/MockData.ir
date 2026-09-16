@@ -144,7 +144,7 @@ export function AuthPreviewDemo() {
           <button
             type="submit"
             disabled={pending || loadingUser || !username}
-            className="relative h-9 min-w-[5.5rem] rounded-md bg-[var(--request)] px-3 text-[13px] font-semibold text-white disabled:opacity-80"
+            className="relative h-9 min-w-[5.5rem] rounded-md bg-[var(--request-fill)] px-3 text-[13px] font-semibold text-white disabled:opacity-80"
           >
             <span className={cn(pending && "invisible")}>{dict.preview.login}</span>
             {pending ? (

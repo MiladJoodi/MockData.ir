@@ -4,7 +4,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
-import { siteUpdates, type SiteUpdate } from "@/lib/changelog";
+import {
+  formatUpdateDate,
+  siteUpdates,
+  type SiteUpdate,
+} from "@/lib/changelog";
 import { cn } from "@/lib/utils";
 
 export function DocsWhatsNew() {
@@ -21,12 +25,13 @@ export function DocsWhatsNew() {
       <ol className="divide-y divide-border">
         {siteUpdates.map((item, index) => {
           const isOpen = openId === item.id;
+          const isLatest = index === 0;
           const copy = dict.changelog[item.id] ?? {
             title: item.title,
             summary: item.summary,
             details: item.details,
           };
-          const num = String(index + 1).padStart(2, "0");
+          const num = (index + 1).toLocaleString(isFa ? "fa-IR" : "en-US");
 
           return (
             <li key={item.id}>
@@ -37,19 +42,39 @@ export function DocsWhatsNew() {
                 className="flex w-full items-center gap-3 px-4 py-3.5 text-start transition-colors hover:bg-[var(--surface-hover)] sm:gap-4 sm:px-5"
               >
                 <span
-                  className="w-7 shrink-0 font-mono text-[12px] tabular-nums text-muted-foreground"
+                  className="w-6 shrink-0 text-[12px] tabular-nums text-muted-foreground"
                   aria-hidden
                 >
                   {num}
                 </span>
-                <h3
-                  className={cn(
-                    "min-w-0 flex-1 text-[14px] font-medium text-foreground sm:text-[15px]",
-                    isFa && "font-fa-label",
-                  )}
-                >
-                  {copy.title}
-                </h3>
+                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
+                  <h3
+                    className={cn(
+                      "text-[14px] font-medium text-foreground sm:text-[15px]",
+                      isFa && "font-fa-label",
+                    )}
+                  >
+                    {copy.title}
+                  </h3>
+                  {isLatest ? (
+                    <span
+                      className={cn(
+                        "inline-flex items-center rounded-md bg-[var(--request-fill)]/15 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--request)]",
+                        isFa && "font-fa-label",
+                      )}
+                    >
+                      {dict.common.new}
+                    </span>
+                  ) : null}
+                  <span
+                    className={cn(
+                      "text-[12px] tabular-nums text-muted-foreground",
+                      isFa && "font-fa-label",
+                    )}
+                  >
+                    {formatUpdateDate(item.date, isFa ? "fa" : "en")}
+                  </span>
+                </div>
                 <ChevronDown
                   className={cn(
                     "size-4 shrink-0 text-muted-foreground transition-transform duration-200",
@@ -68,7 +93,7 @@ export function DocsWhatsNew() {
                 )}
               >
                 <div className="overflow-hidden">
-                  <div className="space-y-3 border-t border-border/60 bg-muted/20 px-4 py-4 ps-[3.25rem] sm:px-5 sm:ps-[3.75rem]">
+                  <div className="space-y-3 border-t border-border/60 bg-muted/20 px-4 py-4 ps-10 sm:px-5 sm:ps-11">
                     <ul className="space-y-2 text-[13px] leading-6 text-muted-foreground">
                       {copy.details.map((line) => (
                         <li key={line} className="flex gap-2">

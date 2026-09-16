@@ -47,6 +47,7 @@ export function DocsPageContent() {
   const toc = [
     ["#intro", d.toc.intro],
     ["#whats-new", d.toc.whatsNew],
+    ["#temporary", d.toc.temporary],
     ["#shared-data", d.toc.sharedData],
     ["#language", d.toc.language],
     ["#resources", d.toc.resources],
@@ -73,16 +74,19 @@ export function DocsPageContent() {
             >
               {d.navLabel}
             </p>
-            {toc.map(([href, label]) => (
+            {toc.map(([href, label], index) => (
               <a
                 key={href}
                 href={href}
                 className={cn(
-                  "block rounded-md px-2 py-1.5 text-muted-foreground hover:bg-white/5 hover:text-foreground",
+                  "flex items-center gap-2 rounded-md px-2 py-1.5 text-muted-foreground hover:bg-white/5 hover:text-foreground",
                   isFa && "font-fa-label",
                 )}
               >
-                {label}
+                <span className="w-4 shrink-0 text-[11px] tabular-nums text-muted-foreground/80">
+                  {(index + 1).toLocaleString(isFa ? "fa-IR" : "en-US")}
+                </span>
+                <span>{label}</span>
               </a>
             ))}
           </nav>
@@ -106,6 +110,53 @@ export function DocsPageContent() {
               {d.whatsNewBlurb}
             </p>
             <DocsWhatsNew />
+          </section>
+
+          <section id="temporary" className="scroll-mt-20 space-y-4">
+            <h2
+              className={cn(
+                "text-xl font-semibold tracking-tight",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.temporaryTitle}
+            </h2>
+            <p
+              className={cn(
+                "text-[14px] leading-6 text-muted-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.temporaryBody}
+            </p>
+            <ul
+              className={cn(
+                "list-inside list-disc space-y-1.5 text-[14px] leading-6 text-muted-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.temporaryBullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
+            </ul>
+            <h3
+              className={cn(
+                "pt-2 text-[15px] font-semibold tracking-tight",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.temporaryLimitsTitle}
+            </h3>
+            <ul
+              className={cn(
+                "list-inside list-disc space-y-1.5 text-[14px] leading-6 text-muted-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.temporaryLimitsBullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
+            </ul>
           </section>
 
           <section id="shared-data" className="scroll-mt-20 space-y-4">
@@ -265,7 +316,7 @@ export function DocsPageContent() {
               <a
                 href="/openapi.json"
                 download="mockdata.openapi.json"
-                className="rounded-md bg-[var(--request)] px-3 py-2 text-[12px] font-semibold text-white"
+                className="rounded-md bg-[var(--request-fill)] px-3 py-2 text-[12px] font-semibold text-white"
               >
                 {d.download}
               </a>

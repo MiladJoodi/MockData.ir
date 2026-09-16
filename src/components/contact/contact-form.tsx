@@ -219,7 +219,7 @@ export function ContactForm() {
         type="submit"
         disabled={pending}
         className={cn(
-          "h-10 min-w-[8.5rem] rounded-md bg-[var(--request)] px-5 text-[13px] font-semibold text-black transition-opacity",
+          "h-10 min-w-[8.5rem] rounded-md bg-[var(--request-fill)] px-5 text-[13px] font-semibold text-white transition-opacity",
           pending && "opacity-50",
         )}
       >

@@ -33,6 +33,8 @@ export type Messages = {
     send: string;
     sending: string;
     networkError: string;
+    temporary: string;
+    temporaryBadge: string;
   };
   header: {
     primaryNav: string;
@@ -54,10 +56,14 @@ export type Messages = {
   };
   home: {
     tagline: string;
+    taglineNote: string;
     resourcesTitle: string;
     resourcesBlurb: string;
     searchLabel: string;
     searchPlaceholder: string;
+    temporaryCtaTitle: string;
+    temporaryCtaBody: string;
+    temporaryCtaLink: string;
   };
   notFound: {
     title: string;
@@ -86,6 +92,7 @@ export type Messages = {
     toc: {
       intro: string;
       whatsNew: string;
+      temporary: string;
       sharedData: string;
       language: string;
       resources: string;
@@ -97,6 +104,11 @@ export type Messages = {
     };
     whatsNewTitle: string;
     whatsNewBlurb: string;
+    temporaryTitle: string;
+    temporaryBody: string;
+    temporaryBullets: string[];
+    temporaryLimitsTitle: string;
+    temporaryLimitsBullets: string[];
     sharedDataTitle: string;
     sharedDataBody: string;
     languageTitle: string;
@@ -166,6 +178,51 @@ export type Messages = {
     startHint: string;
     types: string;
     json: string;
+  };
+  temporary: {
+    title: string;
+    blurb: string;
+    privacyNote: string;
+    jsonLabel: string;
+    durationLabel: string;
+    duration1h: string;
+    duration6h: string;
+    duration12h: string;
+    duration24h: string;
+    checkJson: string;
+    jsonValid: string;
+    jsonHint: string;
+    create: string;
+    creating: string;
+    acceptFix: string;
+    rejectFix: string;
+    fixedPreview: string;
+    myApis: string;
+    emptyList: string;
+    copyUrl: string;
+    delete: string;
+    deleting: string;
+    confirmDelete: string;
+    confirmDeleteBody: string;
+    cancel: string;
+    limitReached: string;
+    limitReachedBody: string;
+    createdTitle: string;
+    openApi: string;
+    slotsLabel: string;
+    maxActive: string;
+    sampleJson: string;
+    issues: {
+      EMPTY: string;
+      INVALID_JSON: string;
+      TOO_LARGE: string;
+      NOT_OBJECT_OR_ARRAY: string;
+      TOO_DEEP: string;
+      ARRAY_TOO_LONG: string;
+      TOO_MANY_KEYS: string;
+      UNSAFE_KEY: string;
+      AUTO_FIXED: string;
+    };
   };
   preview: {
     docs: string;
@@ -248,6 +305,8 @@ export const en: Messages = {
     send: "Send",
     sending: "Sending…",
     networkError: "Network error",
+    temporary: "Temporary API",
+    temporaryBadge: "Instant",
   },
   header: {
     primaryNav: "Primary",
@@ -270,11 +329,16 @@ export const en: Messages = {
   home: {
     tagline:
       "Free fake REST APIs with live JSON. Prototype UIs, test auth, and call real endpoints — no backend setup.",
+    taglineNote: "You can also paste your own data and get an API URL back.",
     resourcesTitle: "Resources",
     resourcesBlurb:
       "Ten live REST APIs with docs and examples. Shared demo data on production.",
     searchLabel: "Search APIs and endpoints",
     searchPlaceholder: "Search users, posts, auth…",
+    temporaryCtaTitle: "Temporary API",
+    temporaryCtaBody:
+      "Paste your JSON and build a short-lived API. Treat the link like a password — up to 5 live at a time per browser.",
+    temporaryCtaLink: "Create a temporary API",
   },
   notFound: {
     title: "Page not found",
@@ -306,10 +370,11 @@ export const en: Messages = {
     title: "Documentation",
     navLabel: "Docs",
     intro:
-      "MockData serves fake REST resources as JSON. Use public resources freely, or hit Auth to practice login success/failure. Try live calls in the Playground. Production uses one shared database — see Shared data.",
+      "MockData serves fake REST resources as JSON. Use public resources freely, hit Auth to practice login, try live calls in the Playground, or publish your own short-lived Temporary API. Production uses one shared database for catalog resources — see Shared data.",
     toc: {
       intro: "Introduction",
       whatsNew: "What's new",
+      temporary: "Temporary API",
       sharedData: "Shared data",
       language: "Language",
       resources: "Resources",
@@ -322,6 +387,24 @@ export const en: Messages = {
     whatsNewTitle: "What's new",
     whatsNewBlurb:
       "Features shipped for builders, newest first. Click a card to expand details. The same list is under the bell icon in the header.",
+    temporaryTitle: "Temporary API",
+    temporaryBody:
+      "Need a disposable REST endpoint with your own JSON? Temporary APIs are separate from the shared catalog. Paste JSON, pick how long it should live, and get a public URL under /api/t/…",
+    temporaryBullets: [
+      "No account — create from /temporary in the browser.",
+      "Lifetime options: 1, 6, 12, or 24 hours (default 12h).",
+      "Call the public /api/t/… URL with GET, POST, PATCH, and DELETE like a normal collection or document.",
+      "Treat the link like a password: anyone who has it can read and change the data until it expires.",
+      "When an API expires, requests return HTTP 410.",
+    ],
+    temporaryLimitsTitle: "Temporary API limits",
+    temporaryLimitsBullets: [
+      "Up to 5 active temporary APIs per browser at once.",
+      "Up to 20 creates per IP per rolling hour (HTTP 429 if you go over).",
+      "JSON payload max 64 KB.",
+      "Max nesting depth 8; arrays up to 500 items; objects up to 200 keys.",
+      "Same global /api rate limit still applies (about 60 requests per IP per minute).",
+    ],
     sharedDataTitle: "Shared data",
     sharedDataBody:
       "All visitors share the same live database. Creates, updates, and deletes are real and visible to everyone. On production, seed data resets automatically once per day via GET /api/cron/reset. Use this for prototyping and demos — not for storing anything you need to keep.",
@@ -404,8 +487,58 @@ export const en: Messages = {
     loadError: "Could not load picker options",
     emptyResponse: "No response yet",
     startHint: "Pick a resource and send a request to get started.",
-    types: "Types",
+    types: "TS",
     json: "JSON",
+  },
+  temporary: {
+    title: "Temporary API",
+    blurb: "Paste your JSON and build a short-lived API.",
+    privacyNote:
+      "Treat the link like a password. Until it expires, anyone who has it can read and change the data. Up to 5 at a time per browser.",
+    jsonLabel: "JSON",
+    durationLabel: "Lifetime",
+    duration1h: "1 hour",
+    duration6h: "6 hours",
+    duration12h: "12 hours",
+    duration24h: "24 hours",
+    checkJson: "Check",
+    jsonValid: "Nice — ready to create.",
+    jsonHint: "Check when ready, or create directly.",
+    create: "Create API",
+    creating: "Creating…",
+    acceptFix: "Apply fix & create",
+    rejectFix: "Edit again",
+    fixedPreview: "We fixed a few issues. Review, then create.",
+    myApis: "My APIs",
+    emptyList: "No active APIs yet.",
+    copyUrl: "Copy",
+    delete: "Delete",
+    deleting: "…",
+    confirmDelete: "Delete this API?",
+    confirmDeleteBody: "The URL will stop working right away.",
+    cancel: "Cancel",
+    limitReached: "You've hit the 5-API limit.",
+    limitReachedBody: "Delete one from the list below, or wait until one expires.",
+    createdTitle: "Created",
+    openApi: "Open",
+    slotsLabel: "{n} / 5",
+    maxActive: "",
+    sampleJson: `[
+  { "id": "1", "firstName": "Ada", "lastName": "Lovelace", "role": "admin" },
+  { "id": "2", "firstName": "Lin", "lastName": "Chen", "role": "member" },
+  { "id": "3", "firstName": "Maya", "lastName": "Patel", "role": "member" }
+]`,
+    issues: {
+      EMPTY: "Paste a JSON object or array.",
+      INVALID_JSON: "Invalid JSON — check commas, quotes, and brackets.",
+      TOO_LARGE: "JSON is too large (max {max} KB).",
+      NOT_OBJECT_OR_ARRAY: "Root must be an object { } or array [ ].",
+      TOO_DEEP: "Nested too deep (max depth {max}).",
+      ARRAY_TOO_LONG: "Array is too long (max {max} items).",
+      TOO_MANY_KEYS: "Too many keys in one object (max {max}).",
+      UNSAFE_KEY: "Unsafe key “{key}” is not allowed.",
+      AUTO_FIXED: "Trailing commas or unsafe keys were removed.",
+    },
   },
   preview: {
     docs: "Docs",
@@ -475,6 +608,19 @@ export const en: Messages = {
     },
   },
   changelog: {
+    "2026-09-16-temporary": {
+      title: "Temporary API",
+      teaser: "Your JSON, short-lived URL",
+      hint: "/temporary — paste JSON and get a public REST link",
+      summary:
+        "Paste your own JSON and get a short-lived public REST URL — no account, up to 5 live APIs per browser.",
+      details: [
+        "Create from /temporary: pick a lifetime (1h, 6h, 12h, or 24h) and publish.",
+        "Call the public /api/t/… URL with normal GET, POST, PATCH, and DELETE.",
+        "Up to 5 live APIs per browser; up to 20 creates per IP per hour.",
+        "Treat the link like a password — anyone who has it can read and change the data until it expires.",
+      ],
+    },
     "2026-09-15-preview": {
       title: "Preview",
       teaser: "Sample UIs for every resource",

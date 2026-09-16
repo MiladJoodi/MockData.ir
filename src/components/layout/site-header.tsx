@@ -2,12 +2,22 @@
 
 import { useEffect, useId, useState } from "react";
 import Link from "next/link";
-import { Home, Mail, Menu, Moon, Sun, X } from "lucide-react";
+import {
+  BookOpen,
+  Home,
+  Languages,
+  Mail,
+  Menu,
+  Moon,
+  Sparkles,
+  SquareTerminal,
+  Sun,
+  X,
+} from "lucide-react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useTheme } from "@/components/providers/theme-provider";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
-import type { UiLocale } from "@/lib/i18n/constants";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
@@ -32,112 +42,102 @@ export function SiteHeader() {
     };
   }, [menuOpen]);
 
-  const topLinks = [
-    {
-      href: "/playground",
-      label: dict.common.playground,
-      featured: true,
-    },
-    {
-      href: "/#resources",
-      label: dict.home.resourcesTitle,
-      featured: false,
-    },
-  ] as const;
-
-  function pickLocale(next: UiLocale) {
-    setLocale(next);
+  function closeMenu() {
+    setMenuOpen(false);
   }
 
-  const linkClass = (featured?: boolean) =>
-    cn(
-      "inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] whitespace-nowrap transition-colors",
-      isFa && "font-fa-label",
-      featured
-        ? "font-medium text-foreground hover:bg-[var(--surface-hover)]"
-        : "text-muted-foreground hover:bg-[var(--surface-hover)] hover:text-foreground",
-    );
+  const navLinkClass = cn(
+    "inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1.5 text-[13px] text-muted-foreground whitespace-nowrap transition-colors",
+    "hover:bg-[var(--surface-hover)] hover:text-foreground",
+    isFa && "font-fa-label",
+  );
+
+  const drawerItemClass = cn(
+    "flex w-full items-center gap-2.5 px-4 py-2.5 text-start text-[13px] text-foreground transition-colors",
+    "hover:bg-[var(--surface-hover)]",
+    isFa && "font-fa-label",
+  );
+
+  const menuButton = (
+    <button
+      type="button"
+      className="grid size-10 shrink-0 place-items-center rounded-md text-foreground transition-colors hover:bg-[var(--surface-hover)] md:hidden"
+      aria-expanded={menuOpen}
+      aria-controls={panelId}
+      aria-label={menuOpen ? dict.common.close : dict.header.openMenu}
+      onClick={() => setMenuOpen((open) => !open)}
+    >
+      {menuOpen ? (
+        <X className="size-5" strokeWidth={1.75} aria-hidden />
+      ) : (
+        <Menu className="size-5" strokeWidth={1.75} aria-hidden />
+      )}
+    </button>
+  );
+
+  const brand = (
+    <Link
+      href="/"
+      aria-label={dict.common.home}
+      title={dict.common.home}
+      className="hidden shrink-0 items-center rounded-md text-foreground transition-colors hover:opacity-80 md:inline-flex"
+      onClick={closeMenu}
+    >
+      <span
+        className="text-[15px] font-semibold tracking-tight ltr-tech"
+        dir="ltr"
+      >
+        MockData.ir
+      </span>
+    </Link>
+  );
 
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-border bg-[var(--header-bg)] backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
-          <Link
-            href="/"
-            aria-label={dict.common.home}
-            title={dict.common.home}
-            className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-foreground transition-colors hover:bg-[var(--surface-hover)] md:size-auto md:rounded-none md:hover:bg-transparent"
-            onClick={() => setMenuOpen(false)}
-          >
-            <Home
-              className="size-5 md:hidden"
-              strokeWidth={1.75}
-              aria-hidden
-            />
-            <span
-              className="hidden text-[15px] font-semibold tracking-tight ltr-tech md:inline"
-              dir="ltr"
-            >
-              MockData.ir
-            </span>
-          </Link>
+          {/* FA: hamburger on the right (DOM first in RTL). EN: hamburger on the left. */}
+          <div className="md:hidden">{menuButton}</div>
+          {brand}
 
           <nav
-            className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto"
+            className={cn(
+              "flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto",
+              /* FA mobile: links fill from the physical left. */
+              isFa && "max-md:justify-start max-md:[direction:ltr]",
+            )}
             aria-label={dict.header.primaryNav}
           >
-            {topLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={linkClass(link.featured)}
-              >
-                {link.label}
-                {link.featured ? (
-                  <span
-                    aria-hidden
-                    className="size-1.5 shrink-0 rounded-full bg-[var(--request)]"
-                  />
-                ) : null}
-              </Link>
-            ))}
-
+            <Link href="/playground" className={navLinkClass}>
+              <SquareTerminal className="size-3.5" strokeWidth={2} aria-hidden />
+              {dict.common.playground}
+            </Link>
+            <Link href="/temporary" className={navLinkClass}>
+              <Sparkles className="size-3.5" strokeWidth={2} aria-hidden />
+              {dict.common.temporary}
+            </Link>
+            <Link href="/#resources" className={navLinkClass}>
+              {dict.home.resourcesTitle}
+            </Link>
             <Link
               href="/docs"
-              className={cn(linkClass(false), "hidden md:inline-flex")}
+              className={cn(navLinkClass, "hidden md:inline-flex")}
             >
               {dict.common.docs}
             </Link>
           </nav>
 
-          <div className="ms-auto flex shrink-0 items-center gap-0.5">
-            <div className="hidden items-center gap-0.5 md:flex">
-              <LanguageSwitcher />
-              <ThemeToggle />
-              <Link
-                href="/contact"
-                aria-label={dict.header.contact}
-                title={dict.header.contact}
-                className="grid size-9 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground"
-              >
-                <Mail className="size-4" strokeWidth={1.75} aria-hidden />
-              </Link>
-            </div>
-
-            <button
-              type="button"
-              className="grid size-10 place-items-center rounded-md text-foreground transition-colors hover:bg-[var(--surface-hover)] md:hidden"
-              aria-expanded={menuOpen}
-              aria-controls={panelId}
-              aria-label={menuOpen ? dict.common.close : dict.header.openMenu}
-              onClick={() => setMenuOpen((open) => !open)}
+          <div className="hidden shrink-0 items-center gap-0.5 md:flex">
+            <LanguageSwitcher />
+            <ThemeToggle />
+            <Link
+              href="/contact"
+              aria-label={dict.header.contact}
+              title={dict.header.contact}
+              className="grid size-9 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground"
             >
-              {menuOpen ? (
-                <X className="size-5" strokeWidth={1.75} aria-hidden />
-              ) : (
-                <Menu className="size-5" strokeWidth={1.75} aria-hidden />
-              )}
-            </button>
+              <Mail className="size-4" strokeWidth={1.75} aria-hidden />
+            </Link>
           </div>
         </div>
       </header>
@@ -148,7 +148,7 @@ export function SiteHeader() {
             type="button"
             className="fixed inset-0 z-50 bg-black/45"
             aria-label={dict.common.close}
-            onClick={() => setMenuOpen(false)}
+            onClick={closeMenu}
           />
 
           <aside
@@ -156,16 +156,18 @@ export function SiteHeader() {
             aria-modal="true"
             aria-label={dict.header.menu}
             className={cn(
-              "fixed inset-y-0 end-0 z-50 flex w-[min(15.5rem,80vw)] flex-col bg-background",
-              "border-s border-border",
+              "fixed inset-y-0 z-50 flex w-[min(15rem,80vw)] flex-col bg-background",
               "animate-in fade-in-0 duration-200",
-              isFa ? "slide-in-from-left-4" : "slide-in-from-right-4",
+              /* FA: open from right. EN: open from left (same side as hamburger). */
+              isFa
+                ? "right-0 border-s border-border slide-in-from-right-3"
+                : "left-0 border-e border-border slide-in-from-left-3",
             )}
           >
-            <div className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
+            <div className="flex h-12 shrink-0 items-center justify-between border-b border-border px-4">
               <span
                 className={cn(
-                  "text-[15px] font-semibold text-foreground",
+                  "text-[14px] font-medium text-foreground",
                   isFa && "font-fa-label",
                 )}
               >
@@ -173,80 +175,79 @@ export function SiteHeader() {
               </span>
               <button
                 type="button"
-                className="grid size-9 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground"
+                className="grid size-8 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-[var(--surface-hover)]"
                 aria-label={dict.common.close}
-                onClick={() => setMenuOpen(false)}
+                onClick={closeMenu}
               >
                 <X className="size-4" strokeWidth={1.75} aria-hidden />
               </button>
             </div>
 
-            <nav
-              className="flex flex-col py-1"
-              aria-label={dict.header.menu}
-            >
+            <nav className="flex flex-col py-1" aria-label={dict.header.menu}>
+              <Link href="/" onClick={closeMenu} className={drawerItemClass}>
+                <Home className="size-4 shrink-0" strokeWidth={1.75} aria-hidden />
+                {dict.common.home}
+              </Link>
               <Link
                 href="/docs"
-                onClick={() => setMenuOpen(false)}
-                className={cn(
-                  "px-4 py-3 text-[14px] text-foreground transition-colors hover:bg-[var(--surface-hover)]",
-                  isFa && "font-fa-label",
-                )}
+                onClick={closeMenu}
+                className={drawerItemClass}
               >
+                <BookOpen
+                  className="size-4 shrink-0"
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
                 {dict.common.docs}
               </Link>
               <Link
                 href="/contact"
-                onClick={() => setMenuOpen(false)}
-                className={cn(
-                  "px-4 py-3 text-[14px] text-foreground transition-colors hover:bg-[var(--surface-hover)]",
-                  isFa && "font-fa-label",
-                )}
+                onClick={closeMenu}
+                className={drawerItemClass}
               >
+                <Mail className="size-4 shrink-0" strokeWidth={1.75} aria-hidden />
                 {dict.header.contact}
               </Link>
               <button
                 type="button"
-                onClick={() => pickLocale(locale === "fa" ? "en" : "fa")}
-                className={cn(
-                  "flex w-full items-center justify-between px-4 py-3 text-start text-[14px] text-foreground transition-colors hover:bg-[var(--surface-hover)]",
-                  isFa && "font-fa-label",
-                )}
+                onClick={() => setLocale(isFa ? "en" : "fa")}
+                className={drawerItemClass}
                 aria-label={dict.header.apiLangGroup}
               >
-                <span>{dict.header.apiLangGroup}</span>
-                <span
-                  className="text-[13px] text-muted-foreground tabular-nums"
-                  dir="ltr"
-                >
-                  {locale === "fa" ? "FA" : "EN"}
+                <Languages
+                  className="size-4 shrink-0"
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+                <span className="flex-1">{dict.header.apiLangGroup}</span>
+                <span className="text-[12px] text-muted-foreground" dir="ltr">
+                  {isFa ? "FA" : "EN"}
                 </span>
               </button>
               <button
                 type="button"
                 onClick={toggleTheme}
-                className={cn(
-                  "flex w-full items-center justify-between px-4 py-3 text-start text-[14px] text-foreground transition-colors hover:bg-[var(--surface-hover)]",
-                  isFa && "font-fa-label",
-                )}
+                className={drawerItemClass}
                 aria-label={
                   isDark ? dict.header.lightMode : dict.header.darkMode
                 }
               >
-                <span>{isDark ? dict.header.dark : dict.header.light}</span>
                 {isDark ? (
                   <Moon
-                    className="size-4 text-muted-foreground"
+                    className="size-4 shrink-0"
                     strokeWidth={1.75}
                     aria-hidden
                   />
                 ) : (
                   <Sun
-                    className="size-4 text-muted-foreground"
+                    className="size-4 shrink-0"
                     strokeWidth={1.75}
                     aria-hidden
                   />
                 )}
+                <span className="flex-1">
+                  {isDark ? dict.header.dark : dict.header.light}
+                </span>
               </button>
             </nav>
           </aside>

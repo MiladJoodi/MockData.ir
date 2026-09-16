@@ -14,6 +14,21 @@ export type SiteUpdate = {
 /** Newest first. User-facing features only. Prepend to resurface the badge. */
 export const siteUpdates: SiteUpdate[] = [
   {
+    id: "2026-09-16-temporary",
+    date: "2026-09-16",
+    title: "Temporary API",
+    summary:
+      "Paste your own JSON and get a short-lived public REST URL — no account, up to 5 live APIs per browser.",
+    details: [
+      "Create from /temporary: pick a lifetime (1h, 6h, 12h, or 24h) and publish.",
+      "Call the public /api/t/… URL with normal GET, POST, PATCH, and DELETE.",
+      "Up to 5 live APIs per browser; up to 20 creates per IP per hour.",
+      "Treat the link like a password — anyone who has it can read and change the data until it expires.",
+    ],
+    href: "/temporary",
+    hrefLabel: "Create a temporary API",
+  },
+  {
     id: "2026-09-15-preview",
     date: "2026-09-15",
     title: "Preview",
@@ -92,10 +107,10 @@ export const siteUpdates: SiteUpdate[] = [
 
 export const latestUpdateId = siteUpdates[0]?.id ?? "";
 
-export function formatUpdateDate(iso: string) {
+export function formatUpdateDate(iso: string, locale: "en" | "fa" = "en") {
   const d = new Date(`${iso}T12:00:00`);
   if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString("en-US", {
+  return d.toLocaleDateString(locale === "fa" ? "fa-IR" : "en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",

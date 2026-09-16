@@ -7,7 +7,7 @@ import { fa } from "./messages/fa";
 const catalogs: Record<UiLocale, Messages> = { en, fa };
 
 export function getDictionary(locale: UiLocale): Messages {
-  return catalogs[locale] ?? en;
+  return catalogs[locale] ?? fa;
 }
 
 export function getDictionaryFromValue(

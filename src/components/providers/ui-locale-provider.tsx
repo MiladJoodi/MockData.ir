@@ -31,7 +31,7 @@ const UiLocaleContext = createContext<UiLocaleContextValue | null>(null);
 
 export function UiLocaleProvider({
   children,
-  initialLocale = "en",
+  initialLocale = "fa",
 }: {
   children: ReactNode;
   initialLocale?: UiLocale;

@@ -5,7 +5,7 @@ import { absoluteUrl } from "@/lib/seo";
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
 
-  const core = ["/", "/docs", "/playground", "/contact"].map((path) => ({
+  const core = ["/", "/docs", "/playground", "/temporary", "/contact"].map((path) => ({
     url: absoluteUrl(path),
     lastModified,
   }));

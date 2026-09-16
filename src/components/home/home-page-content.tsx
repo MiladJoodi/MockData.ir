@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { SiteSearch } from "@/components/layout/site-search";
 import { CategoryCard } from "@/components/home/category-card";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -10,9 +11,11 @@ import {
   websiteJsonLd,
 } from "@/lib/seo";
 import { HeroTitle } from "@/components/home/hero-title";
+import { cn } from "@/lib/utils";
 
 export function HomePageContent() {
-  const { dict } = useUiLocale();
+  const { dict, locale } = useUiLocale();
+  const isFa = locale === "fa";
 
   const cards = [
     { id: "auth", href: "/auth", imageSrc: "/placeholders/auth.png" },
@@ -45,6 +48,19 @@ export function HomePageContent() {
         <HeroTitle />
         <p className="mt-5 max-w-xl text-[15px] leading-7 text-foreground/75 sm:text-[16px] sm:leading-8">
           {dict.home.tagline}
+        </p>
+        <p
+          className={cn(
+            "mt-2 max-w-xl text-[14px] leading-6 text-foreground/75 sm:text-[15px] sm:leading-7",
+            isFa && "font-fa-label",
+          )}
+        >
+          <Link
+            href="/temporary"
+            className="underline-offset-2 hover:text-foreground hover:underline"
+          >
+            {dict.home.taglineNote}
+          </Link>
         </p>
         <div className="relative z-20 mt-8 w-full max-w-xl">
           <SiteSearch large autofocus />

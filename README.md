@@ -7,6 +7,7 @@ Hit live endpoints, get predictable seeded responses, try auth flows, then wire 
 ## Features
 
 - **10 live resources** — Auth, Users, Posts, Comments, Albums, Photos, Todos, Products, Notifications, Countries
+- **Temporary API** — paste your own JSON and get a short-lived public REST URL (`/api/t/…`), no account, up to 5 live at a time
 - **Full CRUD** — list, create, read, update, delete with pagination, search, and filters
 - **Persian data** — add `?lang=fa` for Iranian names and copy (English is default)
 - **Docs + Playground** — per-resource docs, live examples, and an in-browser request runner
@@ -46,9 +47,11 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/` | Resource catalog + search |
 | `/docs` | Platform guide (requests, errors, rate limit, reset) |
 | `/playground` | Try live requests in the browser |
+| `/temporary` | Paste JSON → short-lived public REST URL |
 | `/users`, `/posts`, … | Per-resource docs |
 | `/contact` | Contact form |
-| `/api/…` | Live JSON APIs |
+| `/api/…` | Live JSON APIs (seeded resources) |
+| `/api/t/…` | Temporary user-published JSON APIs |
 | `/openapi.json` | OpenAPI 3.1 document |
 
 ## Shared demo data
@@ -91,6 +94,34 @@ curl -X POST http://localhost:3000/api/auth/login \
 curl http://localhost:3000/api/auth/me \
   -H "Authorization: Bearer <token>"
 ```
+
+### Temporary API
+
+Paste your own JSON at [/temporary](https://mockdata.ir/temporary) (or locally `/temporary`). You get a public URL like `/api/t/<id>` that lasts 1–24 hours.
+
+```bash
+# After creating in the UI, call the public URL:
+curl http://localhost:3000/api/t/<id>
+curl -X POST http://localhost:3000/api/t/<id> \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Ada"}'
+```
+
+No account required. Treat the link like a password — anyone with it can read and change the data until it expires. This is separate from the shared catalog resources above.
+
+**Limits**
+
+| Limit | Value |
+|-------|--------|
+| Active APIs per browser | 5 |
+| Creates per IP per hour | 20 (then HTTP 429) |
+| Lifetime options | 1h, 6h, 12h, 24h (default 12h) |
+| JSON size | 64 KB |
+| Nesting depth | 8 |
+| Array length | 500 |
+| Object keys | 200 |
+| After expiry | HTTP 410 |
+| Global `/api` rate limit | ~60 req/IP/min (same as other routes) |
 
 ### CRUD pattern
 

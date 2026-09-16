@@ -5,7 +5,7 @@ import { createPageMetadata } from "@/lib/seo";
 export const metadata: Metadata = createPageMetadata({
   title: "API Docs",
   description:
-    "How to use MockData fake REST APIs — resources, requests, errors, rate limits, OpenAPI, and shared demo data.",
+    "How to use MockData fake REST APIs — Temporary API, resources, requests, errors, rate limits, OpenAPI, and shared demo data.",
   path: "/docs",
 });
 

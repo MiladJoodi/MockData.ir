@@ -15,7 +15,7 @@ export function readStoredUiLocale(): UiLocale {
   try {
     return parseUiLocale(localStorage.getItem(UI_LOCALE_STORAGE_KEY));
   } catch {
-    return "en";
+    return "fa";
   }
 }
 

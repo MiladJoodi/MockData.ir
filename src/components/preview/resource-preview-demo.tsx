@@ -41,6 +41,12 @@ function cellText(value: unknown) {
   return String(value);
 }
 
+function clampCellText(value: unknown, max = 72) {
+  const text = cellText(value);
+  if (text === "—" || text.length <= max) return text;
+  return `${text.slice(0, max - 1).trimEnd()}…`;
+}
+
 async function resolveRelations(
   fields: PreviewField[],
   locale: "en" | "fa",
@@ -414,7 +420,7 @@ export function ResourcePreviewDemo({
         <button
           type="button"
           onClick={openCreate}
-          className="box-border inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-md bg-[var(--request)] px-3 text-[13px] font-semibold text-white"
+          className="box-border inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-md bg-[var(--request-fill)] px-3 text-[13px] font-semibold text-white"
         >
           <Plus className="size-3.5" aria-hidden />
           {dict.common.new}
@@ -504,7 +510,7 @@ export function ResourcePreviewDemo({
                     <td className="px-3 py-3 align-middle font-mono text-[12px] text-muted-foreground tabular-nums">
                       {rowNumber}
                     </td>
-                    <td className="px-3 py-3 align-middle">
+                    <td className="max-w-[16rem] px-3 py-3 align-middle sm:max-w-[20rem]">
                       <div className="flex min-w-0 items-center gap-3">
                         {image ? (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -525,7 +531,7 @@ export function ResourcePreviewDemo({
                           </p>
                           {config.subtitleKey ? (
                             <p className="truncate text-[11px] text-muted-foreground">
-                              {cellText(row[config.subtitleKey])}
+                              {clampCellText(row[config.subtitleKey], 64)}
                             </p>
                           ) : null}
                         </div>
@@ -709,7 +715,7 @@ export function ResourcePreviewDemo({
               <button
                 type="submit"
                 disabled={saving}
-                className="relative h-9 min-w-[5.5rem] rounded-md bg-[var(--request)] px-3 text-[13px] font-semibold text-white disabled:opacity-80"
+                className="relative h-9 min-w-[5.5rem] rounded-md bg-[var(--request-fill)] px-3 text-[13px] font-semibold text-white disabled:opacity-80"
               >
                 <span className={cn(saving && "invisible")}>{dict.preview.save}</span>
                 {saving ? (

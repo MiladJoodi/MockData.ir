@@ -4,7 +4,6 @@ export type JsonTypeNode =
   | {
       kind: "primitive";
       name: "string" | "number" | "integer" | "boolean" | "null" | "unknown";
-      note?: string;
     }
   | { kind: "array"; of: JsonTypeNode }
   | {
@@ -14,25 +13,10 @@ export type JsonTypeNode =
     }
   | { kind: "union"; options: JsonTypeNode[] };
 
-const ISO_DATE =
-  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
-const UUID =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const URL_RE = /^https?:\/\//i;
-
-function stringNote(value: string): string | undefined {
-  if (ISO_DATE.test(value)) return "date-time";
-  if (UUID.test(value)) return "uuid";
-  if (EMAIL.test(value)) return "email";
-  if (URL_RE.test(value)) return "url";
-  return undefined;
-}
-
 function typeKey(node: JsonTypeNode): string {
   switch (node.kind) {
     case "primitive":
-      return `p:${node.name}:${node.note ?? ""}`;
+      return `p:${node.name}`;
     case "array":
       return `a:${typeKey(node.of)}`;
     case "union":
@@ -101,12 +85,8 @@ export function inferJsonType(value: unknown): JsonTypeNode {
       return Number.isInteger(value)
         ? { kind: "primitive", name: "integer" }
         : { kind: "primitive", name: "number" };
-    case "string": {
-      const note = stringNote(value);
-      return note
-        ? { kind: "primitive", name: "string", note }
-        : { kind: "primitive", name: "string" };
-    }
+    case "string":
+      return { kind: "primitive", name: "string" };
     case "object": {
       const fields: Record<string, JsonTypeNode> = {};
       for (const [key, child] of Object.entries(
@@ -127,7 +107,7 @@ function formatNode(node: JsonTypeNode, indent: number): string {
 
   switch (node.kind) {
     case "primitive":
-      return node.note ? `${node.name} /* ${node.note} */` : node.name;
+      return node.name;
     case "array":
       if (node.of.kind === "object") {
         return `Array<${formatNode(node.of, indent)}>`;

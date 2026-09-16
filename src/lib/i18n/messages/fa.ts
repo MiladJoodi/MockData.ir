@@ -35,6 +35,8 @@ export const fa: Messages = {
     send: "ارسال",
     sending: "در حال ارسال...",
     networkError: "خطای شبکه",
+    temporary: "API موقت",
+    temporaryBadge: "ویژه",
   },
   header: {
     primaryNav: "منوی اصلی",
@@ -56,12 +58,17 @@ export const fa: Messages = {
   },
   home: {
     tagline:
-      "API فیک و آماده برای فرانت‌اند. بدون بک‌اند، داده JSON زنده داری، می‌تونی تست کنی و UI بسازی.",
+      "API و داده‌‌های آماده برای ساخت و تست فرانت‌اند، بدون نیاز به بک‌اند.",
+    taglineNote: "راستی، می‌تونی داده خودت رو بدهی و آدرس API بگیری.",
     resourcesTitle: "منابع",
     resourcesBlurb:
       "ده تا API زنده با مستندات و مثال. برای تمرین و پروتوتایپ آماده‌اند.",
     searchLabel: "جستجوی API",
     searchPlaceholder: "مثلاً کاربران، پست‌ها، ورود...",
+    temporaryCtaTitle: "API موقت",
+    temporaryCtaBody:
+      "داده‌ات را JSON بگذار و یک API کوتاه‌مدت بساز. لینک را مثل رمز نگه دار — حداکثر ۵ تا همزمان در هر مرورگر.",
+    temporaryCtaLink: "ساخت API موقت",
   },
   notFound: {
     title: "صفحه پیدا نشد",
@@ -93,10 +100,11 @@ export const fa: Messages = {
     title: "مستندات",
     navLabel: "مستندات",
     intro:
-      "MockData چند API فیک آماده دارد که JSON برمی‌گردانند. می‌توانی مستقیم صدا بزنی، توی محیط تست امتحان کنی، یا با بخش احراز هویت جریان ورود را تمرین کنی.",
+      "MockData چند API فیک آماده دارد که JSON برمی‌گردانند. می‌توانی مستقیم صدا بزنی، توی محیط تست امتحان کنی، با احراز هویت ورود را تمرین کنی، یا با API موقت JSON خودت را کوتاه‌مدت منتشر کنی.",
     toc: {
       intro: "مقدمه",
       whatsNew: "تازه‌ها",
+      temporary: "API موقت",
       sharedData: "داده مشترک",
       language: "زبان داده",
       resources: "منابع",
@@ -109,6 +117,24 @@ export const fa: Messages = {
     whatsNewTitle: "تازه‌ها",
     whatsNewBlurb:
       "امکانات جدید، از تازه‌ترین. روی هر مورد بزن تا جزئیاتش را ببینی.",
+    temporaryTitle: "API موقت",
+    temporaryBody:
+      "اگر یک endpoint کوتاه‌مدت با JSON خودت می‌خواهی، API موقت جدا از کاتالوگ مشترک است. JSON را بگذار، مدت را انتخاب کن، و یک آدرس عمومی زیر /api/t/… بگیر.",
+    temporaryBullets: [
+      "بدون حساب کاربری — از صفحه /temporary بساز.",
+      "مدت اعتبار: ۱، ۶، ۱۲ یا ۲۴ ساعت (پیش‌فرض ۱۲ ساعت).",
+      "با همان آدرس می‌توانی داده را بخوانی، بسازی، ویرایش کنی و حذف کنی.",
+      "لینک را مثل رمز نگه دار؛ تا منقضی نشده هرکس آن را داشته باشد می‌تواند بخواند و عوض کند.",
+      "بعد از انقضا، درخواست‌ها با وضعیت HTTP 410 جواب می‌گیرند.",
+    ],
+    temporaryLimitsTitle: "محدودیت‌های API موقت",
+    temporaryLimitsBullets: [
+      "حداکثر ۵ API فعال همزمان در هر مرورگر.",
+      "حداکثر ۲۰ ساخت در هر ساعت برای هر IP (اگر بیشتر شود پاسخ 429 می‌گیری).",
+      "حداکثر حجم JSON: ۶۴ کیلوبایت.",
+      "حداکثر عمق تودرتویی ۸؛ آرایه تا ۵۰۰ آیتم؛ هر آبجکت تا ۲۰۰ کلید.",
+      "سقف کلی /api هم برقرار است (حدود ۶۰ درخواست در دقیقه برای هر IP).",
+    ],
     sharedDataTitle: "داده مشترک",
     sharedDataBody:
       "همه از یک دیتابیس مشترک استفاده می‌کنند؛ تغییری که می‌دهی برای بقیه هم دیده می‌شود. مناسب تمرین و دمو است، نه ذخیره دائمی.",
@@ -190,8 +216,58 @@ export const fa: Messages = {
     loadError: "Could not load options",
     emptyResponse: "No response yet",
     startHint: "Pick a resource and send a request.",
-    types: "تایپ",
+    types: "TS",
     json: "JSON",
+  },
+  temporary: {
+    title: "API موقت",
+    blurb: "داده‌ات را JSON بگذار و یک API کوتاه‌مدت بساز.",
+    privacyNote:
+      "لینک را مثل رمز نگه دار؛ تا وقتی منقضی نشده هرکس آن را داشته باشد می‌تواند داده را بخواند و عوض کند. در هر مرورگر حداکثر ۵ تا همزمان.",
+    jsonLabel: "JSON",
+    durationLabel: "مدت اعتبار",
+    duration1h: "۱ ساعت",
+    duration6h: "۶ ساعت",
+    duration12h: "۱۲ ساعت",
+    duration24h: "۲۴ ساعت",
+    checkJson: "بررسی",
+    jsonValid: "عالیه — آماده‌ی ساخت است.",
+    jsonHint: "می‌توانی بررسی کنی یا مستقیم بسازی.",
+    create: "ساخت API",
+    creating: "در حال ساخت...",
+    acceptFix: "اعمال اصلاح و ساخت",
+    rejectFix: "ویرایش دوباره",
+    fixedPreview: "چند مورد اصلاح شد. بررسی کن، بعد بساز.",
+    myApis: "APIهای من",
+    emptyList: "هنوز API فعالی نیست.",
+    copyUrl: "کپی",
+    delete: "حذف",
+    deleting: "…",
+    confirmDelete: "این API حذف شود؟",
+    confirmDeleteBody: "آدرس بلافاصله از کار می‌افتد.",
+    cancel: "لغو",
+    limitReached: "سقف ۵ API فعال پر شده.",
+    limitReachedBody: "یکی را از لیست پایین حذف کن، یا صبر کن تا منقضی شود.",
+    createdTitle: "ساخته شد",
+    openApi: "باز کردن",
+    slotsLabel: "{n} / ۵",
+    maxActive: "",
+    sampleJson: `[
+  { "id": "1", "firstName": "سارا", "lastName": "محمدی", "role": "admin" },
+  { "id": "2", "firstName": "علی", "lastName": "رضایی", "role": "member" },
+  { "id": "3", "firstName": "مریم", "lastName": "حسینی", "role": "member" }
+]`,
+    issues: {
+      EMPTY: "یک آبجکت یا آرایه JSON وارد کن.",
+      INVALID_JSON: "JSON نامعتبر است — ویرگول، گیومه و براکت را چک کن.",
+      TOO_LARGE: "حجم JSON زیاد است (حداکثر {max} کیلوبایت).",
+      NOT_OBJECT_OR_ARRAY: "ریشه باید آبجکت { } یا آرایه [ ] باشد.",
+      TOO_DEEP: "تودرتویی زیاد است (حداکثر عمق {max}).",
+      ARRAY_TOO_LONG: "آرایه خیلی بلند است (حداکثر {max} آیتم).",
+      TOO_MANY_KEYS: "تعداد کلیدهای یک آبجکت زیاد است (حداکثر {max}).",
+      UNSAFE_KEY: "کلید ناامن «{key}» مجاز نیست.",
+      AUTO_FIXED: "ویرگول اضافه یا کلید ناامن حذف شد.",
+    },
   },
   preview: {
     docs: "مستندات",
@@ -261,6 +337,19 @@ export const fa: Messages = {
     },
   },
   changelog: {
+    "2026-09-16-temporary": {
+      title: "API موقت",
+      teaser: "JSON خودت، آدرس کوتاه‌مدت",
+      hint: "/temporary — JSON بگذار و لینک REST بگیر",
+      summary:
+        "JSON خودت را بگذار و یک آدرس کوتاه‌مدت بگیر — بدون حساب، حداکثر ۵ API فعال در هر مرورگر.",
+      details: [
+        "از صفحه /temporary بساز؛ مدت را ۱، ۶، ۱۲ یا ۲۴ ساعت انتخاب کن.",
+        "با همان آدرس می‌توانی داده را بخوانی، بسازی، ویرایش کنی و حذف کنی.",
+        "حداکثر ۵ API فعال در هر مرورگر؛ حداکثر ۲۰ ساخت در ساعت برای هر IP.",
+        "لینک را مثل رمز نگه دار؛ تا منقضی نشده هرکس آن را داشته باشد می‌تواند بخواند و عوض کند.",
+      ],
+    },
     "2026-09-15-preview": {
       title: "پیش‌نمایش",
       teaser: "پیش‌نمایش برای هر منبع",

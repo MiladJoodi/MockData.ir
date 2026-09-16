@@ -20,7 +20,7 @@ export function NotFoundContent() {
       <div className="mt-8 flex flex-wrap gap-3">
         <Link
           href="/"
-          className="rounded-md bg-[var(--request)] px-4 py-2 text-[13px] font-semibold text-black"
+          className="rounded-md bg-[var(--request-fill)] px-4 py-2 text-[13px] font-semibold text-white"
         >
           {dict.notFound.home}
         </Link>

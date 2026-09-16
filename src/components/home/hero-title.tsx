@@ -4,36 +4,44 @@ import { useEffect, useState } from "react";
 import { SITE_NAME } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
-const STORAGE_KEY = "mockdata-hero-reveal-v3";
-
-function hasPlayed(): boolean {
-  try {
-    return window.localStorage.getItem(STORAGE_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
-function markPlayed(): void {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, "1");
-  } catch {
-    /* private mode / quota */
-  }
-}
+const STORAGE_KEY = "mockdata-hero-load-id";
 
 export function HeroTitle({ className }: { className?: string }) {
   const [mode, setMode] = useState<"pending" | "static" | "play">("pending");
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || hasPlayed()) {
+    if (reduce) {
+      setMode("static");
+      return;
+    }
+
+    const loadId = String(performance.timeOrigin);
+    let alreadyPlayed = false;
+    try {
+      alreadyPlayed = window.sessionStorage.getItem(STORAGE_KEY) === loadId;
+    } catch {
+      /* private mode */
+    }
+
+    if (alreadyPlayed) {
       setMode("static");
       return;
     }
 
     setMode("play");
-    markPlayed();
+
+    // Mark after a tick so React Strict Mode remount still gets "play"
+    // once; soft client navigations later see the same loadId and stay static.
+    const timer = window.setTimeout(() => {
+      try {
+        window.sessionStorage.setItem(STORAGE_KEY, loadId);
+      } catch {
+        /* ignore */
+      }
+    }, 50);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   const letters = SITE_NAME.split("");
@@ -73,7 +81,6 @@ export function HeroTitle({ className }: { className?: string }) {
           ))}
         </span>
         <span className="hero-title-sheen" />
-        <span className="hero-title-rule" />
       </span>
     </h1>
   );

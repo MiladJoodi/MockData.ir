@@ -159,6 +159,7 @@ export type Messages = {
     tryExample: string;
     preview: string;
     playground: string;
+    backToResources: string;
   };
   playground: {
     title: string;
@@ -550,6 +551,7 @@ export const en: Messages = {
     tryExample: "Try",
     preview: "Preview",
     playground: "Playground",
+    backToResources: "Back to resources",
   },
   playground: {
     title: "Playground",

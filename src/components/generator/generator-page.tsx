@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { WandSparkles } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { FieldSelector } from "@/components/generator/field-selector";
 import { GeneratedResult } from "@/components/generator/generated-result";
 import { QuantityAndModeRow } from "@/components/generator/quantity-and-mode-row";
@@ -271,21 +272,26 @@ export function GeneratorPageContent() {
   return (
     <div className="mx-auto max-w-3xl px-4 pt-10 pb-36 sm:px-6 sm:pb-14 sm:pt-14">
       <header className="mb-8 space-y-2">
-        <div className="flex items-center gap-2">
-          <WandSparkles
-            className="size-5 text-muted-foreground"
-            strokeWidth={1.75}
-            aria-hidden
-          />
-          <h1
-            className={cn(
-              "text-2xl font-semibold tracking-[-0.03em] sm:text-3xl",
-              isFa && "font-fa-label",
-            )}
+        <h1
+          className={cn(
+            "inline-flex min-w-0 items-center gap-2.5 text-2xl font-semibold tracking-[-0.03em] sm:text-3xl",
+            isFa && "font-fa-label",
+          )}
+        >
+          <Link
+            href="/"
+            aria-label={dict.common.home}
+            title={dict.common.home}
+            className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
-            {t.title}
-          </h1>
-        </div>
+            <ArrowLeft
+              className="size-5 rotate-180 sm:size-6"
+              strokeWidth={1.75}
+              aria-hidden
+            />
+          </Link>
+          <span className="truncate">{t.title}</span>
+        </h1>
         <p
           className={cn(
             "max-w-2xl text-[15px] leading-7 text-muted-foreground",

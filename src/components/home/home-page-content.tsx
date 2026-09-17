@@ -28,7 +28,7 @@ export function HomePageContent() {
           {dict.home.tagline}
         </p>
         <div className="relative z-20 mt-8 w-full max-w-xl">
-          <SiteSearch large autofocus />
+          <SiteSearch large />
         </div>
       </section>
 

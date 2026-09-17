@@ -25,45 +25,39 @@ export function PreviewShell({
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14">
-      <header className="mb-8 space-y-3">
-        <Link
-          href={resourceHref}
+      <header className="mb-8 space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="inline-flex min-w-0 items-center gap-2.5 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
+            <Link
+              href={resourceHref}
+              aria-label={backLabel}
+              title={backLabel}
+              className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <ArrowLeft className="size-5 rotate-180 sm:size-6" strokeWidth={1.75} aria-hidden />
+            </Link>
+            <span className={cn("truncate", isFa && "font-fa-label")}>{title}</span>
+          </h1>
+          <Eye
+            className="size-6 shrink-0 text-muted-foreground sm:size-7"
+            strokeWidth={1.75}
+            aria-label={dict.common.preview}
+          />
+        </div>
+        <p
           className={cn(
-            "inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground",
+            "max-w-xl text-[14px] leading-6 text-muted-foreground",
             isFa && "font-fa-label",
           )}
         >
-          <ArrowLeft
-            className={cn("size-3.5 shrink-0", isFa && "rotate-180")}
-            strokeWidth={1.75}
-            aria-hidden
-          />
-          {backLabel}
-        </Link>
-        <div className="space-y-2">
-          <h1 className="inline-flex items-center gap-2.5 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-            <Eye
-              className="size-6 shrink-0 text-muted-foreground sm:size-7"
-              strokeWidth={1.75}
-              aria-label={dict.common.preview}
-            />
-            <span className={cn(isFa && "font-fa-label")}>{title}</span>
-          </h1>
-          <p
-            className={cn(
-              "max-w-xl text-[14px] leading-6 text-muted-foreground",
-              isFa && "font-fa-label",
-            )}
+          {dict.preview.blurb}{" "}
+          <code
+            className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px] ltr-tech"
+            dir="ltr"
           >
-            {dict.preview.blurb}{" "}
-            <code
-              className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px] ltr-tech"
-              dir="ltr"
-            >
-              {basePath}
-            </code>
-          </p>
-        </div>
+            {basePath}
+          </code>
+        </p>
       </header>
       {children}
     </div>

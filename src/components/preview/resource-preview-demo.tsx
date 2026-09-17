@@ -395,9 +395,9 @@ export function ResourcePreviewDemo({
 
   return (
     <div className="space-y-5" dir={isFa ? "rtl" : undefined}>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <div className="flex items-center gap-2">
         <form
-          className="flex min-w-0 flex-1 gap-2"
+          className="flex min-w-0 flex-1 items-center gap-2"
           onSubmit={(e) => {
             e.preventDefault();
             setPage(1);
@@ -416,15 +416,15 @@ export function ResourcePreviewDemo({
           >
             {dict.preview.search}
           </button>
+          <button
+            type="button"
+            onClick={openCreate}
+            className="box-border inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-md bg-[var(--request-fill)] px-3 text-[13px] font-semibold text-white"
+          >
+            <Plus className="size-3.5" aria-hidden />
+            {dict.common.new}
+          </button>
         </form>
-        <button
-          type="button"
-          onClick={openCreate}
-          className="box-border inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-md bg-[var(--request-fill)] px-3 text-[13px] font-semibold text-white"
-        >
-          <Plus className="size-3.5" aria-hidden />
-          {dict.common.new}
-        </button>
       </div>
 
       {error ? (

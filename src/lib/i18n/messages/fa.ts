@@ -205,6 +205,7 @@ export const fa: Messages = {
     tryExample: "Try",
     preview: "پیش‌نمایش",
     playground: "محیط تست",
+    backToResources: "بازگشت به منابع",
   },
   playground: {
     title: "محیط تست",

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
@@ -14,6 +13,16 @@ type MenuPos = {
   left?: number;
   right?: number;
 };
+
+const PLACEHOLDER_SRCS = Object.values(RESOURCE_PLACEHOLDERS);
+
+function preloadResourceImages() {
+  for (const src of PLACEHOLDER_SRCS) {
+    const img = new window.Image();
+    img.decoding = "async";
+    img.src = src;
+  }
+}
 
 function positionForButton(
   button: HTMLButtonElement,
@@ -64,6 +73,10 @@ export function ResourcesNavMenu({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
 
+  useEffect(() => {
+    preloadResourceImages();
+  }, []);
+
   useLayoutEffect(() => {
     if (!open || !buttonRef.current) {
       setMenuPos(null);
@@ -105,6 +118,8 @@ export function ResourcesNavMenu({
         aria-controls={menuId}
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
+        onPointerEnter={preloadResourceImages}
+        onFocus={preloadResourceImages}
         className={cn(
           "inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1.5 text-[13px] text-muted-foreground whitespace-nowrap transition-colors",
           "hover:bg-[var(--surface-hover)] hover:text-foreground",
@@ -153,11 +168,13 @@ export function ResourcesNavMenu({
                   isFa && "font-fa-label",
                 )}
               >
-                <Image
+                {/* Plain img: same URL as preload cache; avoids /_next/image first-paint delay */}
+                <img
                   src={imageSrc}
                   alt=""
                   width={18}
                   height={18}
+                  decoding="async"
                   className="size-[18px] shrink-0 object-contain"
                   aria-hidden
                 />

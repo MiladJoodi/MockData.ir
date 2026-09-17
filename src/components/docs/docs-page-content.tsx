@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Download, Eye } from "lucide-react";
+import { ArrowLeft, Download, Eye } from "lucide-react";
 import { DocsWhatsNew } from "@/components/docs/docs-whats-new";
 import { ResetSeedPanel } from "@/components/docs/reset-seed-panel";
 import { VsCodeBlock } from "@/components/docs/vscode-block";
@@ -115,8 +115,25 @@ export function DocsPageContent() {
 
         <article className="min-w-0 space-y-14">
           <header className="space-y-3" id="intro">
-            <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-              {d.title}
+            <h1
+              className={cn(
+                "inline-flex min-w-0 items-center gap-2.5 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl",
+                isFa && "font-fa-label",
+              )}
+            >
+              <Link
+                href="/"
+                aria-label={dict.common.home}
+                title={dict.common.home}
+                className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <ArrowLeft
+                  className="size-5 rotate-180 sm:size-6"
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+              </Link>
+              <span className="truncate">{d.title}</span>
             </h1>
             <p
               className={cn(

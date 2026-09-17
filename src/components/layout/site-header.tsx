@@ -4,6 +4,7 @@ import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import { Mail, Menu, X } from "lucide-react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { ResourcesNavMenu } from "@/components/layout/resources-nav-menu";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useTheme } from "@/components/providers/theme-provider";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
@@ -85,7 +86,6 @@ export function SiteHeader() {
     <>
       <header className="sticky top-0 z-40 border-b border-border bg-[var(--header-bg)] backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
-          {/* FA: hamburger on the right (DOM first in RTL). EN: hamburger on the left. */}
           <div className="md:hidden">{menuButton}</div>
           {brand}
 
@@ -94,7 +94,6 @@ export function SiteHeader() {
             aria-label={dict.header.primaryNav}
             dir="ltr"
           >
-            {/* Physical left→right on mobile: playground, temporary, generator, resources */}
             <Link href="/playground" className={navLinkClass}>
               {dict.common.playground}
             </Link>
@@ -104,9 +103,7 @@ export function SiteHeader() {
             <Link href="/generator" className={navLinkClass}>
               {dict.common.generator}
             </Link>
-            <Link href="/#resources" className={navLinkClass}>
-              {dict.home.resourcesTitle}
-            </Link>
+            <ResourcesNavMenu />
           </nav>
 
           <nav
@@ -122,6 +119,7 @@ export function SiteHeader() {
             <Link href="/generator" className={navLinkClass}>
               {dict.common.generator}
             </Link>
+            <ResourcesNavMenu />
             <Link href="/docs" className={navLinkClass}>
               {dict.common.docs}
             </Link>
@@ -158,7 +156,6 @@ export function SiteHeader() {
             className={cn(
               "fixed inset-y-0 z-50 flex w-[min(15rem,80vw)] flex-col bg-background",
               "animate-in fade-in-0 duration-200",
-              /* FA: open from right. EN: open from left (same side as hamburger). */
               isFa
                 ? "right-0 border-s border-border slide-in-from-right-3"
                 : "left-0 border-e border-border slide-in-from-left-3",

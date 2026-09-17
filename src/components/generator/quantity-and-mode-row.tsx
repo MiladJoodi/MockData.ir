@@ -5,6 +5,9 @@ import { GENERATOR_QTY_PRESETS } from "@/lib/generator/constants";
 import type { GeneratorOutputMode } from "@/lib/generator/modes";
 import { cn } from "@/lib/utils";
 
+const segmentBtn =
+  "inline-flex h-9 items-center justify-center px-2.5 text-[13px] transition-colors";
+
 export function QuantityAndModeRow({
   quantity,
   onQuantityChange,
@@ -47,11 +50,28 @@ export function QuantityAndModeRow({
           {recordsLabel}
         </p>
         <div
-          className="inline-flex max-w-full flex-wrap items-center gap-0 overflow-hidden rounded-lg border border-border"
+          className="inline-flex h-9 max-w-full items-stretch overflow-hidden rounded-lg border border-border divide-x divide-border"
           role="group"
           aria-label={recordsLabel}
+          dir="ltr"
         >
-          {GENERATOR_QTY_PRESETS.map((n, index) => {
+          {isFa ? (
+            <button
+              type="button"
+              onClick={() => setCustomOpen(true)}
+              aria-pressed={customOpen}
+              className={cn(
+                segmentBtn,
+                "font-fa-label",
+                customOpen
+                  ? "bg-[var(--request)]/15 font-medium text-foreground"
+                  : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
+              )}
+            >
+              {customLabel}
+            </button>
+          ) : null}
+          {GENERATOR_QTY_PRESETS.map((n) => {
             const selected = !customOpen && quantity === n;
             return (
               <button
@@ -63,31 +83,34 @@ export function QuantityAndModeRow({
                 }}
                 aria-pressed={selected}
                 className={cn(
-                  "min-w-11 px-2.5 py-2 text-[13px] tabular-nums transition-colors",
-                  index > 0 && "border-s border-border",
+                  segmentBtn,
                   selected
                     ? "bg-[var(--request)]/15 font-medium text-foreground"
                     : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
+                  isFa && "font-fa-label",
                 )}
               >
-                {n.toLocaleString(isFa ? "fa-IR" : "en-US")}
+                {n.toLocaleString(isFa ? "fa-IR" : "en-US", {
+                  useGrouping: false,
+                })}
               </button>
             );
           })}
-          <button
-            type="button"
-            onClick={() => setCustomOpen(true)}
-            aria-pressed={customOpen}
-            className={cn(
-              "border-s border-border px-2.5 py-2 text-[12px] transition-colors",
-              customOpen
-                ? "bg-[var(--request)]/15 font-medium text-foreground"
-                : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
-              isFa && "font-fa-label",
-            )}
-          >
-            {customLabel}
-          </button>
+          {!isFa ? (
+            <button
+              type="button"
+              onClick={() => setCustomOpen(true)}
+              aria-pressed={customOpen}
+              className={cn(
+                segmentBtn,
+                customOpen
+                  ? "bg-[var(--request)]/15 font-medium text-foreground"
+                  : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
+              )}
+            >
+              {customLabel}
+            </button>
+          ) : null}
         </div>
         {customOpen ? (
           <input
@@ -104,7 +127,10 @@ export function QuantityAndModeRow({
               if (!Number.isFinite(n)) return;
               onQuantityChange(Math.min(1000, Math.max(1, Math.floor(n))));
             }}
-            className="w-28 rounded-lg border border-border bg-background px-3 py-2 text-[13px] text-foreground tabular-nums outline-none focus-visible:border-foreground/30 focus-visible:ring-2 focus-visible:ring-foreground/15"
+            className={cn(
+              "h-9 w-28 rounded-lg border border-border bg-background px-3 text-[13px] text-foreground outline-none focus-visible:border-foreground/30 focus-visible:ring-2 focus-visible:ring-foreground/15 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+              isFa && "font-fa-label",
+            )}
             dir="ltr"
             aria-label={customLabel}
           />
@@ -121,16 +147,17 @@ export function QuantityAndModeRow({
           {modeLabel}
         </p>
         <div
-          className="inline-flex overflow-hidden rounded-lg border border-border"
+          className="inline-flex h-9 items-stretch overflow-hidden rounded-lg border border-border divide-x divide-border"
           role="group"
           aria-label={modeLabel}
+          dir="ltr"
         >
           {(
             [
               ["payload", modePayload],
               ["api", modeApi],
             ] as const
-          ).map(([id, label], index) => {
+          ).map(([id, label]) => {
             const active = mode === id;
             return (
               <button
@@ -140,8 +167,7 @@ export function QuantityAndModeRow({
                 aria-pressed={active}
                 onClick={() => onModeChange(id)}
                 className={cn(
-                  "px-3 py-2 text-[12px] transition-colors",
-                  index > 0 && "border-s border-border",
+                  segmentBtn,
                   active
                     ? "bg-[var(--request)]/15 font-medium text-foreground"
                     : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",

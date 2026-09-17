@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Eye } from "lucide-react";
+import { Download, Eye } from "lucide-react";
 import { DocsWhatsNew } from "@/components/docs/docs-whats-new";
 import { ResetSeedPanel } from "@/components/docs/reset-seed-panel";
 import { VsCodeBlock } from "@/components/docs/vscode-block";
@@ -10,9 +10,29 @@ import { apiResources, plannedResources } from "@/lib/catalog";
 import { RATE_LIMIT } from "@/lib/api/rate-limit";
 import { cn } from "@/lib/utils";
 
-const jsExample = `const res = await fetch('/api/posts?limit=6');
-const { data, pagination } = await res.json();
-console.log(data, pagination);`;
+const responseShapeExample = `{
+  "data": [
+    {
+      "id": "1",
+      "title": "Hello MockData",
+      "published": true
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 6,
+    "total": 42,
+    "totalPages": 7
+  }
+}`;
+
+const singleItemExample = `{
+  "data": {
+    "id": "1",
+    "title": "Hello MockData",
+    "published": true
+  }
+}`;
 
 const faExample = `// Persian sample data — English is default
 const res = await fetch('/api/users?limit=3&lang=fa');
@@ -98,7 +118,12 @@ export function DocsPageContent() {
             <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
               {d.title}
             </h1>
-            <p className="max-w-2xl text-[15px] leading-7 text-muted-foreground">
+            <p
+              className={cn(
+                "max-w-2xl whitespace-pre-line text-[15px] leading-7 text-muted-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
               {d.intro}
             </p>
           </header>
@@ -345,21 +370,23 @@ export function DocsPageContent() {
             <p className="text-[14px] leading-6 text-muted-foreground">
               {d.openapiBody}
             </p>
-            <div className="flex flex-wrap items-center gap-3" dir="ltr">
+            <div className="flex flex-wrap items-center gap-2" dir="ltr">
               <a
                 href="/openapi.json"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-md border border-border bg-muted/40 px-3 py-2 font-mono text-[12px] text-[var(--request)] transition-colors hover:border-[var(--request)]/40"
+                className="font-mono text-[12px] text-[var(--request)] underline-offset-2 hover:underline"
               >
-                GET /openapi.json ↗
+                GET /openapi.json
               </a>
               <a
                 href="/openapi.json"
                 download="mockdata.openapi.json"
-                className="rounded-md bg-[var(--request-fill)] px-3 py-2 text-[12px] font-semibold text-white"
+                aria-label={d.download}
+                title={d.download}
+                className="grid size-8 place-items-center text-muted-foreground transition-colors hover:text-foreground"
               >
-                {d.download}
+                <Download className="size-4" strokeWidth={1.75} aria-hidden />
               </a>
             </div>
             <div dir="ltr">
@@ -378,23 +405,17 @@ curl -O http://localhost:3000/openapi.json`}
             <p className="text-[14px] leading-6 text-muted-foreground">
               {d.requestsBody}
             </p>
-            <div dir="ltr">
-              <VsCodeBlock code={jsExample} language="javascript" />
+            <div dir="ltr" className="space-y-3">
+              <VsCodeBlock code={responseShapeExample} language="json" />
+              <VsCodeBlock code={singleItemExample} language="json" />
             </div>
-            <p className="text-[13px] leading-6 text-muted-foreground">
-              {d.requestsFaNote}{" "}
-              <a href="#language" className="text-[var(--request)] hover:underline">
-                {d.toc.language}
-              </a>
-              .
-            </p>
           </section>
 
           <section id="errors" className="scroll-mt-20 space-y-4">
             <h2 className="text-xl font-semibold tracking-tight">
               {d.errorsTitle}
             </h2>
-            <p className="text-[14px] leading-6 text-muted-foreground">
+            <p className="max-w-2xl whitespace-pre-line text-[14px] leading-6 text-muted-foreground">
               {d.errorsBody}
             </p>
             <div dir="ltr">
@@ -406,7 +427,7 @@ curl -O http://localhost:3000/openapi.json`}
             <h2 className="text-xl font-semibold tracking-tight">
               {d.rateLimitTitle}
             </h2>
-            <p className="text-[14px] leading-6 text-muted-foreground">
+            <p className="max-w-2xl whitespace-pre-line text-[14px] leading-6 text-muted-foreground">
               {d.rateLimitBody.replace("{limit}", String(limitPerMin))}
             </p>
             <div dir="ltr">

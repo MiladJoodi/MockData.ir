@@ -20,9 +20,10 @@ export const siteUpdates: SiteUpdate[] = [
     summary:
       "Generate realistic JSON for UI work — pick a type, fields, and quantity, then copy, download, or publish via Temporary API.",
     details: [
-      "Open /generator for users, products, orders, jobs, and more.",
-      "Generate up to 1,000 records in the browser with useful default fields.",
-      "Create API reuses Temporary API (max 500 items / 64 KB per publish).",
+      "Open /generator for people, ecommerce, content, media, business, and location types.",
+      "POST body vs API record shapes; FA UI uses Persian locale packs.",
+      "Generate up to 1,000 records in the browser; Create API uses Temporary limits (500 / 64 KB).",
+      "Selections and results survive client-side navigation (cleared on full reload).",
     ],
     href: "/generator",
     hrefLabel: "Open generator",
@@ -82,7 +83,7 @@ export const siteUpdates: SiteUpdate[] = [
       "Pick a resource and action, edit query params or JSON body, then send the request.",
       "Auth login has Correct / Wrong password presets so you can demo 200 vs 401 quickly.",
       "Responses show status, headers-friendly JSON, and pagination when the route returns it.",
-      "Handy for teaching, screenshots, and checking filters without opening Postman.",
+      "Request UI and last responses are kept per resource across SPA navigation (full reload clears).",
     ],
     href: "/playground",
     hrefLabel: "Open Playground",

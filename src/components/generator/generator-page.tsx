@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { Loader2, WandSparkles } from "lucide-react";
+import { WandSparkles } from "lucide-react";
 import { FieldSelector } from "@/components/generator/field-selector";
 import { GeneratedResult } from "@/components/generator/generated-result";
 import { QuantityAndModeRow } from "@/components/generator/quantity-and-mode-row";
@@ -250,7 +250,9 @@ export function GeneratorPageContent() {
     }
   }
 
-  const qtyLabel = quantity.toLocaleString(isFa ? "fa-IR" : "en-US");
+  const qtyLabel = quantity.toLocaleString(isFa ? "fa-IR" : "en-US", {
+    useGrouping: false,
+  });
   const generateLabel = t.generate.replace("{n}", qtyLabel);
   const generatingLabel = t.generating.replace("{n}", qtyLabel);
 
@@ -323,9 +325,11 @@ export function GeneratorPageContent() {
             <p className="text-[15px] font-medium text-foreground">
               {t.emptyTitle}
             </p>
-            <p className="mt-1 text-[13px] text-muted-foreground">
-              {t.emptyBody}
-            </p>
+            {t.emptyBody ? (
+              <p className="mt-1 text-[13px] text-muted-foreground">
+                {t.emptyBody}
+              </p>
+            ) : null}
           </div>
         )}
 
@@ -464,16 +468,11 @@ function GenerateButton({
         onClick={onClick}
         disabled={loading}
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-md bg-[var(--request-fill)] px-4 py-2.5 text-[14px] font-semibold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40",
+          "inline-flex items-center justify-center rounded-md bg-[var(--request-fill)] px-4 py-2.5 text-[14px] font-semibold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40",
           fullWidth && "w-full",
           isFa && "font-fa-label",
         )}
       >
-        {loading ? (
-          <Loader2 className="size-4 animate-spin" aria-hidden />
-        ) : (
-          <WandSparkles className="size-4" aria-hidden />
-        )}
         {label}
       </button>
       {loading && progress !== null ? (

@@ -5,7 +5,7 @@ import { createPageMetadata } from "@/lib/seo";
 export const metadata: Metadata = createPageMetadata({
   title: "Fake Data Generator",
   description:
-    "Generate realistic fake JSON for frontend development — pick a type, fields, and quantity, then copy, download, or publish a Temporary API.",
+    "Generate realistic fake JSON in the browser — people, ecommerce, and more. Choose POST body or API record shape, copy or download, or Create API via Temporary.",
   path: "/generator",
 });
 

@@ -1,16 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
+import { cn } from "@/lib/utils";
 
 export function ResetSeedPanel() {
-  const { dict } = useUiLocale();
+  const { dict, locale } = useUiLocale();
   const p = dict.docs.resetPanel;
+  const isFa = locale === "fa";
+  const [unlocked, setUnlocked] = useState(false);
   const [key, setKey] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">(
     "idle",
   );
   const [message, setMessage] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!unlocked) return;
+    inputRef.current?.focus();
+  }, [unlocked]);
 
   async function onReset() {
     if (!key.trim()) {
@@ -62,27 +71,50 @@ export function ResetSeedPanel() {
     }
   }
 
+  function onButtonClick() {
+    if (!unlocked) {
+      setUnlocked(true);
+      setStatus("idle");
+      setMessage("");
+      return;
+    }
+    void onReset();
+  }
+
   return (
     <div className="space-y-3 rounded-xl border border-border bg-card p-4">
-      <p className="text-[13px] leading-6 text-muted-foreground">{p.intro}</p>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-        <input
-          type="password"
-          value={key}
-          onChange={(e) => setKey(e.target.value)}
-          placeholder={p.placeholder}
-          autoComplete="off"
-          className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 font-mono text-[13px] outline-none focus:border-[var(--request)]/50"
-        />
+      <div className="flex items-center justify-end gap-2" dir="ltr">
+        {unlocked ? (
+          <input
+            ref={inputRef}
+            type="password"
+            value={key}
+            onChange={(e) => setKey(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") void onReset();
+            }}
+            placeholder={p.placeholder}
+            autoComplete="off"
+            dir={isFa ? "rtl" : "ltr"}
+            className={cn(
+              "min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 text-[13px] outline-none focus:border-[var(--request)]/50",
+              isFa && "font-fa-label",
+            )}
+          />
+        ) : null}
         <button
           type="button"
-          onClick={onReset}
+          onClick={onButtonClick}
           disabled={status === "loading"}
-          className="rounded-md border border-[var(--delete)]/40 bg-[var(--delete)]/10 px-3 py-2 text-[13px] font-semibold text-[var(--delete)] transition-colors hover:bg-[var(--delete)]/20 disabled:opacity-50"
+          className={cn(
+            "shrink-0 rounded-md border border-[var(--delete)]/40 bg-[var(--delete)]/10 px-3 py-2 text-[13px] font-semibold text-[var(--delete)] transition-colors hover:bg-[var(--delete)]/20 disabled:opacity-50",
+            isFa && "font-fa-label",
+          )}
         >
           {status === "loading" ? p.resetting : p.button}
         </button>
       </div>
+
       {message ? (
         <p
           className={

@@ -240,16 +240,7 @@ export const plannedResources: {
   basePath: string;
   status: "coming-soon" | "in-development";
   summary: string;
-}[] = [
-  {
-    id: "orders",
-    category: "Commerce",
-    title: "Orders",
-    basePath: "/api/orders",
-    status: "coming-soon",
-    summary: "Order records related to users and products.",
-  },
-];
+}[] = [];
 
 /** Normalize Latin + Persian for search (ye/kaf variants, ZWNJ). */
 function normalizeSearch(value: string) {

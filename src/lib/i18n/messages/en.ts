@@ -133,7 +133,6 @@ export type Messages = {
     download: string;
     requestsTitle: string;
     requestsBody: string;
-    requestsFaNote: string;
     errorsTitle: string;
     errorsBody: string;
     rateLimitTitle: string;
@@ -407,7 +406,7 @@ export const en: Messages = {
     searchPlaceholder: "Search users, posts, auth…",
     temporaryCtaTitle: "Temporary API",
     temporaryCtaBody:
-      "Paste your JSON and build a short-lived API. Treat the link like a password — up to 5 live at a time per browser.",
+      "Paste your JSON and build a short-lived API — or publish from the Fake Data Generator. Treat the link like a password — up to 5 live at a time per browser.",
     temporaryCtaLink: "Create a temporary API",
   },
   notFound: {
@@ -440,7 +439,7 @@ export const en: Messages = {
     title: "Documentation",
     navLabel: "Docs",
     intro:
-      "MockData serves fake REST resources as JSON. Use public resources freely, hit Auth to practice login, try live calls in the Playground, or publish your own short-lived Temporary API. Production uses one shared database for catalog resources — see Shared data.",
+      "MockData serves fake REST resources as JSON. Use public resources freely, hit Auth to practice login, try live calls in the Playground, generate fixtures at /generator, or publish your own short-lived Temporary API. Production uses one shared database for catalog resources — see Shared data.",
     toc: {
       intro: "Introduction",
       whatsNew: "What's new",
@@ -460,9 +459,9 @@ export const en: Messages = {
       "Features shipped for builders, newest first. Click a card to expand details. The same list is under the bell icon in the header.",
     temporaryTitle: "Temporary API",
     temporaryBody:
-      "Need a disposable REST endpoint with your own JSON? Temporary APIs are separate from the shared catalog. Paste JSON, pick how long it should live, and get a public URL under /api/t/…",
+      "Need a disposable REST endpoint with your own JSON? Temporary APIs are separate from the shared catalog. Paste JSON, pick how long it should live, and get a public URL under /api/t/… You can also publish from the Fake Data Generator via Create API.",
     temporaryBullets: [
-      "No account — create from /temporary in the browser.",
+      "No account — create from /temporary in the browser (or Create API on /generator).",
       "Lifetime options: 1, 6, 12, or 24 hours (default 12h).",
       "Call the public /api/t/… URL with GET, POST, PATCH, and DELETE like a normal collection or document.",
       "Treat the link like a password: anyone who has it can read and change the data until it expires.",
@@ -478,11 +477,13 @@ export const en: Messages = {
     ],
     generatorTitle: "Fake Data Generator",
     generatorBody:
-      "Generate realistic JSON for UI work without writing fixtures by hand. Pick a data type, choose fields and quantity, then copy, download, or publish via Temporary API.",
+      "Generate realistic JSON for UI work without writing fixtures by hand. Runs entirely in the browser. Pick a data type, fields, and quantity, then copy, download, or publish via Temporary API.",
     generatorBullets: [
-      "Open /generator — users, products, orders, jobs, and more.",
-      "Generate up to 1,000 records in the browser (no backend call).",
-      "Create API reuses Temporary API limits (max 500 items / 64 KB per publish).",
+      "Open /generator — people, ecommerce, content, media, business, and location types.",
+      "Choose POST body (no id/timestamps) or API record shape (id + createdAt + updatedAt).",
+      "Site language FA uses Persian locale packs; EN uses multi-country English packs.",
+      "Generate up to 1,000 records; Create API is capped by Temporary limits (500 items / 64 KB).",
+      "Selections and results survive client-side navigation (cleared on full page reload).",
     ],
     sharedDataTitle: "Shared data",
     sharedDataBody:
@@ -512,7 +513,6 @@ export const en: Messages = {
     requestsTitle: "Requests",
     requestsBody:
       "Lists return data + pagination. Single items return { data }.",
-    requestsFaNote: "Persian: append lang=fa. See Language.",
     errorsTitle: "Errors",
     errorsBody:
       "Failures use an error object. Statuses: 400 validation, 401 unauthorized, 404 missing, 429 rate limited, 500 server. Pass ?status=500 (400–599) to force an error for UI demos.",
@@ -548,7 +548,7 @@ export const en: Messages = {
   playground: {
     title: "Playground",
     blurb:
-      "Send live requests against MockData APIs. Inspect JSON responses in the browser.",
+      "Send live requests against MockData APIs. Inspect JSON in the browser — your last request per resource stays while you navigate the site.",
     resource: "Resource",
     action: "Action",
     send: "Send",
@@ -1063,9 +1063,10 @@ export const en: Messages = {
       summary:
         "Generate realistic JSON for UI work — pick a type, fields, and quantity, then copy, download, or publish via Temporary API.",
       details: [
-        "Open /generator for users, products, orders, jobs, and more.",
-        "Generate up to 1,000 records in the browser with useful default fields.",
-        "Create API reuses Temporary API (max 500 items / 64 KB per publish).",
+        "Open /generator for people, ecommerce, content, media, business, and location types.",
+        "POST body vs API record shapes; FA UI uses Persian locale packs.",
+        "Generate up to 1,000 records in the browser; Create API uses Temporary limits (500 / 64 KB).",
+        "Selections and results survive client-side navigation (cleared on full reload).",
       ],
     },
     "2026-09-16-temporary": {
@@ -1117,7 +1118,7 @@ export const en: Messages = {
         "Pick a resource and action, edit query params or JSON body, then send the request.",
         "Auth login has Correct / Wrong password presets so you can demo 200 vs 401 quickly.",
         "Responses show status, headers-friendly JSON, and pagination when the route returns it.",
-        "Handy for teaching, screenshots, and checking filters without opening Postman.",
+        "Request UI and last responses are kept per resource across SPA navigation (full reload clears).",
       ],
     },
     "2026-09-10-auth": {

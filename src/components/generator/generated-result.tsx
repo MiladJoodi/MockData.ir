@@ -224,10 +224,12 @@ export function GeneratedResult({
             <span className="size-2.5 rounded-full bg-[#ffbd2e]" />
             <span className="size-2.5 rounded-full bg-[#27c93f]" />
           </div>
-          <span className="font-mono text-[11px] font-semibold text-[var(--response-fg)]">
-            {view === "type" ? "TS" : "JSON"}
-          </span>
-          <span className="truncate font-mono text-[10px] text-[var(--vscode-fg)]/45">
+          <span
+            className={cn(
+              "min-w-0 truncate text-[10px] text-[var(--vscode-fg)]/45",
+              isFa ? "font-fa-label" : "font-mono",
+            )}
+          >
             {topicLabel} · {count}
           </span>
           <div

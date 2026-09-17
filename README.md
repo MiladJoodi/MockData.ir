@@ -8,10 +8,11 @@ Hit live endpoints, get predictable seeded responses, try auth flows, then wire 
 
 - **10 live resources** — Auth, Users, Posts, Comments, Albums, Photos, Todos, Products, Notifications, Countries
 - **Temporary API** — paste your own JSON and get a short-lived public REST URL (`/api/t/…`), no account, up to 5 live at a time
-- **Fake Data Generator** — pick a type, fields, and quantity at `/generator`, then copy, download, or publish via Temporary API
+- **Fake Data Generator** — schema-driven fake JSON at `/generator` (people, ecommerce, content, and more); copy, download, or Create API
+- **Playground** — in-browser request runner; request/response state survives client-side navigation between resources and routes
 - **Full CRUD** — list, create, read, update, delete with pagination, search, and filters
-- **Persian data** — add `?lang=fa` for Iranian names and copy (English is default)
-- **Docs + Playground** — per-resource docs, live examples, and an in-browser request runner
+- **Persian data** — add `?lang=fa` for Iranian names and copy (English is default); Generator FA UI uses Persian locale packs
+- **Docs** — platform guide plus per-resource docs and live Preview UIs
 - **Mock controls** — `?delay=` and `?status=` for loading and error UI demos
 - **OpenAPI 3.1** — downloadable at `/openapi.json` for Postman, Insomnia, or codegen
 - **Shared demo DB** — production seed data resets automatically once per day
@@ -47,10 +48,10 @@ Open [http://localhost:3000](http://localhost:3000).
 |------|---------|
 | `/` | Resource catalog + search |
 | `/docs` | Platform guide (requests, errors, rate limit, reset) |
-| `/playground` | Try live requests in the browser |
+| `/playground` | Try live requests in the browser (state kept across SPA navigation) |
 | `/temporary` | Paste JSON → short-lived public REST URL |
-| `/generator` | Generate realistic fake JSON (copy / download / Create API) |
-| `/users`, `/posts`, … | Per-resource docs |
+| `/generator` | Fake Data Generator → copy / download / Create API |
+| `/users`, `/posts`, … | Per-resource docs (+ Preview where available) |
 | `/contact` | Contact form |
 | `/api/…` | Live JSON APIs (seeded resources) |
 | `/api/t/…` | Temporary user-published JSON APIs |
@@ -111,6 +112,8 @@ curl -X POST http://localhost:3000/api/t/<id> \
 
 No account required. Treat the link like a password — anyone with it can read and change the data until it expires. This is separate from the shared catalog resources above.
 
+You can also publish from the **Fake Data Generator** (`Create API`) — same Temporary backend and limits.
+
 **Limits**
 
 | Limit | Value |
@@ -124,6 +127,25 @@ No account required. Treat the link like a password — anyone with it can read 
 | Object keys | 200 |
 | After expiry | HTTP 410 |
 | Global `/api` rate limit | ~60 req/IP/min (same as other routes) |
+
+### Fake Data Generator
+
+Open [/generator](https://mockdata.ir/generator) (or locally `/generator`). Generation runs **in the browser** — no backend call for the JSON itself.
+
+| Capability | Detail |
+|------------|--------|
+| Data types | People, ecommerce, content, media, business, location (users, products, orders, posts, …) |
+| Quantity | Presets up to **1,000** records |
+| Output shape | **POST body** (no id/timestamps) or **API record** (with id / createdAt / updatedAt) |
+| Locale packs | Site UI **FA** → Persian names/places; **EN** → multi-country English packs (IR excluded from “all”) |
+| Preview | Live sample card for the selected type and fields |
+| Export | Copy JSON or TypeScript types, download `.json` |
+| Create API | Same Temporary API flow (lifetime select + publish); max **500** items / **64 KB** per publish |
+| Session | Generator selections and results survive client-side route changes (cleared on full reload) |
+
+### Playground
+
+[/playground](https://mockdata.ir/playground) sends live requests against the seeded APIs. Resource choice, action, URL, body, and last responses are kept **per resource** while you navigate the site (SPA). A full page reload starts fresh (Bearer token may still be in `sessionStorage`).
 
 ### CRUD pattern
 
@@ -225,7 +247,3 @@ Also accepts `Authorization: Bearer <ADMIN_SECRET>`.
 - **Zod** request validation
 - **Resend** for the contact form
 - Deployed on **Vercel** (optional daily cron reset)
-
-## Roadmap
-
-- Orders (`/api/orders`) — related to users and products

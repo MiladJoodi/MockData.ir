@@ -269,7 +269,7 @@ export function GeneratorPageContent() {
   }, [topic?.id, t.fields, isFa]);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
+    <div className="mx-auto max-w-3xl px-4 pt-10 pb-36 sm:px-6 sm:pb-14 sm:pt-14">
       <header className="mb-8 space-y-2">
         <div className="flex items-center gap-2">
           <WandSparkles

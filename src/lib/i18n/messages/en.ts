@@ -401,7 +401,7 @@ export const en: Messages = {
   home: {
     tagline:
       "Free fake REST APIs with live JSON. Prototype UIs, test auth, and call real endpoints — no backend setup.",
-    taglineNote: "You can also paste your own data and get an API URL back.",
+    taglineNote: "",
     resourcesTitle: "Resources",
     resourcesBlurb:
       "Ten live REST APIs with docs and examples. Shared demo data on production.",

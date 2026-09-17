@@ -55,6 +55,10 @@ export function removeStoredTemporaryApi(publicId: string) {
   writeRaw(loadStoredTemporaryApis().filter((x) => x.publicId !== publicId));
 }
 
+export function clearStoredTemporaryApis() {
+  writeRaw([]);
+}
+
 export function mergeServerTemporaryList(
   serverItems: Omit<StoredTemporaryApi, "manageToken">[],
 ): StoredTemporaryApi[] {

@@ -15,6 +15,7 @@ import {
   loadStoredTemporaryApis,
   mergeServerTemporaryList,
   removeStoredTemporaryApi,
+  clearStoredTemporaryApis,
   upsertStoredTemporaryApi,
   type StoredTemporaryApi,
 } from "@/lib/temporary/client-store";
@@ -59,6 +60,8 @@ export function TemporaryPageContent() {
   const [deleteTarget, setDeleteTarget] = useState<StoredTemporaryApi | null>(
     null,
   );
+  const [deleteAllOpen, setDeleteAllOpen] = useState(false);
+  const [deletingAll, setDeletingAll] = useState(false);
   const [list, setList] = useState<StoredTemporaryApi[]>([]);
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const [justCreated, setJustCreated] = useState<StoredTemporaryApi | null>(
@@ -284,6 +287,44 @@ export function TemporaryPageContent() {
     }
   }
 
+  async function confirmDeleteAll() {
+    if (list.length === 0) return;
+    setDeletingAll(true);
+    setError(null);
+    try {
+      await Promise.all(
+        list.map(async (item) => {
+          try {
+            await fetch(`/api/temporary/${item.publicId}`, {
+              method: "DELETE",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+                ...(item.manageToken
+                  ? { "x-manage-token": item.manageToken }
+                  : {}),
+              },
+              body: JSON.stringify(
+                item.manageToken ? { manageToken: item.manageToken } : {},
+              ),
+            });
+          } catch {
+            /* best-effort; local list is cleared either way */
+          }
+        }),
+      );
+      clearStoredTemporaryApis();
+      setHighlightId(null);
+      setJustCreated(null);
+      setDeleteAllOpen(false);
+      await syncList();
+    } catch {
+      setError(dict.common.networkError);
+    } finally {
+      setDeletingAll(false);
+    }
+  }
+
   const statusTone =
     jsonStatus === "ok"
       ? "border-[var(--response)]/25 bg-[var(--response)]/8 text-[var(--response)]"
@@ -315,7 +356,7 @@ export function TemporaryPageContent() {
         </p>
         <p
           className={cn(
-            "max-w-xl text-[14px] leading-6 text-muted-foreground",
+            "max-w-xl whitespace-pre-line text-[14px] leading-6 text-muted-foreground",
             isFa && "font-fa-label",
           )}
         >
@@ -600,7 +641,7 @@ export function TemporaryPageContent() {
       </section>
 
       <section id="my-apis" className="mt-12 scroll-mt-20">
-        <div className="mb-3 flex items-baseline justify-between gap-3">
+        <div className="mb-3 flex items-center justify-between gap-3">
           <h2
             className={cn(
               "text-[15px] font-semibold tracking-tight",
@@ -609,19 +650,34 @@ export function TemporaryPageContent() {
           >
             {t.myApis}
           </h2>
-          <span
-            className={cn(
-              "text-[12px] tabular-nums text-muted-foreground",
-              isFa && "font-fa-label",
-            )}
-          >
-            {t.slotsLabel.replace(
-              "{n}",
-              isFa
-                ? activeCount.toLocaleString("fa-IR")
-                : String(activeCount),
-            )}
-          </span>
+          <div className="flex items-center gap-2">
+            {list.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => setDeleteAllOpen(true)}
+                disabled={deletingAll}
+                className={cn(
+                  "text-[12px] text-[var(--delete)] transition-opacity hover:opacity-80 disabled:opacity-50",
+                  isFa && "font-fa-label",
+                )}
+              >
+                {t.deleteAll}
+              </button>
+            ) : null}
+            <span
+              className={cn(
+                "text-[12px] tabular-nums text-muted-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
+              {t.slotsLabel.replace(
+                "{n}",
+                isFa
+                  ? activeCount.toLocaleString("fa-IR")
+                  : String(activeCount),
+              )}
+            </span>
+          </div>
         </div>
 
         {list.length === 0 ? (
@@ -748,6 +804,65 @@ export function TemporaryPageContent() {
                 {deletingId === deleteTarget.publicId
                   ? t.deleting
                   : t.delete}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {deleteAllOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
+          role="presentation"
+          onClick={() => !deletingAll && setDeleteAllOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="tmp-delete-all-title"
+            className="w-full max-w-sm rounded-xl border border-border bg-card p-5 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+            dir={isFa ? "rtl" : undefined}
+          >
+            <h3
+              id="tmp-delete-all-title"
+              className={cn(
+                "text-[16px] font-semibold",
+                isFa && "font-fa-label",
+              )}
+            >
+              {t.confirmDeleteAll}
+            </h3>
+            <p
+              className={cn(
+                "mt-1.5 text-[13px] leading-5 text-muted-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
+              {t.confirmDeleteAllBody}
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                disabled={deletingAll}
+                onClick={() => setDeleteAllOpen(false)}
+                className={cn(
+                  "h-9 rounded-md border border-border px-3 text-[13px] disabled:opacity-50",
+                  isFa && "font-fa-label",
+                )}
+              >
+                {t.cancel}
+              </button>
+              <button
+                type="button"
+                disabled={deletingAll}
+                onClick={() => void confirmDeleteAll()}
+                className={cn(
+                  "h-9 rounded-md bg-[var(--delete)] px-3 text-[13px] font-medium text-white disabled:opacity-50",
+                  isFa && "font-fa-label",
+                )}
+              >
+                {deletingAll ? t.deleting : t.deleteAll}
               </button>
             </div>
           </div>

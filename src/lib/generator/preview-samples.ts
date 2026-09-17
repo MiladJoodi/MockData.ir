@@ -27,6 +27,46 @@ export const TOPIC_PREVIEW_SAMPLES: Record<
     line1: "Jordan Lee",
     line2: "Writes about product craft.",
   },
+  contacts: {
+    line1: "Nora Blake",
+    line2: "nora@acme.test · Acme",
+  },
+  "team-members": {
+    line1: "Sam Ortiz",
+    line2: "lead · Engineering",
+  },
+  doctors: {
+    line1: "Dr. Lena Park",
+    line2: "Cardiology · City General",
+  },
+  patients: {
+    line1: "Omar Hassan",
+    line2: "A+ · Hypertension",
+  },
+  drivers: {
+    line1: "Chris Adams",
+    line2: "sedan · ★ 4.8",
+  },
+  guests: {
+    line1: "Elena Rossi",
+    line2: "Room 412 · checked_in",
+  },
+  profiles: {
+    line1: "Ava Chen",
+    line2: "@avachen · 12.4k followers",
+  },
+  "girl-students": {
+    line1: "Mia Johnson",
+    line2: "Grade 11 · Lincoln High",
+  },
+  "boy-students": {
+    line1: "Noah Smith",
+    line2: "Grade 10 · Jefferson High",
+  },
+  teachers: {
+    line1: "Emma Wilson",
+    line2: "Mathematics · Oakwood School",
+  },
   products: {
     line1: "Wireless Headphones",
     line2: "€89.99 · Electronics",
@@ -61,6 +101,14 @@ export const TOPIC_PREVIEW_SAMPLES: Record<
     line1: "ORD-10482 · DHL",
     line2: "In transit · 1Z999…",
   },
+  invoices: {
+    line1: "INV-10482",
+    line2: "$420 · paid",
+  },
+  brands: {
+    line1: "Acme",
+    line2: "acme · 128 products",
+  },
   posts: {
     line1: "Designing for speed",
     line2: "By Ava Chen",
@@ -76,6 +124,18 @@ export const TOPIC_PREVIEW_SAMPLES: Record<
   notifications: {
     line1: "New comment",
     line2: "info · 2h ago",
+  },
+  tags: {
+    line1: "typescript",
+    line2: "142 posts",
+  },
+  "content-categories": {
+    line1: "Tutorials",
+    line2: "tutorials · 86 posts",
+  },
+  likes: {
+    line1: "Ava liked a post",
+    line2: "post · love",
   },
   albums: {
     line1: "Random Access Memories",
@@ -94,6 +154,22 @@ export const TOPIC_PREVIEW_SAMPLES: Record<
     line1: "Designing Interfaces",
     line2: "Jordan Lee · 2019",
   },
+  videos: {
+    line1: "Build a dashboard in 10 minutes",
+    line2: "12:40 · 84k views",
+  },
+  images: {
+    line1: "Morning light",
+    line2: "1280×720",
+  },
+  podcasts: {
+    line1: "Code & Coffee",
+    line2: "48 episodes · Tech",
+  },
+  playlists: {
+    line1: "Deep Focus",
+    line2: "32 tracks · Electronic",
+  },
   companies: {
     line1: "Acme Corp",
     line2: "Technology · New York",
@@ -110,9 +186,21 @@ export const TOPIC_PREVIEW_SAMPLES: Record<
     line1: "Frontend Meetup",
     line2: "Berlin · Workshop",
   },
+  projects: {
+    line1: "Dashboard redesign",
+    line2: "in_progress · 72%",
+  },
+  teams: {
+    line1: "Product squad",
+    line2: "8 members · Engineering",
+  },
+  continents: {
+    line1: "Europe",
+    line2: "EU · 44 countries",
+  },
   countries: {
-    line1: "Germany",
-    line2: "DE · Berlin",
+    line1: "England",
+    line2: "GB · London",
   },
   cities: {
     line1: "Munich",
@@ -121,5 +209,21 @@ export const TOPIC_PREVIEW_SAMPLES: Record<
   addresses: {
     line1: "12 Hauptstraße",
     line2: "Munich, Bavaria, Germany",
+  },
+  regions: {
+    line1: "Bavaria",
+    line2: "Germany · Munich",
+  },
+  neighborhoods: {
+    line1: "Riverside",
+    line2: "Munich · Bavaria",
+  },
+  airports: {
+    line1: "Frankfurt",
+    line2: "FRA · Germany",
+  },
+  coordinates: {
+    line1: "48.137154, 11.576124",
+    line2: "Munich · Germany",
   },
 };

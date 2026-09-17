@@ -10,33 +10,14 @@ import {
   softwareApplicationJsonLd,
   websiteJsonLd,
 } from "@/lib/seo";
+import { RESOURCE_PLACEHOLDERS } from "@/lib/resource-images";
+import { apiResources } from "@/lib/catalog";
 import { HeroTitle } from "@/components/home/hero-title";
 import { cn } from "@/lib/utils";
 
 export function HomePageContent() {
   const { dict, locale } = useUiLocale();
   const isFa = locale === "fa";
-
-  const cards = [
-    { id: "auth", href: "/auth", imageSrc: "/placeholders/auth.png" },
-    { id: "users", href: "/users", imageSrc: "/placeholders/users.png" },
-    { id: "posts", href: "/posts", imageSrc: "/placeholders/posts.png" },
-    { id: "comments", href: "/comments", imageSrc: "/placeholders/comments.png" },
-    { id: "albums", href: "/albums", imageSrc: "/placeholders/albums.png" },
-    { id: "photos", href: "/photos", imageSrc: "/placeholders/photos.png" },
-    { id: "todos", href: "/todos", imageSrc: "/placeholders/todos.png" },
-    { id: "products", href: "/products", imageSrc: "/placeholders/products.png" },
-    {
-      id: "notifications",
-      href: "/notifications",
-      imageSrc: "/placeholders/notifications.png",
-    },
-    {
-      id: "countries",
-      href: "/countries",
-      imageSrc: "/placeholders/countries.png",
-    },
-  ] as const;
 
   return (
     <div className="mx-auto max-w-6xl overflow-x-clip px-4 pt-16 pb-24 sm:px-6 sm:pt-24">
@@ -77,15 +58,18 @@ export function HomePageContent() {
           </p>
         </div>
         <div className="grid grid-cols-2 gap-x-3 gap-y-10 lg:grid-cols-5">
-          {cards.map((card) => {
-            const cat = dict.catalog[card.id];
+          {apiResources.map((resource) => {
+            const cat = dict.catalog[resource.id];
             return (
               <CategoryCard
-                key={card.id}
-                href={card.href}
-                title={cat?.title ?? card.id}
-                imageSrc={card.imageSrc}
-                imageAlt={cat?.title ?? card.id}
+                key={resource.id}
+                href={resource.href}
+                title={cat?.title ?? resource.title}
+                imageSrc={
+                  RESOURCE_PLACEHOLDERS[resource.id] ??
+                  "/placeholders/users.png"
+                }
+                imageAlt={cat?.title ?? resource.title}
               />
             );
           })}

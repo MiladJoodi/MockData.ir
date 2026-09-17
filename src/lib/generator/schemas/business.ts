@@ -14,7 +14,7 @@ import {
   takeFields,
 } from "@/lib/generator/helpers";
 import type { GeneratorTopic } from "@/lib/generator/types";
-import { Building2, Briefcase, GraduationCap, CalendarDays } from "lucide-react";
+import { Building2, Briefcase, GraduationCap, CalendarDays, FolderKanban, UsersRound } from "lucide-react";
 
 const JOB_TYPES = {
   en: ["Full-time", "Part-time", "Contract", "Internship"] as const,
@@ -209,6 +209,102 @@ export const businessTopics: GeneratorTopic[] = [
           en: [0, 120],
         }),
         country: ctx.pack.countryName,
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "projects",
+    category: "business",
+    icon: FolderKanban,
+    fields: [
+      { id: "name", default: true },
+      { id: "status", default: true },
+      { id: "owner", default: true },
+      { id: "progress", default: true },
+      { id: "id", default: false },
+      { id: "description", default: false },
+      { id: "teamSize", default: false },
+      { id: "budget", default: false },
+      { id: "startDate", default: false },
+      { id: "dueDate", default: false },
+      { id: "company", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const names =
+        ctx.uiLocale === "fa"
+          ? ["بازطراحی داشبورد", "مهاجرت API", "لانچ موبایل", "سیستم اعلان", "پورتال مشتری"]
+          : [
+              "Dashboard redesign",
+              "API migration",
+              "Mobile launch",
+              "Notification system",
+              "Customer portal",
+            ];
+      const statuses =
+        ctx.uiLocale === "fa"
+          ? ["برنامه‌ریزی", "در حال انجام", "بازبینی", "انجام‌شده", "متوقف"]
+          : ["planning", "in_progress", "review", "done", "on_hold"];
+      const name = pick(rng, names);
+      const record: Record<string, unknown> = {
+        id: id("prj", ctx.index, rng),
+        name,
+        status: pick(rng, statuses),
+        owner: fullName(ctx.pack, rng),
+        progress: int(rng, 5, 100),
+        description:
+          ctx.uiLocale === "fa"
+            ? `${name} — پیگیری تحویل و هماهنگی تیم.`
+            : `${name} — track delivery and team coordination.`,
+        teamSize: int(rng, 2, 24),
+        budget: moneyAmount(rng, ctx.uiLocale, {
+          fa: [50_000_000, 2_000_000_000],
+          en: [5_000, 250_000],
+        }),
+        startDate: isoDate(rng, 200),
+        dueDate: isoDateFuture(rng, 120),
+        company: pick(rng, ctx.pack.companies),
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "teams",
+    category: "business",
+    icon: UsersRound,
+    fields: [
+      { id: "name", default: true },
+      { id: "lead", default: true },
+      { id: "membersCount", default: true },
+      { id: "department", default: true },
+      { id: "id", default: false },
+      { id: "company", default: false },
+      { id: "location", default: false },
+      { id: "createdAt", default: false },
+      { id: "focus", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const names =
+        ctx.uiLocale === "fa"
+          ? ["تیم محصول", "تیم پلتفرم", "تیم رشد", "تیم طراحی", "تیم داده"]
+          : ["Product squad", "Platform team", "Growth crew", "Design guild", "Data team"];
+      const focuses =
+        ctx.uiLocale === "fa"
+          ? ["تجربه کاربری", "زیرساخت", "درآمد", "برند", "بینش"]
+          : ["UX", "Infrastructure", "Revenue", "Brand", "Insights"];
+      const loc = place(ctx.pack, rng);
+      const record: Record<string, unknown> = {
+        id: id("tea", ctx.index, rng),
+        name: pick(rng, names),
+        lead: fullName(ctx.pack, rng),
+        membersCount: int(rng, 3, 28),
+        department: pick(rng, contentList("departments", ctx.uiLocale)),
+        company: pick(rng, ctx.pack.companies),
+        location: `${loc.city}, ${ctx.pack.countryName}`,
+        createdAt: isoDate(rng, 900),
+        focus: pick(rng, focuses),
       };
       return takeFields(record, fields);
     },

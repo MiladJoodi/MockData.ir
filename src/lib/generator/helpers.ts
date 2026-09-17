@@ -133,6 +133,85 @@ export function fullName(pack: LocalePack, rng: () => number): string {
   return `${pick(rng, pack.firstNames)} ${pick(rng, pack.lastNames)}`;
 }
 
+const FEMALE_FIRST_NAMES = {
+  en: [
+    "Emily",
+    "Olivia",
+    "Ava",
+    "Sophia",
+    "Isabella",
+    "Mia",
+    "Emma",
+    "Charlotte",
+    "Amelia",
+    "Harper",
+  ],
+  fa: [
+    "سارا",
+    "مریم",
+    "زهرا",
+    "فاطمه",
+    "ندا",
+    "لیلا",
+    "یاسمن",
+    "نگار",
+    "هستی",
+    "نیلوفر",
+    "آناهیتا",
+    "مهسا",
+    "الهام",
+    "شیدا",
+    "کیمیا",
+  ],
+} as const;
+
+const MALE_FIRST_NAMES = {
+  en: [
+    "James",
+    "Michael",
+    "William",
+    "Noah",
+    "Liam",
+    "Ethan",
+    "Oliver",
+    "Benjamin",
+    "Lucas",
+    "Henry",
+  ],
+  fa: [
+    "رضا",
+    "حسین",
+    "امیر",
+    "محمد",
+    "پارسا",
+    "آرمان",
+    "کیان",
+    "آرش",
+    "سینا",
+    "پویا",
+    "بهراد",
+    "نیما",
+    "سامان",
+    "فرزاد",
+    "مهرداد",
+  ],
+} as const;
+
+export function fullNameByGender(
+  pack: LocalePack,
+  rng: () => number,
+  uiLocale: "en" | "fa",
+  gender: "female" | "male",
+): string {
+  const first = pick(
+    rng,
+    gender === "female"
+      ? FEMALE_FIRST_NAMES[uiLocale]
+      : MALE_FIRST_NAMES[uiLocale],
+  );
+  return `${first} ${pick(rng, pack.lastNames)}`;
+}
+
 export function usernameFromName(name: string, rng: () => number): string {
   let base = slugify(name).replace(/-/g, "");
   if (base.length < 2) {

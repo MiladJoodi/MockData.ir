@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { apiResources } from "@/lib/catalog";
+import { RESOURCE_PLACEHOLDERS } from "@/lib/resource-images";
 import { cn } from "@/lib/utils";
 
 type MenuPos = {
@@ -15,24 +17,35 @@ type MenuPos = {
 
 function positionForButton(
   button: HTMLButtonElement,
-  preferEnd: boolean,
+  isFa: boolean,
 ): MenuPos {
   const rect = button.getBoundingClientRect();
   const width = 200;
   const pad = 8;
   const top = rect.bottom + 4;
-  const fitsStart = rect.left + width <= window.innerWidth - pad;
-  const useEnd = preferEnd || !fitsStart;
+  const maxLeft = window.innerWidth - width - pad;
 
-  if (useEnd) {
+  if (isFa) {
+    // Open toward the right (reading start in FA): pin to button left when possible.
+    const openRightLeft = Math.min(Math.max(pad, rect.left), maxLeft);
+    const openRightFits = rect.left + width <= window.innerWidth - pad;
+    if (openRightFits || rect.left < window.innerWidth / 2) {
+      return { top, left: openRightLeft };
+    }
+    // Button near the right edge — keep menu on-screen by aligning to button end.
     return {
       top,
       right: Math.max(pad, window.innerWidth - rect.right),
     };
   }
+
+  const fitsStart = rect.left + width <= window.innerWidth - pad;
+  if (fitsStart) {
+    return { top, left: Math.max(pad, rect.left) };
+  }
   return {
     top,
-    left: Math.max(pad, rect.left),
+    right: Math.max(pad, window.innerWidth - rect.right),
   };
 }
 
@@ -122,10 +135,13 @@ export function ResourcesNavMenu({
             right: menuPos.right,
           }}
           className="fixed z-50 max-h-[min(24rem,70vh)] w-[12.5rem] overflow-y-auto rounded-lg border border-border bg-background py-1 shadow-md"
+          dir={isFa ? "rtl" : "ltr"}
         >
           {apiResources.map((resource) => {
             const title =
               dict.catalog[resource.id]?.title ?? resource.title;
+            const imageSrc =
+              RESOURCE_PLACEHOLDERS[resource.id] ?? "/placeholders/users.png";
             return (
               <Link
                 key={resource.id}
@@ -133,11 +149,19 @@ export function ResourcesNavMenu({
                 role="menuitem"
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "block px-3 py-2 text-[13px] text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground",
+                  "flex items-center gap-2 px-2.5 py-1.5 text-start text-[13px] text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground",
                   isFa && "font-fa-label",
                 )}
               >
-                {title}
+                <Image
+                  src={imageSrc}
+                  alt=""
+                  width={18}
+                  height={18}
+                  className="size-[18px] shrink-0 object-contain"
+                  aria-hidden
+                />
+                <span className="min-w-0 truncate">{title}</span>
               </Link>
             );
           })}

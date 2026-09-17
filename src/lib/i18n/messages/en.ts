@@ -205,9 +205,12 @@ export type Messages = {
     emptyList: string;
     copyUrl: string;
     delete: string;
+    deleteAll: string;
     deleting: string;
     confirmDelete: string;
     confirmDeleteBody: string;
+    confirmDeleteAll: string;
+    confirmDeleteAllBody: string;
     cancel: string;
     limitReached: string;
     limitReachedBody: string;
@@ -592,9 +595,12 @@ export const en: Messages = {
     emptyList: "No active APIs yet.",
     copyUrl: "Copy",
     delete: "Delete",
+    deleteAll: "Delete all",
     deleting: "…",
     confirmDelete: "Delete this API?",
     confirmDeleteBody: "The URL will stop working right away.",
+    confirmDeleteAll: "Delete all APIs?",
+    confirmDeleteAllBody: "Every URL in this list will stop working right away.",
     cancel: "Cancel",
     limitReached: "You've hit the 5-API limit.",
     limitReachedBody: "Delete one from the list below, or wait until one expires.",
@@ -666,7 +672,7 @@ export const en: Messages = {
       IR: "Iran",
       DE: "Germany",
       US: "United States",
-      GB: "United Kingdom",
+      GB: "England",
       FR: "France",
       NL: "Netherlands",
       JP: "Japan",
@@ -795,6 +801,67 @@ export const en: Messages = {
       longitude: "Longitude",
       country: "Country",
       city: "City",
+      notes: "Notes",
+      team: "Team",
+      joinedAt: "Joined at",
+      skills: "Skills",
+      specialty: "Specialty",
+      hospital: "Hospital",
+      licenseNumber: "License number",
+      yearsExperience: "Years of experience",
+      bloodType: "Blood type",
+      diagnosis: "Diagnosis",
+      doctor: "Doctor",
+      admittedAt: "Admitted at",
+      vehicleType: "Vehicle type",
+      plateNumber: "Plate number",
+      tripsCount: "Trips count",
+      roomNumber: "Room number",
+      checkIn: "Check-in",
+      checkOut: "Check-out",
+      nights: "Nights",
+      followers: "Followers",
+      following: "Following",
+      grade: "Grade",
+      school: "School",
+      gpa: "GPA",
+      major: "Major",
+      enrollmentYear: "Enrollment year",
+      subject: "Subject",
+      classesCount: "Classes count",
+      invoiceNumber: "Invoice number",
+      issueDate: "Issue date",
+      dueDate: "Due date",
+      tax: "Tax",
+      itemsCount: "Items count",
+      target: "Target",
+      targetType: "Target type",
+      reaction: "Reaction",
+      color: "Color",
+      thumbnail: "Thumbnail",
+      channel: "Channel",
+      url: "URL",
+      width: "Width",
+      height: "Height",
+      alt: "Alt text",
+      photographer: "Photographer",
+      host: "Host",
+      episodes: "Episodes",
+      subscribers: "Subscribers",
+      owner: "Owner",
+      public: "Public",
+      progress: "Progress",
+      teamSize: "Team size",
+      budget: "Budget",
+      startDate: "Start date",
+      membersCount: "Members count",
+      focus: "Focus",
+      countriesCount: "Countries count",
+      areaKm2: "Area (km²)",
+      timezone: "Timezone",
+      terminals: "Terminals",
+      altitude: "Altitude",
+      accuracy: "Accuracy",
     },
     topics: {
       users: {
@@ -830,6 +897,86 @@ export const en: Messages = {
         preview: {
           line1: "Jordan Lee",
           line2: "Writes about product craft.",
+        },
+      },
+      contacts: {
+        name: "Contacts",
+        description: "CRM-style people and company links",
+        preview: {
+          line1: "Nora Blake",
+          line2: "nora@acme.test · Acme",
+        },
+      },
+      "team-members": {
+        name: "Team members",
+        description: "People on product and engineering teams",
+        preview: {
+          line1: "Sam Ortiz",
+          line2: "lead · Engineering",
+        },
+      },
+      doctors: {
+        name: "Doctors",
+        description: "Clinicians with specialty and hospital",
+        preview: {
+          line1: "Dr. Lena Park",
+          line2: "Cardiology · City General",
+        },
+      },
+      patients: {
+        name: "Patients",
+        description: "Medical records with diagnosis and blood type",
+        preview: {
+          line1: "Omar Hassan",
+          line2: "A+ · Hypertension",
+        },
+      },
+      drivers: {
+        name: "Drivers",
+        description: "Fleet drivers with vehicle and rating",
+        preview: {
+          line1: "Chris Adams",
+          line2: "sedan · ★ 4.8",
+        },
+      },
+      guests: {
+        name: "Guests",
+        description: "Hotel guests with room and stay status",
+        preview: {
+          line1: "Elena Rossi",
+          line2: "Room 412 · checked_in",
+        },
+      },
+      profiles: {
+        name: "Profiles",
+        description: "Social profiles with followers and bio",
+        preview: {
+          line1: "Ava Chen",
+          line2: "@avachen · 12.4k followers",
+        },
+      },
+      "girl-students": {
+        name: "Girl students",
+        description: "Female students with grade and school",
+        preview: {
+          line1: "Mia Johnson",
+          line2: "Grade 11 · Lincoln High",
+        },
+      },
+      "boy-students": {
+        name: "Boy students",
+        description: "Male students with grade and school",
+        preview: {
+          line1: "Noah Smith",
+          line2: "Grade 10 · Jefferson High",
+        },
+      },
+      teachers: {
+        name: "Teachers",
+        description: "Educators with subject and school",
+        preview: {
+          line1: "Emma Wilson",
+          line2: "Mathematics · Oakwood School",
         },
       },
       products: {
@@ -883,6 +1030,16 @@ export const en: Messages = {
         description: "Carriers and tracking status",
         preview: { line1: "ORD-10482 · DHL", line2: "In transit" },
       },
+      invoices: {
+        name: "Invoices",
+        description: "Billing documents with amounts and due dates",
+        preview: { line1: "INV-10482", line2: "$420 · paid" },
+      },
+      brands: {
+        name: "Brands",
+        description: "Store brands with logos and catalogs",
+        preview: { line1: "Acme", line2: "acme · 128 products" },
+      },
       posts: {
         name: "Posts",
         description: "Blog and feed posts",
@@ -909,6 +1066,21 @@ export const en: Messages = {
         description: "In-app alerts and digests",
         preview: { line1: "New comment", line2: "info · 2h ago" },
       },
+      tags: {
+        name: "Tags",
+        description: "Content tags with slugs and counts",
+        preview: { line1: "typescript", line2: "142 posts" },
+      },
+      "content-categories": {
+        name: "Content categories",
+        description: "Editorial categories for posts",
+        preview: { line1: "Tutorials", line2: "tutorials · 86 posts" },
+      },
+      likes: {
+        name: "Likes",
+        description: "Reactions on posts and comments",
+        preview: { line1: "Ava liked a post", line2: "post · love" },
+      },
       albums: {
         name: "Albums",
         description: "Music albums with cover art",
@@ -933,6 +1105,29 @@ export const en: Messages = {
         description: "Titles with authors and covers",
         preview: { line1: "Designing Interfaces", line2: "Jordan Lee · 2019" },
       },
+      videos: {
+        name: "Videos",
+        description: "Video clips with duration and views",
+        preview: {
+          line1: "Build a dashboard in 10 minutes",
+          line2: "12:40 · 84k views",
+        },
+      },
+      images: {
+        name: "Images",
+        description: "Photos with dimensions and tags",
+        preview: { line1: "Morning light", line2: "1280×720" },
+      },
+      podcasts: {
+        name: "Podcasts",
+        description: "Shows with hosts and episode counts",
+        preview: { line1: "Code & Coffee", line2: "48 episodes · Tech" },
+      },
+      playlists: {
+        name: "Playlists",
+        description: "Track lists with owners and genres",
+        preview: { line1: "Deep Focus", line2: "32 tracks · Electronic" },
+      },
       companies: {
         name: "Companies",
         description: "Organizations and industries",
@@ -956,10 +1151,25 @@ export const en: Messages = {
         description: "Meetups and conferences",
         preview: { line1: "Frontend Meetup", line2: "Berlin · Workshop" },
       },
+      projects: {
+        name: "Projects",
+        description: "Workstreams with progress and budget",
+        preview: { line1: "Dashboard redesign", line2: "in_progress · 72%" },
+      },
+      teams: {
+        name: "Teams",
+        description: "Company teams with leads and size",
+        preview: { line1: "Product squad", line2: "8 members · Engineering" },
+      },
+      continents: {
+        name: "Continents",
+        description: "World continents with codes and stats",
+        preview: { line1: "Europe", line2: "EU · 44 countries" },
+      },
       countries: {
         name: "Countries",
         description: "Country names, codes, and flags",
-        preview: { line1: "Germany", line2: "DE · Berlin" },
+        preview: { line1: "England", line2: "GB · London" },
       },
       cities: {
         name: "Cities",
@@ -972,6 +1182,29 @@ export const en: Messages = {
         preview: {
           line1: "12 Hauptstraße",
           line2: "Munich, Bavaria, Germany",
+        },
+      },
+      regions: {
+        name: "Regions",
+        description: "States, provinces, and regions",
+        preview: { line1: "Bavaria", line2: "Germany · Munich" },
+      },
+      neighborhoods: {
+        name: "Neighborhoods",
+        description: "City districts and local areas",
+        preview: { line1: "Riverside", line2: "Munich · Bavaria" },
+      },
+      airports: {
+        name: "Airports",
+        description: "Airports with IATA codes and cities",
+        preview: { line1: "Frankfurt", line2: "FRA · Germany" },
+      },
+      coordinates: {
+        name: "Geo coordinates",
+        description: "Latitude, longitude, and place labels",
+        preview: {
+          line1: "48.137154, 11.576124",
+          line2: "Munich · Germany",
         },
       },
     },

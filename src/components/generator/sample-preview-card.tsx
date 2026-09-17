@@ -57,7 +57,8 @@ function formatValue(value: unknown, isFa: boolean, fieldId?: string): string {
     if (
       fieldId === "founded" ||
       fieldId === "year" ||
-      fieldId === "age"
+      fieldId === "age" ||
+      fieldId === "enrollmentYear"
     ) {
       const raw = String(value);
       return isFa ? toFaDigits(raw) : raw;

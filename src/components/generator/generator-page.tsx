@@ -11,12 +11,8 @@ import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { GENERATOR_MAX_RECORDS } from "@/lib/generator/constants";
 import { generateBatchChunked, clampQuantity } from "@/lib/generator/generate";
 import { getGeneratorTopic } from "@/lib/generator/registry";
-import {
-  fieldsForMode,
-  adjustFieldsForMode,
-  visibleFieldsForMode,
-  type GeneratorOutputMode,
-} from "@/lib/generator/modes";
+import { fieldsForMode, adjustFieldsForMode, visibleFieldsForMode, type GeneratorOutputMode } from "@/lib/generator/modes";
+import { recordToTypeScript } from "@/lib/generator/to-typescript";
 import {
   loadGeneratorSession,
   saveGeneratorSession,
@@ -180,14 +176,20 @@ export function GeneratorPageContent() {
     return { ok: true as const, reason: null };
   }, [records, jsonText, t]);
 
-  function onDownload() {
+  function onDownload(format: "json" | "ts") {
     if (!records || !topicId) return;
     try {
-      const blob = new Blob([jsonText], { type: "application/json" });
+      const text =
+        format === "json"
+          ? jsonText
+          : recordToTypeScript(topicId, records[0] ?? {});
+      const blob = new Blob([text], {
+        type: format === "json" ? "application/json" : "text/plain",
+      });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${topicId}-${records.length}.json`;
+      a.download = `${topicId}-${records.length}.${format}`;
       a.click();
       URL.revokeObjectURL(url);
     } catch {
@@ -294,7 +296,7 @@ export function GeneratorPageContent() {
         </p>
       </header>
 
-      <div className="space-y-6 pb-24 md:pb-0">
+      <div className="space-y-6">
         <TopicPicker
           value={topicId}
           onChange={selectTopic}
@@ -359,16 +361,14 @@ export function GeneratorPageContent() {
               }
               isFa={isFa}
             />
-            <div className="hidden md:block">
-              <GenerateButton
-                label={generating ? generatingLabel : generateLabel}
-                loading={generating}
-                progress={progress}
-                onClick={onGenerate}
-                isFa={isFa}
-                fullWidth
-              />
-            </div>
+            <GenerateButton
+              label={generating ? generatingLabel : generateLabel}
+              loading={generating}
+              progress={progress}
+              onClick={onGenerate}
+              isFa={isFa}
+              fullWidth
+            />
           </section>
         ) : null}
 
@@ -413,7 +413,6 @@ export function GeneratorPageContent() {
             onDownload={onDownload}
             onCreateApi={onCreateApi}
             createdUrl={createdUrl}
-            openTemporaryLabel={t.openTemporary}
             generatedLabel={t.generated.replace(
               "{n}",
               records.length.toLocaleString(isFa ? "fa-IR" : "en-US"),
@@ -421,19 +420,6 @@ export function GeneratorPageContent() {
           />
         ) : null}
       </div>
-
-      {topic ? (
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-[var(--header-bg)] p-3 backdrop-blur-md md:hidden">
-          <GenerateButton
-            label={generating ? generatingLabel : generateLabel}
-            loading={generating}
-            progress={progress}
-            onClick={onGenerate}
-            isFa={isFa}
-            fullWidth
-          />
-        </div>
-      ) : null}
 
       <p className="sr-only" aria-live="polite">
         {generating

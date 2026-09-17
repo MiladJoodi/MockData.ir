@@ -8,6 +8,7 @@ import {
   isoDate,
   pick,
   pickN,
+  slugify,
   takeFields,
 } from "@/lib/generator/helpers";
 import type { GeneratorTopic } from "@/lib/generator/types";
@@ -16,6 +17,9 @@ import {
   MessageSquare,
   MessagesSquare,
   Bell,
+  Hash,
+  FolderTree,
+  Heart,
 } from "lucide-react";
 
 const TAGS = {
@@ -191,6 +195,110 @@ export const contentTopics: GeneratorTopic[] = [
         date: isoDate(rng, 14),
         read: rng() > 0.5,
         actionUrl: `/notifications/${ctx.index + 1}`,
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "tags",
+    category: "content",
+    icon: Hash,
+    fields: [
+      { id: "name", default: true },
+      { id: "slug", default: true },
+      { id: "postsCount", default: true },
+      { id: "id", default: false },
+      { id: "description", default: false },
+      { id: "color", default: false },
+      { id: "followers", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const name = pick(rng, TAGS[ctx.uiLocale]);
+      const colors = ["#2563eb", "#16a34a", "#ca8a04", "#dc2626", "#7c3aed", "#0891b2"];
+      const record: Record<string, unknown> = {
+        id: id("tag", ctx.index, rng),
+        name,
+        slug: slugify(name) || `tag-${ctx.index + 1}`,
+        postsCount: int(rng, 2, 900),
+        description:
+          ctx.uiLocale === "fa"
+            ? `محتواهای مرتبط با ${name}.`
+            : `Posts tagged with ${name}.`,
+        color: pick(rng, colors),
+        followers: int(rng, 10, 50_000),
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "content-categories",
+    category: "content",
+    icon: FolderTree,
+    fields: [
+      { id: "name", default: true },
+      { id: "slug", default: true },
+      { id: "postsCount", default: true },
+      { id: "id", default: false },
+      { id: "description", default: false },
+      { id: "parentCategory", default: false },
+      { id: "image", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const names =
+        ctx.uiLocale === "fa"
+          ? ["آموزش", "خبر", "نقد", "راهنما", "داستان", "فناوری"]
+          : ["Tutorials", "News", "Reviews", "Guides", "Stories", "Tech"];
+      const name = pick(rng, names);
+      const parents =
+        ctx.uiLocale === "fa"
+          ? ["محتوا", "وبلاگ", "مجله", null]
+          : ["Content", "Blog", "Magazine", null];
+      const record: Record<string, unknown> = {
+        id: id("ccat", ctx.index, rng),
+        name,
+        slug: slugify(name) || `content-cat-${ctx.index + 1}`,
+        postsCount: int(rng, 5, 400),
+        description:
+          ctx.uiLocale === "fa"
+            ? `دسته‌بندی ${name} برای مقالات و پست‌ها.`
+            : `${name} category for articles and posts.`,
+        parentCategory: pick(rng, parents),
+        image: imageUrl(`ccat-${ctx.index}`, 400, 240),
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "likes",
+    category: "content",
+    icon: Heart,
+    fields: [
+      { id: "user", default: true },
+      { id: "target", default: true },
+      { id: "targetType", default: true },
+      { id: "date", default: true },
+      { id: "id", default: false },
+      { id: "reaction", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const targetTypes =
+        ctx.uiLocale === "fa"
+          ? ["پست", "کامنت", "تصویر", "ویدیو"]
+          : ["post", "comment", "image", "video"];
+      const reactions =
+        ctx.uiLocale === "fa"
+          ? ["پسند", "عاشق", "خنده", "آفرین"]
+          : ["like", "love", "laugh", "clap"];
+      const record: Record<string, unknown> = {
+        id: id("lik", ctx.index, rng),
+        user: fullName(ctx.pack, rng),
+        target: pick(rng, contentList("postTitles", ctx.uiLocale)),
+        targetType: pick(rng, targetTypes),
+        date: isoDate(rng, 60),
+        reaction: pick(rng, reactions),
       };
       return takeFields(record, fields);
     },

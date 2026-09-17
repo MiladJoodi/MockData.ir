@@ -9,10 +9,9 @@ export const GENERATOR_COUNTRIES: ReadonlyArray<{
   labelKey: string;
 }> = [
   { code: "all", labelKey: "all" },
-  { code: "IR", labelKey: "IR" },
+  { code: "GB", labelKey: "GB" },
   { code: "DE", labelKey: "DE" },
   { code: "US", labelKey: "US" },
-  { code: "GB", labelKey: "GB" },
   { code: "FR", labelKey: "FR" },
   { code: "NL", labelKey: "NL" },
   { code: "JP", labelKey: "JP" },

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { Check, ChevronDown, CircleAlert, Download, Loader2 } from "lucide-react";
 import { CopyButton } from "@/components/docs/copy-button";
 import { highlightCode } from "@/lib/syntax";
@@ -33,7 +32,6 @@ export function GeneratedResult({
   onDownload,
   onCreateApi,
   createdUrl,
-  openTemporaryLabel,
   generatedLabel,
 }: {
   count: number;
@@ -55,10 +53,9 @@ export function GeneratedResult({
   duration: TemporaryDuration;
   onDurationChange: (d: TemporaryDuration) => void;
   durationLabels: Record<TemporaryDuration, string>;
-  onDownload: () => void;
+  onDownload: (format: "json" | "ts") => void;
   onCreateApi: () => void;
   createdUrl: string | null;
-  openTemporaryLabel: string;
   generatedLabel: string;
 }) {
   const [view, setView] = useState<"json" | "type">("json");
@@ -88,6 +85,94 @@ export function GeneratedResult({
         {generatedLabel}
       </h2>
 
+      <div
+        className="code-pane overflow-hidden rounded-lg border border-[var(--vscode-border)] bg-[var(--vscode-bg)]"
+        dir="ltr"
+      >
+        <div className="flex items-center gap-2 border-b border-[var(--vscode-border)] bg-[var(--vscode-bg-elevated)] px-3 py-2">
+          <div className="flex items-center gap-1.5" aria-hidden>
+            <span className="size-2.5 rounded-full bg-[#ff5f56]" />
+            <span className="size-2.5 rounded-full bg-[#ffbd2e]" />
+            <span className="size-2.5 rounded-full bg-[#27c93f]" />
+          </div>
+          <span
+            className={cn(
+              "min-w-0 truncate text-[10px] text-[var(--vscode-fg)]/45",
+              isFa ? "font-fa-label" : "font-mono",
+            )}
+          >
+            {topicLabel} · {count}
+          </span>
+          <div
+            className="ms-auto flex items-center rounded border border-[var(--vscode-border)] bg-[var(--vscode-bg)] p-0.5"
+            role="group"
+            aria-label="View"
+          >
+            <button
+              type="button"
+              onClick={() => setView("json")}
+              className={cn(
+                "rounded px-2.5 py-1 font-mono text-[10px] font-medium transition-colors",
+                view === "json"
+                  ? "bg-[var(--response-fg)]/20 text-[var(--response-fg)]"
+                  : "text-[var(--vscode-fg)]/70 hover:text-[var(--vscode-fg)]",
+              )}
+            >
+              {viewJsonLabel}
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("type")}
+              className={cn(
+                "rounded px-2.5 py-1 font-mono text-[10px] font-medium transition-colors",
+                view === "type"
+                  ? "bg-[var(--response-fg)]/20 text-[var(--response-fg)]"
+                  : "text-[var(--vscode-fg)]/70 hover:text-[var(--vscode-fg)]",
+              )}
+            >
+              {viewTypeLabel}
+            </button>
+          </div>
+          <CopyButton
+            value={displayText}
+            label={copyLabel}
+            className="text-[var(--vscode-fg)]/70 hover:bg-white/10 hover:text-[var(--vscode-fg)]"
+          />
+          <button
+            type="button"
+            onClick={() => onDownload(view === "json" ? "json" : "ts")}
+            aria-label={downloadLabel}
+            title={downloadLabel}
+            className="grid size-7 place-items-center rounded-md text-[var(--vscode-fg)]/70 transition-colors hover:bg-white/10 hover:text-[var(--vscode-fg)]"
+          >
+            <Download className="size-3.5" aria-hidden />
+          </button>
+        </div>
+        <pre
+          className="code-scroll m-0 h-[28rem] overflow-auto p-0 font-mono text-[12.5px] leading-6"
+          dir="ltr"
+        >
+          <code className="grid min-w-0">
+            {displayLines.map((line, index) => (
+              <span key={index} className="flex min-w-0">
+                <span className="sticky left-0 w-10 shrink-0 select-none bg-[var(--vscode-bg)] pr-3 text-right text-[var(--vscode-line)]">
+                  {index + 1}
+                </span>
+                <span className="min-w-0 flex-1 break-all pr-4 whitespace-pre-wrap">
+                  {highlightCode(
+                    line.length ? line : " ",
+                    view === "json" ? "json" : "types",
+                    {
+                      persianStrings: isFa && view === "json",
+                    },
+                  )}
+                </span>
+              </span>
+            ))}
+          </code>
+        </pre>
+      </div>
+
       {createdUrl ? (
         <div
           key={createdUrl}
@@ -99,44 +184,36 @@ export function GeneratedResult({
           )}
         >
           <div className="flex items-center justify-center gap-2">
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[var(--response)] text-white">
-              <Check className="size-3.5" strokeWidth={2.5} aria-hidden />
+            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[var(--response)] text-white">
+              <Check className="size-3" strokeWidth={2.5} aria-hidden />
             </span>
             <p
               className={cn(
-                "text-[14px] font-medium text-[var(--response)]",
+                "text-[13px] font-medium text-[var(--response)]",
                 isFa && "font-fa-label",
               )}
             >
               {createdTitle}
             </p>
           </div>
-          <div className="flex items-center justify-center gap-1" dir="ltr">
+          <div
+            className="flex min-w-0 items-center justify-center gap-0.5"
+            dir="ltr"
+          >
             <a
               href={createdUrl}
               target="_blank"
               rel="noopener noreferrer"
               title={createdUrl}
-              className="max-w-[calc(100%-2.25rem)] truncate text-center font-mono text-[14px] text-[var(--response)] underline-offset-2 hover:underline sm:text-[15px]"
+              className="min-w-0 max-w-[calc(100%-1.75rem)] truncate text-center font-mono text-[11px] text-[var(--response)] underline-offset-2 hover:underline sm:text-[12px]"
             >
               {createdUrl}
             </a>
             <CopyButton
               value={createdUrl}
               label={copyLabel}
-              className="size-8 shrink-0 text-[var(--response)] hover:bg-[var(--response)]/15 hover:text-[var(--response)]"
+              className="size-7 shrink-0 text-[var(--response)] hover:bg-[var(--response)]/15 hover:text-[var(--response)]"
             />
-          </div>
-          <div className="flex justify-center">
-            <Link
-              href="/temporary"
-              className={cn(
-                "text-[12px] text-muted-foreground underline-offset-2 hover:underline",
-                isFa && "font-fa-label",
-              )}
-            >
-              {openTemporaryLabel}
-            </Link>
           </div>
         </div>
       ) : null}
@@ -213,92 +290,6 @@ export function GeneratedResult({
           </p>
         </div>
       ) : null}
-
-      <div
-        className="code-pane overflow-hidden rounded-lg border border-[var(--vscode-border)] bg-[var(--vscode-bg)]"
-        dir="ltr"
-      >
-        <div className="flex items-center gap-2 border-b border-[var(--vscode-border)] bg-[var(--vscode-bg-elevated)] px-3 py-2">
-          <div className="flex items-center gap-1.5" aria-hidden>
-            <span className="size-2.5 rounded-full bg-[#ff5f56]" />
-            <span className="size-2.5 rounded-full bg-[#ffbd2e]" />
-            <span className="size-2.5 rounded-full bg-[#27c93f]" />
-          </div>
-          <span
-            className={cn(
-              "min-w-0 truncate text-[10px] text-[var(--vscode-fg)]/45",
-              isFa ? "font-fa-label" : "font-mono",
-            )}
-          >
-            {topicLabel} · {count}
-          </span>
-          <div
-            className="ms-auto flex items-center rounded border border-[var(--vscode-border)] bg-[var(--vscode-bg)] p-0.5"
-            role="group"
-            aria-label="View"
-          >
-            <button
-              type="button"
-              onClick={() => setView("json")}
-              className={cn(
-                "rounded px-2.5 py-1 font-mono text-[10px] font-medium transition-colors",
-                view === "json"
-                  ? "bg-[var(--response-fg)]/20 text-[var(--response-fg)]"
-                  : "text-[var(--vscode-fg)]/70 hover:text-[var(--vscode-fg)]",
-              )}
-            >
-              {viewJsonLabel}
-            </button>
-            <button
-              type="button"
-              onClick={() => setView("type")}
-              className={cn(
-                "rounded px-2.5 py-1 font-mono text-[10px] font-medium transition-colors",
-                view === "type"
-                  ? "bg-[var(--response-fg)]/20 text-[var(--response-fg)]"
-                  : "text-[var(--vscode-fg)]/70 hover:text-[var(--vscode-fg)]",
-              )}
-            >
-              {viewTypeLabel}
-            </button>
-          </div>
-          <CopyButton
-            value={displayText}
-            label={copyLabel}
-            className="text-[var(--vscode-fg)]/70 hover:bg-white/10 hover:text-[var(--vscode-fg)]"
-          />
-          {view === "json" ? (
-            <button
-              type="button"
-              onClick={onDownload}
-              aria-label={downloadLabel}
-              title={downloadLabel}
-              className="grid size-7 place-items-center rounded-md text-[var(--vscode-fg)]/70 transition-colors hover:bg-white/10 hover:text-[var(--vscode-fg)]"
-            >
-              <Download className="size-3.5" aria-hidden />
-            </button>
-          ) : null}
-        </div>
-        <pre
-          className="code-scroll m-0 h-[28rem] overflow-auto p-0 font-mono text-[12.5px] leading-6"
-          dir="ltr"
-        >
-          <code className="grid min-w-0">
-            {displayLines.map((line, index) => (
-              <span key={index} className="flex min-w-0">
-                <span className="sticky left-0 w-10 shrink-0 select-none bg-[var(--vscode-bg)] pr-3 text-right text-[var(--vscode-line)]">
-                  {index + 1}
-                </span>
-                <span className="min-w-0 flex-1 break-all pr-4 whitespace-pre-wrap">
-                  {highlightCode(line.length ? line : " ", view === "json" ? "json" : "types", {
-                    persianStrings: isFa && view === "json",
-                  })}
-                </span>
-              </span>
-            ))}
-          </code>
-        </pre>
-      </div>
     </section>
   );
 }

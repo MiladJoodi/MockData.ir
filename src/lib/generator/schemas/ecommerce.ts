@@ -26,6 +26,8 @@ import {
   TicketPercent,
   CreditCard,
   Truck,
+  FileSpreadsheet,
+  BadgeCheck,
 } from "lucide-react";
 
 const ORDER_STATUSES = {
@@ -370,6 +372,89 @@ export const ecommerceTopics: GeneratorTopic[] = [
         trackingNumber: `${carrier.slice(0, 3).toUpperCase()}${int(rng, 1e9, 2e9)}`,
         estimatedDelivery: isoDateFuture(rng, 14),
         country: ctx.pack.countryName,
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "invoices",
+    category: "ecommerce",
+    icon: FileSpreadsheet,
+    fields: [
+      { id: "invoiceNumber", default: true },
+      { id: "customer", default: true },
+      { id: "amount", default: true },
+      { id: "status", default: true },
+      { id: "id", default: false },
+      { id: "issueDate", default: false },
+      { id: "dueDate", default: false },
+      { id: "currency", default: false },
+      { id: "tax", default: false },
+      { id: "itemsCount", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const statuses =
+        ctx.uiLocale === "fa"
+          ? ["پرداخت‌شده", "در انتظار", "سررسید گذشته", "پیش‌نویس"]
+          : ["paid", "pending", "overdue", "draft"];
+      const amount = moneyAmount(rng, ctx.uiLocale, {
+        fa: [200_000, 40_000_000],
+        en: [40, 2400],
+      });
+      const tax = Math.round(amount * 0.09);
+      const record: Record<string, unknown> = {
+        id: id("inv", ctx.index, rng),
+        invoiceNumber:
+          ctx.uiLocale === "fa"
+            ? `INV-${10000 + ctx.index + int(rng, 0, 200)}`
+            : `INV-${10000 + ctx.index + int(rng, 0, 200)}`,
+        customer: fullName(ctx.pack, rng),
+        amount,
+        status: pick(rng, statuses),
+        issueDate: isoDate(rng, 90),
+        dueDate: isoDateFuture(rng, 45),
+        currency: ctx.pack.currency,
+        tax,
+        itemsCount: int(rng, 1, 12),
+      };
+      return takeFields(record, fields);
+    },
+  },
+  {
+    id: "brands",
+    category: "ecommerce",
+    icon: BadgeCheck,
+    fields: [
+      { id: "name", default: true },
+      { id: "logo", default: true },
+      { id: "slug", default: true },
+      { id: "country", default: true },
+      { id: "id", default: false },
+      { id: "description", default: false },
+      { id: "website", default: false },
+      { id: "productCount", default: false },
+      { id: "founded", default: false },
+    ],
+    generateOne(ctx, fields) {
+      const rng = createRng(ctx.seed, ctx.index);
+      const name = pick(rng, ctx.pack.companies);
+      const record: Record<string, unknown> = {
+        id: id("brn", ctx.index, rng),
+        name,
+        logo: imageUrl(`brn-${ctx.seed}-${ctx.index}`, 200, 200),
+        slug: slugify(name) || `brand-${ctx.index + 1}`,
+        country: ctx.pack.countryName,
+        description:
+          ctx.uiLocale === "fa"
+            ? `برند ${name} در حوزه خرده‌فروشی و محصولات مصرفی.`
+            : `${name} — consumer products and retail brand.`,
+        website:
+          ctx.uiLocale === "fa"
+            ? `https://example.ir/brands/${ctx.index + 1}`
+            : `https://example.com/brands/${ctx.index + 1}`,
+        productCount: int(rng, 8, 420),
+        founded: int(rng, 1960, 2020),
       };
       return takeFields(record, fields);
     },

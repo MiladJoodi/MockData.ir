@@ -45,7 +45,11 @@ export function resolveLocalePack(
   uiLocale: "en" | "fa" = "en",
 ): LocalePack {
   if (uiLocale === "fa") return irFaPack;
-  if (country !== "all") return PACKS[country];
+  if (country !== "all") {
+    // EN UI never resolves to Iran — fall back to GB (England).
+    if (country === "IR") return PACKS.GB;
+    return PACKS[country];
+  }
   return PACKS[EN_ALL_CODES[index % EN_ALL_CODES.length]!];
 }
 
@@ -53,4 +57,9 @@ export function getLocalePack(code: GeneratorCountryCode): LocalePack {
   return PACKS[code];
 }
 
-export { PACKS as LOCALE_PACKS, ALL_CODES as LOCALE_COUNTRY_CODES, irFaPack };
+export {
+  PACKS as LOCALE_PACKS,
+  ALL_CODES as LOCALE_COUNTRY_CODES,
+  EN_ALL_CODES as EN_LOCALE_COUNTRY_CODES,
+  irFaPack,
+};

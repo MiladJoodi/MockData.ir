@@ -2,7 +2,7 @@ import type { LocalePack } from "@/lib/generator/locales/types";
 
 export const gbPack: LocalePack = {
   code: "GB",
-  countryName: "United Kingdom",
+  countryName: "England",
   currency: "GBP",
   currencySymbol: "£",
   regionLabel: "region",

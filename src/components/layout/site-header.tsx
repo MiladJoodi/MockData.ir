@@ -2,13 +2,24 @@
 
 import { useEffect, useId, useState } from "react";
 import Link from "next/link";
-import { Mail, Menu, X } from "lucide-react";
+import {
+  BookOpen,
+  Home,
+  Languages,
+  Mail,
+  Menu,
+  Moon,
+  Sun,
+  X,
+} from "lucide-react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ResourcesNavMenu } from "@/components/layout/resources-nav-menu";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useTheme } from "@/components/providers/theme-provider";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { cn } from "@/lib/utils";
+
+const drawerIconClass = "size-4 shrink-0 text-muted-foreground";
 
 export function SiteHeader() {
   const { dict, locale, setLocale } = useUiLocale();
@@ -40,6 +51,12 @@ export function SiteHeader() {
     "inline-flex shrink-0 items-center rounded-md px-2 py-1.5 text-[13px] text-muted-foreground whitespace-nowrap transition-colors",
     "hover:bg-[var(--surface-hover)] hover:text-foreground",
     isFa && "font-fa-label",
+  );
+
+  const temporaryLabel = (
+    <span dir="ltr" className="ltr-tech">
+      {dict.common.temporary}
+    </span>
   );
 
   const drawerItemClass = cn(
@@ -90,7 +107,11 @@ export function SiteHeader() {
           {brand}
 
           <nav
-            className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto md:hidden"
+            className={cn(
+              "flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto md:hidden",
+              // FA header is RTL, so reverse keeps Playground near the menu and Resources last.
+              isFa && "flex-row-reverse",
+            )}
             aria-label={dict.header.primaryNav}
             dir="ltr"
           >
@@ -98,7 +119,7 @@ export function SiteHeader() {
               {dict.common.playground}
             </Link>
             <Link href="/temporary" className={navLinkClass}>
-              {dict.common.temporary}
+              {temporaryLabel}
             </Link>
             <Link href="/generator" className={navLinkClass}>
               {dict.common.generator}
@@ -114,7 +135,7 @@ export function SiteHeader() {
               {dict.common.playground}
             </Link>
             <Link href="/temporary" className={navLinkClass}>
-              {dict.common.temporary}
+              {temporaryLabel}
             </Link>
             <Link href="/generator" className={navLinkClass}>
               {dict.common.generator}
@@ -180,8 +201,12 @@ export function SiteHeader() {
               </button>
             </div>
 
-            <nav className="flex flex-col py-1" aria-label={dict.header.menu}>
+            <nav
+              className="flex min-h-0 flex-1 flex-col overflow-y-auto py-1"
+              aria-label={dict.header.menu}
+            >
               <Link href="/" onClick={closeMenu} className={drawerItemClass}>
+                <Home className={drawerIconClass} strokeWidth={1.75} aria-hidden />
                 {dict.common.home}
               </Link>
               <Link
@@ -189,21 +214,25 @@ export function SiteHeader() {
                 onClick={closeMenu}
                 className={drawerItemClass}
               >
+                <BookOpen
+                  className={drawerIconClass}
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
                 {dict.common.docs}
               </Link>
-              <Link
-                href="/contact"
-                onClick={closeMenu}
-                className={drawerItemClass}
-              >
-                {dict.header.contact}
-              </Link>
+
               <button
                 type="button"
                 onClick={() => setLocale(isFa ? "en" : "fa")}
                 className={drawerItemClass}
                 aria-label={dict.header.apiLangGroup}
               >
+                <Languages
+                  className={drawerIconClass}
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
                 <span className="flex-1">{dict.header.apiLangGroup}</span>
                 <span className="text-[12px] text-muted-foreground" dir="ltr">
                   {isFa ? "FA" : "EN"}
@@ -217,10 +246,35 @@ export function SiteHeader() {
                   isDark ? dict.header.lightMode : dict.header.darkMode
                 }
               >
+                {isDark ? (
+                  <Moon
+                    className={drawerIconClass}
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                ) : (
+                  <Sun
+                    className={drawerIconClass}
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                )}
                 <span className="flex-1">
                   {isDark ? dict.header.dark : dict.header.light}
                 </span>
               </button>
+              <Link
+                href="/contact"
+                onClick={closeMenu}
+                className={drawerItemClass}
+              >
+                <Mail
+                  className={drawerIconClass}
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+                {dict.header.contact}
+              </Link>
             </nav>
           </aside>
         </div>

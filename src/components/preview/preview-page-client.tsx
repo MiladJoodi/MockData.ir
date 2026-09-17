@@ -10,6 +10,7 @@ export function PreviewPageClient({
   kind,
   resourceId,
   basePath,
+  docsHref,
 }: {
   kind: "auth" | "resource";
   resourceId: string;
@@ -18,11 +19,16 @@ export function PreviewPageClient({
   playgroundHref?: string;
 }) {
   const { dict } = useUiLocale();
+  const resourceHref = docsHref ?? `/${resourceId}`;
 
   if (kind === "auth") {
     const title = dict.catalog.auth?.title ?? "Auth";
     return (
-      <PreviewShell title={title} basePath={basePath}>
+      <PreviewShell
+        title={title}
+        basePath={basePath}
+        resourceHref={resourceHref}
+      >
         <AuthPreviewDemo />
       </PreviewShell>
     );
@@ -31,7 +37,7 @@ export function PreviewPageClient({
   const cat = dict.catalog[resourceId];
   const name = cat?.title ?? resourceId;
   return (
-    <PreviewShell title={name} basePath={basePath}>
+    <PreviewShell title={name} basePath={basePath} resourceHref={resourceHref}>
       <ResourcePreviewDemo resourceId={resourceId as PreviewResourceId} />
     </PreviewShell>
   );

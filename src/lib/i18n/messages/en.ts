@@ -300,6 +300,7 @@ export type Messages = {
     playground: string;
     blurb: string;
     blurbFaHint: string;
+    backToResource: string;
     search: string;
     create: string;
     edit: string;
@@ -318,6 +319,8 @@ export type Messages = {
     username: string;
     password: string;
     login: string;
+    loginSuccess: string;
+    logout: string;
     getMe: string;
     token: string;
     user: string;
@@ -1226,6 +1229,7 @@ export const en: Messages = {
     playground: "Playground",
     blurb: "A simple UI to try this API.",
     blurbFaHint: "",
+    backToResource: "Back to {name}",
     search: "Search",
     create: "Create",
     edit: "Edit",
@@ -1244,6 +1248,8 @@ export const en: Messages = {
     username: "Username",
     password: "Password",
     login: "Login",
+    loginSuccess: "You’re logged in successfully.",
+    logout: "Log out",
     getMe: "GET /me",
     token: "Token",
     user: "User",

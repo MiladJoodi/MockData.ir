@@ -285,7 +285,7 @@ export function GeneratorPageContent() {
             className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <ArrowLeft
-              className="size-5 rotate-180 sm:size-6"
+              className={cn("size-5 sm:size-6", isFa && "rotate-180")}
               strokeWidth={1.75}
               aria-hidden
             />

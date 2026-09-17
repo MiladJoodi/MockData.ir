@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono, Vazirmatn } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SiteHeader } from "@/components/layout/site-header";
+import { NavigationProgress } from "@/components/layout/navigation-progress";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { UiLocaleProvider } from "@/components/providers/ui-locale-provider";
 import { getServerUiLocale } from "@/lib/i18n/server";
@@ -104,6 +105,7 @@ export default async function RootLayout({
       <body className="flex min-h-full flex-col">
         <UiLocaleProvider initialLocale={initialLocale}>
           <ThemeProvider>
+            <NavigationProgress />
             <SiteHeader />
             <main className="flex-1">{children}</main>
           </ThemeProvider>

@@ -13,6 +13,7 @@ import {
 } from "react";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { searchResources } from "@/lib/catalog";
+import { startNavigationProgress } from "@/lib/navigation-progress";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { cn } from "@/lib/utils";
 
@@ -58,11 +59,13 @@ export function SiteSearch({ large = false, autofocus = false }: SiteSearchProps
   function onSubmit(event: FormEvent) {
     event.preventDefault();
     if (results[0]) {
+      startNavigationProgress();
       router.push(results[0].resource.href);
       setOpen(false);
       return;
     }
     if (value.trim()) {
+      startNavigationProgress();
       router.push(`/docs`);
       setOpen(false);
     }

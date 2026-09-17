@@ -342,3 +342,27 @@
     display: none;
   }
 }
+
+/* Global App Router navigation progress (indeterminate) */
+@keyframes nav-progress-indeterminate {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+.nav-progress-indeterminate {
+  width: 40%;
+  transform-origin: left center;
+  animation: nav-progress-indeterminate 1.05s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-progress-indeterminate {
+    animation: none;
+    width: 33%;
+  }
+}
+

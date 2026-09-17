@@ -304,6 +304,7 @@ export function GeneratorPageContent() {
           searchPlaceholder={t.searchPlaceholder}
           label={t.chooseType}
           isFa={isFa}
+          emptySearchLabel={t.noTopics}
         />
 
         {topic ? (

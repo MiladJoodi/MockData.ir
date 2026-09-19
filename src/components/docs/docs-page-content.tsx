@@ -72,6 +72,7 @@ export function DocsPageContent() {
     ["#temporary", <TemporaryApiLabel key="temporary" />],
     ["#generator", d.toc.generator],
     ["#image-generator", d.toc.imageGenerator],
+    ["#json-workbench", d.toc.jsonWorkbench],
     ["#shared-data", d.toc.sharedData],
     ["#language", d.toc.language],
     ["#resources", d.toc.resources],
@@ -291,6 +292,46 @@ export function DocsPageContent() {
                 )}
               >
                 {dict.common.imageGenerator}
+              </Link>
+            </p>
+          </section>
+
+          <section id="json-workbench" className="scroll-mt-20 space-y-4">
+            <h2
+              className={cn(
+                "text-xl font-semibold tracking-tight",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.jsonWorkbenchTitle}
+            </h2>
+            <p
+              className={cn(
+                "text-[14px] leading-6 text-muted-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.jsonWorkbenchBody}
+            </p>
+            <ul
+              className={cn(
+                "list-inside list-disc space-y-1.5 text-[14px] leading-6 text-muted-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.jsonWorkbenchBullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
+            </ul>
+            <p>
+              <Link
+                href="/json-workbench"
+                className={cn(
+                  "text-[14px] font-medium text-foreground underline-offset-2 hover:underline",
+                  isFa && "font-fa-label",
+                )}
+              >
+                {dict.common.jsonWorkbench}
               </Link>
             </p>
           </section>

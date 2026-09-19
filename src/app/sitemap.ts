@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/temporary",
     "/generator",
     "/image-generator",
+    "/json-workbench",
     "/contact",
   ].map((path) => ({
     url: absoluteUrl(path),

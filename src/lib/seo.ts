@@ -6,7 +6,7 @@ export const SITE_NAME = "MockData";
 export const SITE_TAGLINE = "Free Fake REST API";
 
 export const DEFAULT_DESCRIPTION =
-  "Free fake REST APIs with live JSON for frontend development. Seeded resources, Temporary API, Fake Data Generator, Image Generator, auth, docs, and an in-browser playground.";
+  "Free fake REST APIs with live JSON for frontend development. Seeded resources, Temporary API, Fake Data Generator, Image Generator, JSON Workbench, auth, docs, and an in-browser playground.";
 
 type CreatePageMetadataInput = {
   title: string;

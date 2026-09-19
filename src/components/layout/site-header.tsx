@@ -4,6 +4,7 @@ import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import {
   BookOpen,
+  Braces,
   ChevronDown,
   Home,
   ImageIcon,
@@ -148,6 +149,9 @@ export function SiteHeader() {
             <Link href="/image-generator" className={navLinkClass}>
               {dict.common.imageGenerator}
             </Link>
+            <Link href="/json-workbench" className={navLinkClass}>
+              {dict.common.jsonWorkbench}
+            </Link>
             <ResourcesNavMenu />
           </nav>
 
@@ -167,6 +171,9 @@ export function SiteHeader() {
             <Link href="/image-generator" className={navLinkClass}>
               {dict.common.imageGenerator}
               {newBadge}
+            </Link>
+            <Link href="/json-workbench" className={navLinkClass}>
+              {dict.common.jsonWorkbench}
             </Link>
             <ResourcesNavMenu />
             <Link href="/docs" className={navLinkClass}>
@@ -285,6 +292,18 @@ export function SiteHeader() {
                 />
                 <span className="flex-1">{dict.common.imageGenerator}</span>
                 {newBadge}
+              </Link>
+              <Link
+                href="/json-workbench"
+                onClick={closeMenu}
+                className={drawerItemClass}
+              >
+                <Braces
+                  className={drawerIconClass}
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+                {dict.common.jsonWorkbench}
               </Link>
 
               <div>

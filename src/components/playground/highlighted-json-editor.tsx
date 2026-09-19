@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type UIEvent } from "react";
+import { useRef, useState, type UIEvent } from "react";
 import { highlightCode } from "@/lib/syntax";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +28,7 @@ export function HighlightedJsonEditor({
   persianStrings = false,
 }: Props) {
   const preRef = useRef<HTMLPreElement>(null);
+  const [selecting, setSelecting] = useState(false);
   const display = value.length ? value : " ";
 
   function syncScroll(e: UIEvent<HTMLTextAreaElement>) {
@@ -35,6 +36,11 @@ export function HighlightedJsonEditor({
     if (!pre) return;
     pre.scrollTop = e.currentTarget.scrollTop;
     pre.scrollLeft = e.currentTarget.scrollLeft;
+  }
+
+  function refreshSelecting(el: HTMLTextAreaElement) {
+    const next = el.selectionStart !== el.selectionEnd;
+    setSelecting((prev) => (prev === next ? prev : next));
   }
 
   const padClass = padEnd ? "pe-11" : null;
@@ -56,7 +62,8 @@ export function HighlightedJsonEditor({
         aria-hidden
         className={cn(
           "pointer-events-none absolute inset-0 m-0 overflow-auto p-3 text-[12px] leading-5",
-          "code-scroll",
+          "code-scroll transition-opacity",
+          selecting && "opacity-0",
           padClass,
           faFont,
         )}
@@ -78,13 +85,19 @@ export function HighlightedJsonEditor({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onScroll={syncScroll}
+        onSelect={(e) => refreshSelecting(e.currentTarget)}
+        onKeyUp={(e) => refreshSelecting(e.currentTarget)}
+        onMouseUp={(e) => refreshSelecting(e.currentTarget)}
+        onBlur={() => setSelecting(false)}
         spellCheck={false}
         rows={rows}
         dir="ltr"
         className={cn(
           "relative z-10 w-full resize-none bg-transparent p-3 text-[12px] leading-5",
-          "text-transparent caret-[#d4d4d4] outline-none selection:bg-[#264f78] selection:text-transparent",
+          "caret-[#d4d4d4] outline-none",
+          "selection:bg-[#264f78] selection:text-[#f3f3f3]",
           "code-scroll ltr-tech whitespace-pre-wrap break-all",
+          selecting ? "text-[#d4d4d4]" : "text-transparent",
           padClass,
           faFont,
         )}

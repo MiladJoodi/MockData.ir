@@ -14,6 +14,21 @@ export type SiteUpdate = {
 /** Newest first. User-facing features only. Prepend to resurface the badge. */
 export const siteUpdates: SiteUpdate[] = [
   {
+    id: "2026-09-19-json-workbench",
+    date: "2026-09-19",
+    title: "JSON Workbench",
+    summary:
+      "One in-browser workspace to format, compare structure, search, and transform JSON — plus TypeScript, Zod, YAML, CSV, and utilities.",
+    details: [
+      "Open /json-workbench and pick a tool — the workspace updates in place (deep-link with ?tool=).",
+      "Core: Format, Tree, Search, JSONPath, and Compare Structure.",
+      "Transform: TypeScript, Zod, JSON Schema, YAML, and CSV conversions.",
+      "Utilities: sort keys, clean empty values, flatten, escape, repair, pick/omit, and more.",
+    ],
+    href: "/json-workbench",
+    hrefLabel: "Open JSON Workbench",
+  },
+  {
     id: "2026-09-19-image-generator",
     date: "2026-09-19",
     title: "Image Generator",

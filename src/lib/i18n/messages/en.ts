@@ -37,6 +37,7 @@ export type Messages = {
     temporaryBadge: string;
     generator: string;
     imageGenerator: string;
+    jsonWorkbench: string;
   };
   header: {
     primaryNav: string;
@@ -97,6 +98,7 @@ export type Messages = {
       temporary: string;
       generator: string;
       imageGenerator: string;
+      jsonWorkbench: string;
       sharedData: string;
       language: string;
       resources: string;
@@ -119,6 +121,9 @@ export type Messages = {
     imageGeneratorTitle: string;
     imageGeneratorBody: string;
     imageGeneratorBullets: string[];
+    jsonWorkbenchTitle: string;
+    jsonWorkbenchBody: string;
+    jsonWorkbenchBullets: string[];
     sharedDataTitle: string;
     sharedDataBody: string;
     languageTitle: string;
@@ -264,6 +269,314 @@ export type Messages = {
       cover: string;
       banner: string;
       story: string;
+    };
+  };
+  jsonWorkbench: {
+    title: string;
+    blurb: string;
+    toolNavLabel: string;
+    source: {
+      title: string;
+      hint: string;
+      sample: string;
+      valid: string;
+      needJson: string;
+      fixFirst: string;
+      pickAction: string;
+      useResult: string;
+      diffHint: string;
+      escapedInput: string;
+      schemaInput: string;
+      fromSchemaNote: string;
+    };
+    categories: {
+      core: string;
+      transform: string;
+      utility: string;
+    };
+    labels: {
+      input: string;
+      output: string;
+      tree: string;
+      matches: string;
+      jsonA: string;
+      jsonB: string;
+      diffResult: string;
+      jsonpath: string;
+      result: string;
+    };
+    actions: {
+      format: string;
+      minify: string;
+      showTree: string;
+      search: string;
+      clearSearch: string;
+      replace: string;
+      replaceAll: string;
+      prevMatch: string;
+      nextMatch: string;
+      compare: string;
+      run: string;
+      runPath: string;
+      toTypescript: string;
+      toZod: string;
+      toSchema: string;
+      swapDirection: string;
+      sortKeys: string;
+      removeEmpty: string;
+      flatten: string;
+      unflatten: string;
+      escape: string;
+      unescape: string;
+      repair: string;
+      fromSchema: string;
+      extractKeys: string;
+      extractValues: string;
+      pick: string;
+      omit: string;
+      compareStructure: string;
+      clear: string;
+      expandAll: string;
+      collapseAll: string;
+      copyPath: string;
+      copyValue: string;
+    };
+    errors: {
+      empty: string;
+      invalid: string;
+      unexpectedEnd: string;
+      unexpectedToken: string;
+      expectedPropertyName: string;
+      expectedCommaOrBrace: string;
+      expectedCommaOrBracket: string;
+      expectedColon: string;
+      unterminatedString: string;
+      badControlChar: string;
+      badEscape: string;
+      trailingChar: string;
+      objectKeyExpected: string;
+      unexpectedCharacter: string;
+      invalidCharacter: string;
+      invalidUnicode: string;
+      couldNotRepair: string;
+      atLineColumn: string;
+      atLine: string;
+      atPosition: string;
+    };
+    types: {
+      object: string;
+      array: string;
+      string: string;
+      number: string;
+      boolean: string;
+      null: string;
+    };
+    validate: {
+      idleHint: string;
+      validTitle: string;
+      validBody: string;
+      invalidTitle: string;
+    };
+    tree: {
+      idleTitle: string;
+      idleBody: string;
+      errorTitle: string;
+      errorBody: string;
+    };
+    search: {
+      query: string;
+      replaceWith: string;
+      matchCount: string;
+      noMatches: string;
+      noMatchesBody: string;
+      idleTitle: string;
+      idleBody: string;
+      errorTitle: string;
+      errorBody: string;
+      kindKey: string;
+      kindValue: string;
+      activeHint: string;
+      replacedCount: string;
+    };
+    diff: {
+      idleTitle: string;
+      idleBody: string;
+      identical: string;
+      added: string;
+      removed: string;
+      changed: string;
+      sideEmpty: string;
+      emptyA: string;
+      emptyB: string;
+      bothInvalid: string;
+    };
+    jsonpath: {
+      whatIs: string;
+      hintTitle: string;
+      hintBody: string;
+      idleTitle: string;
+      idleBody: string;
+      errorTitle: string;
+      errorBody: string;
+      noResults: string;
+      emptyPath: string;
+    };
+    transform: {
+      tsIdleTitle: string;
+      tsIdleBody: string;
+      zodIdleTitle: string;
+      zodIdleBody: string;
+      schemaExplain: string;
+      schemaUse: string;
+      schemaIdleTitle: string;
+      schemaIdleBody: string;
+      yamlIdleTitle: string;
+      yamlIdleBody: string;
+      yamlToJsonIdle: string;
+      yamlApplied: string;
+      csvIdleTitle: string;
+      csvIdleBodyJson: string;
+      csvIdleBodyCsv: string;
+      csvToJsonIdle: string;
+      csvApplied: string;
+      csvUnsupported: string;
+    };
+    utilities: {
+      sortAsc: string;
+      sortDesc: string;
+      sortIdleTitle: string;
+      sortIdleBody: string;
+      sortApplied: string;
+      removeOptions: string;
+      removeNull: string;
+      removeEmptyString: string;
+      removeEmptyArray: string;
+      removeEmptyObject: string;
+      removeNullLabel: string;
+      removeEmptyStringLabel: string;
+      removeEmptyArrayLabel: string;
+      removeEmptyObjectLabel: string;
+      removePreserveHint: string;
+      removeIdleTitle: string;
+      removeIdleBody: string;
+      nestedLabel: string;
+      flatLabel: string;
+      flattenHint: string;
+      flattenUse: string;
+      flattenIdleTitle: string;
+      flattenIdleBody: string;
+      flattenApplied: string;
+      unflattenHint: string;
+      unflattenUse: string;
+      unflattenIdleTitle: string;
+      unflattenIdleBody: string;
+      escapeIdleTitle: string;
+      escapeIdleBody: string;
+      escapeHint: string;
+      escapeUse: string;
+      unescapeIdleTitle: string;
+      unescapeIdleBody: string;
+      repairHint: string;
+      repairUse: string;
+      repairAlreadyValid: string;
+      repairFormatted: string;
+      repairReady: string;
+      repairApplied: string;
+      repairFailedTitle: string;
+      repairFailedAt: string;
+      repairPreview: string;
+      repairFixes: {
+        "trailing-commas": string;
+        "single-quotes": string;
+        "smart-quotes": string;
+        "unquoted-keys": string;
+        "missing-commas": string;
+        "missing-brackets": string;
+        comments: string;
+        "code-fence": string;
+        "python-literals": string;
+        "js-undefined": string;
+        jsonp: string;
+        "escaped-string": string;
+        mongodb: string;
+        ndjson: string;
+        ellipsis: string;
+        "string-concat": string;
+        whitespace: string;
+        truncated: string;
+        "mid-edit-junk": string;
+      };
+      repairIdleTitle: string;
+      repairIdleBody: string;
+      fromSchemaHint: string;
+      fromSchemaIdleTitle: string;
+      fromSchemaIdleBody: string;
+      extractHint: string;
+      extractIdleTitle: string;
+      extractIdleBody: string;
+      extractKeysHint: string;
+      extractKeysIdleTitle: string;
+      extractKeysIdleBody: string;
+      extractValuesHint: string;
+      extractValuesIdleTitle: string;
+      extractValuesIdleBody: string;
+      fieldsLabel: string;
+      fieldsClickHint: string;
+      fieldsSelectAll: string;
+      fieldsClear: string;
+      fieldsEmpty: string;
+      pickHint: string;
+      pickIdleTitle: string;
+      pickIdleBody: string;
+      omitHint: string;
+      omitIdleTitle: string;
+      omitIdleBody: string;
+      compareHint: string;
+      compareUse: string;
+      compareBack: string;
+      compareIdleTitle: string;
+      compareIdleBody: string;
+      compareIdentical: string;
+      compareMissing: string;
+      compareExtra: string;
+      compareType: string;
+    };
+    empty: {
+      formatTitle: string;
+      formatBody: string;
+    };
+    soon: {
+      badge: string;
+      title: string;
+      body: string;
+    };
+    tools: {
+      format: string;
+      minify: string;
+      validate: string;
+      tree: string;
+      search: string;
+      diff: string;
+      jsonpath: string;
+      convert: string;
+      toTypescript: string;
+      toZod: string;
+      toSchema: string;
+      yaml: string;
+      csv: string;
+      sortKeys: string;
+      removeEmpty: string;
+      flatten: string;
+      unflatten: string;
+      escape: string;
+      unescape: string;
+      repair: string;
+      extract: string;
+      extractKeys: string;
+      extractValues: string;
+      pick: string;
+      omit: string;
+      compareStructure: string;
     };
   };
   generator: {
@@ -418,6 +731,7 @@ export const en: Messages = {
     temporaryBadge: "Instant",
     generator: "Generator",
     imageGenerator: "Images",
+    jsonWorkbench: "JSON",
   },
   header: {
     primaryNav: "Primary",
@@ -425,7 +739,7 @@ export const en: Messages = {
     whatsNewTitle: "What's new",
     whatsNewSubtitle: "Latest updates and features",
     latest: "Latest",
-    contact: "Contact",
+    contact: "About",
     menu: "Menu",
     openMenu: "Open menu",
     appearance: "Appearance",
@@ -458,7 +772,7 @@ export const en: Messages = {
     docs: "Docs",
   },
   contact: {
-    title: "Contact",
+    title: "Get in touch",
     intro:
       "Questions, feedback, or ideas — send a short message and it goes straight to inbox. You can also email",
     name: "Name",
@@ -481,13 +795,14 @@ export const en: Messages = {
     title: "Documentation",
     navLabel: "Docs",
     intro:
-      "MockData serves fake REST resources as JSON. Use public resources freely, hit Auth to practice login, try live calls in the Playground, generate fixtures at /generator, grab placeholder images at /image-generator, or publish your own short-lived Temporary API. Production uses one shared database for catalog resources — see Shared data.",
+      "MockData serves fake REST resources as JSON. Use public resources freely, hit Auth to practice login, try live calls in the Playground, generate fixtures at /generator, grab placeholder images at /image-generator, work with JSON at /json-workbench, or publish your own short-lived Temporary API. Production uses one shared database for catalog resources — see Shared data.",
     toc: {
       intro: "Introduction",
       whatsNew: "What's new",
       temporary: "Temporary API",
       generator: "Fake Data Generator",
       imageGenerator: "Image Generator",
+      jsonWorkbench: "JSON Workbench",
       sharedData: "Shared data",
       language: "Language",
       resources: "Resources",
@@ -536,6 +851,16 @@ export const en: Messages = {
       "Public URL shape: /image/{width}/{height} for SVG; add ?type=real for photos.",
       "Random by default. Optional ?seed= keeps the same SVG colors or the same real photo.",
       "Ready sizes for avatar, thumbnail, profile, post, cover, banner, and story.",
+    ],
+    jsonWorkbenchTitle: "JSON Workbench",
+    jsonWorkbenchBody:
+      "A single in-browser workspace for everyday JSON work while you build UIs — format, compare, search, and convert without leaving MockData.",
+    jsonWorkbenchBullets: [
+      "Open /json-workbench and select a tool — the workspace updates in place (share with ?tool=).",
+      "Core: Format, Tree View, Search, JSONPath, and Compare Structure.",
+      "Transform: TypeScript, Zod, JSON Schema, YAML, and CSV.",
+      "Utilities: sort keys, remove empty values, flatten, escape/repair, pick/omit, and more.",
+      "Runs in your browser — JSON is not sent to a server.",
     ],
     sharedDataTitle: "Shared data",
     sharedDataBody:
@@ -703,6 +1028,333 @@ export const en: Messages = {
       cover: "Cover",
       banner: "Banner",
       story: "Story",
+    },
+  },
+  jsonWorkbench: {
+    title: "JSON Workbench",
+    blurb:
+      "Paste your JSON once. Then pick what you want to do — format, search, convert, and more without pasting again.",
+    toolNavLabel: "Workbench tools",
+    source: {
+      title: "Your JSON",
+      hint: "Paste here once. Every action below uses this document.",
+      sample: "Load sample",
+      valid: "JSON looks valid — pick an action.",
+      needJson: "Paste your JSON on the left first.",
+      fixFirst: "Fix the JSON error in Your JSON, then try again.",
+      pickAction: "What do you want to do?",
+      useResult: "Use as JSON",
+      diffHint: "Your JSON is side A. Paste the other document below as B.",
+      escapedInput: "Escaped string",
+      schemaInput: "JSON Schema",
+      fromSchemaNote:
+        "Paste a JSON Schema below — generates a sample document you can push into Your JSON.",
+    },
+    categories: {
+      core: "Core",
+      transform: "Transform",
+      utility: "Utilities",
+    },
+    labels: {
+      input: "Input — paste here",
+      output: "Output",
+      tree: "Tree",
+      matches: "Matches",
+      jsonA: "JSON A",
+      jsonB: "JSON B",
+      diffResult: "Differences",
+      jsonpath: "JSONPath",
+      result: "Result ({count})",
+    },
+    actions: {
+      format: "Format",
+      minify: "Minify",
+      showTree: "Show tree",
+      search: "Search",
+      clearSearch: "Clear search",
+      replace: "Replace",
+      replaceAll: "Replace all",
+      prevMatch: "Previous match",
+      nextMatch: "Next match",
+      compare: "Compare",
+      run: "Run",
+      runPath: "Run",
+      toTypescript: "Generate types",
+      toZod: "Generate Zod",
+      toSchema: "Generate schema",
+      swapDirection: "Swap",
+      sortKeys: "Sort keys",
+      removeEmpty: "Remove empty",
+      flatten: "Flatten",
+      unflatten: "Unflatten",
+      escape: "Escape",
+      unescape: "Unescape",
+      repair: "Repair",
+      fromSchema: "Generate example",
+      extractKeys: "Extract keys",
+      extractValues: "Extract values",
+      pick: "Pick fields",
+      omit: "Omit fields",
+      compareStructure: "Compare structure",
+      clear: "Clear",
+      expandAll: "Expand all",
+      collapseAll: "Collapse all",
+      copyPath: "Copy path",
+      copyValue: "Copy value",
+    },
+    errors: {
+      empty: "Paste some JSON first.",
+      invalid: "Invalid JSON.",
+      unexpectedEnd: "Unexpected end of JSON.",
+      unexpectedToken: "Unexpected token: {token}",
+      expectedPropertyName: "Expected a double-quoted property name.",
+      expectedCommaOrBrace: "Expected ',' or '}' after a property value.",
+      expectedCommaOrBracket: "Expected ',' or ']' after an array item.",
+      expectedColon: "Expected ':' after a property name.",
+      unterminatedString: "Unterminated string.",
+      badControlChar: "Bad control character in a string.",
+      badEscape: "Bad escape sequence in a string.",
+      trailingChar: "Unexpected characters after the JSON value.",
+      objectKeyExpected: "Expected an object key.",
+      unexpectedCharacter: "Unexpected character: {char}",
+      invalidCharacter: "Invalid character: {char}",
+      invalidUnicode: "Invalid unicode escape: {chars}",
+      couldNotRepair: "Could not repair this JSON.",
+      atLineColumn: "line {line}, column {column}",
+      atLine: "line {line}",
+      atPosition: "position {position}",
+    },
+    types: {
+      object: "object",
+      array: "array",
+      string: "string",
+      number: "number",
+      boolean: "boolean",
+      null: "null",
+    },
+    validate: {
+      idleHint: "Paste JSON, then validate. Only standard JSON syntax is checked.",
+      validTitle: "Valid JSON",
+      validBody: "Root type: {type}",
+      invalidTitle: "Invalid JSON",
+    },
+    tree: {
+      idleTitle: "Tree appears here",
+      idleBody: "Paste JSON on the left, then show the tree.",
+      errorTitle: "Cannot build tree",
+      errorBody: "Fix the JSON error first, then try again.",
+    },
+    search: {
+      query: "Find",
+      replaceWith: "Replace with",
+      matchCount: "{current} of {total}",
+      noMatches: "No matches",
+      noMatchesBody: "Nothing matched that query in keys or values.",
+      idleTitle: "Matches appear here",
+      idleBody: "Enter a query and press Search. Searches keys and values.",
+      errorTitle: "Cannot search",
+      errorBody: "Fix the JSON error first, then search again.",
+      kindKey: "Key",
+      kindValue: "Value",
+      activeHint: "{kind} · {path}",
+      replacedCount: "Replaced {count} occurrence(s).",
+    },
+    diff: {
+      idleTitle: "Diff appears here",
+      idleBody: "Paste JSON A and JSON B, then compare.",
+      identical: "No differences — the documents are structurally identical.",
+      added: "Added / in B",
+      removed: "Removed / in A",
+      changed: "Changed",
+      sideEmpty: "Nothing on this side.",
+      emptyA: "JSON A is empty.",
+      emptyB: "JSON B is empty.",
+      bothInvalid: "Both JSON A and JSON B are invalid.",
+    },
+    jsonpath: {
+      whatIs:
+        "JSONPath picks values out of nested JSON — like a CSS selector for data. Click an example below.",
+      hintTitle: "Syntax",
+      hintBody: `$              Root
+.users         Property
+[*]            All array items
+[0]            First item`,
+      idleTitle: "Result appears here",
+      idleBody: "Enter a path and run the query.",
+      errorTitle: "Cannot run query",
+      errorBody: "Fix the JSON or path error, then try again.",
+      noResults: "No results for this path.",
+      emptyPath: "Enter a JSONPath expression.",
+    },
+    transform: {
+      tsIdleTitle: "TypeScript appears here",
+      tsIdleBody: "Paste JSON, then generate types.",
+      zodIdleTitle: "Zod schema appears here",
+      zodIdleBody: "Paste JSON, then generate a Zod schema.",
+      schemaExplain: "JSON ↔ Schema",
+      schemaUse:
+        "Infer a JSON Schema from Your JSON, or swap direction to build a sample document from a schema.",
+      schemaIdleTitle: "JSON Schema appears here",
+      schemaIdleBody: "Paste JSON, then generate a schema.",
+      yamlIdleTitle: "YAML appears here",
+      yamlIdleBody: "Your JSON converts to YAML live.",
+      yamlToJsonIdle: "Paste YAML above — it becomes Your JSON.",
+      yamlApplied: "Converted — Your JSON was updated.",
+      csvIdleTitle: "CSV appears here",
+      csvIdleBodyJson:
+        "Converts Your JSON — a single object, an array of objects, or an object wrapping one table.",
+      csvIdleBodyCsv: "Paste CSV with a header row, then convert to JSON.",
+      csvToJsonIdle: "Paste CSV above — it becomes Your JSON.",
+      csvApplied: "Converted — Your JSON was updated.",
+      csvUnsupported: "Could not convert this JSON to CSV.",
+    },
+    utilities: {
+      sortAsc: "A → Z",
+      sortDesc: "Z → A",
+      sortIdleTitle: "Ready to sort",
+      sortIdleBody: "Choose A→Z or Z→A — sorted keys appear in the output.",
+      sortApplied: "Keys sorted — see output below.",
+      removeOptions: "Remove these",
+      removeNull: "null",
+      removeEmptyString: '""',
+      removeEmptyArray: "[]",
+      removeEmptyObject: "{}",
+      removeNullLabel: "null values",
+      removeEmptyStringLabel: "empty strings",
+      removeEmptyArrayLabel: "empty arrays",
+      removeEmptyObjectLabel: "empty objects",
+      removePreserveHint: "false and 0 are always kept.",
+      removeIdleTitle: "Cleaned JSON appears here",
+      removeIdleBody: "Choose what to remove, then run.",
+      nestedLabel: "Nested",
+      flatLabel: "Flat",
+      flattenHint: "Turns nested objects into dotted keys — e.g. address.city and skills.0.",
+      flattenUse:
+        "Handy for spreadsheets, env files, search indexes, or APIs that only accept flat key/value maps.",
+      flattenIdleTitle: "Ready to flatten",
+      flattenIdleBody: "Nested keys become dotted paths in the output.",
+      flattenApplied: "Flattened — see output below.",
+      unflattenHint: "Dot paths rebuild objects; numeric segments rebuild arrays.",
+      unflattenUse:
+        "Use when you have flat keys (user.name, skills.0) and need nested JSON back.",
+      unflattenIdleTitle: "Nested JSON appears here",
+      unflattenIdleBody: "Paste a flat path object, then unflatten.",
+      escapeIdleTitle: "Escaped string appears here",
+      escapeIdleBody: "Your JSON will be escaped for use inside a string.",
+      escapeHint:
+        "Turns your JSON into a single escaped string — quotes and newlines become \\u0022 / \\n so it can sit inside another string or config.",
+      escapeUse:
+        "Handy for embedding JSON in code, env vars, or logs without breaking the surrounding quotes.",
+      unescapeIdleTitle: "JSON appears here",
+      unescapeIdleBody: "Paste an escaped JSON string, then unescape.",
+      repairHint:
+        "Professional JSON repair — multi-pass salvage for truncated and mid-edit JSON.",
+      repairUse:
+        "Fixes quotes, commas, and brackets; strips comments and code fences; handles Python/JS literals, JSONP, MongoDB types, NDJSON, truncated documents, and junk typed in the middle.",
+      repairAlreadyValid: "Already valid JSON — pretty-printed in the output.",
+      repairFormatted: "Formatted — see output below.",
+      repairReady: "Repairable issues detected — see output below.",
+      repairApplied: "Repaired — see output below (Your JSON is unchanged).",
+      repairFailedTitle: "Could not fully repair",
+      repairFailedAt: "{message} (line {line}, column {column})",
+      repairPreview: "Repaired output",
+      repairFixes: {
+        "trailing-commas": "Trailing commas",
+        "single-quotes": "Single quotes",
+        "smart-quotes": "Smart quotes",
+        "unquoted-keys": "Unquoted keys",
+        "missing-commas": "Missing commas",
+        "missing-brackets": "Missing brackets",
+        comments: "Comments",
+        "code-fence": "Code fence",
+        "python-literals": "Python literals",
+        "js-undefined": "undefined → null",
+        jsonp: "JSONP wrapper",
+        "escaped-string": "Escaped JSON string",
+        mongodb: "MongoDB types",
+        ndjson: "NDJSON → array",
+        ellipsis: "Ellipsis",
+        "string-concat": "String concatenation",
+        whitespace: "Whitespace / formatting",
+        truncated: "Truncated / incomplete",
+        "mid-edit-junk": "Mid-edit junk",
+      },
+      repairIdleTitle: "Repaired JSON appears here",
+      repairIdleBody:
+        "Paste broken or almost-JSON text in Your JSON — repair runs live into the output.",
+      fromSchemaHint:
+        "Schema → sample JSON from type, properties, required, items, enum, and default.",
+      fromSchemaIdleTitle: "Example JSON appears here",
+      fromSchemaIdleBody: "Paste a JSON Schema below, then generate an example.",
+      extractHint:
+        "Returns leaf path + value pairs together — e.g. { path: \"address.city\", value: \"Tehran\" }.",
+      extractIdleTitle: "Keys & values appear here",
+      extractIdleBody: "Select fields above to extract their paths and values.",
+      extractKeysHint: "Returns nested key paths with dot notation (arrays as .0).",
+      extractKeysIdleTitle: "Keys appear here",
+      extractKeysIdleBody: "Paste JSON, then extract keys.",
+      extractValuesHint: "Collects leaf values (primitives and null) depth-first.",
+      extractValuesIdleTitle: "Values appear here",
+      extractValuesIdleBody: "Paste JSON, then extract values.",
+      fieldsLabel: "Fields from Your JSON",
+      fieldsClickHint:
+        "Click paths to select — no typing needed. Nested paths use dot notation.",
+      fieldsSelectAll: "Select all",
+      fieldsClear: "Clear",
+      fieldsEmpty: "This JSON has no selectable fields.",
+      pickHint: "Keep only the fields you select — click fields below.",
+      pickIdleTitle: "Select the fields you want to keep.",
+      pickIdleBody: "",
+      omitHint: "Remove the fields you select — click fields below.",
+      omitIdleTitle: "Select the fields you want to remove.",
+      omitIdleBody: "",
+      compareHint: "Paste two JSON documents side by side. Structure only — values are ignored.",
+      compareUse:
+        "Missing keys light up red on A, added keys green on B, type mismatches amber on both.",
+      compareBack: "Back to workbench",
+      compareIdleTitle: "Paste both JSON documents",
+      compareIdleBody: "Add JSON on the left and right to compare structure.",
+      compareIdentical: "Same structure — types and keys match.",
+      compareMissing: "Missing (only in A)",
+      compareExtra: "Added (only in B)",
+      compareType: "Type mismatch",
+    },
+    empty: {
+      formatTitle: "Formatted JSON appears here",
+      formatBody: "Paste JSON on the left, then press Format.",
+    },
+    soon: {
+      badge: "Soon",
+      title: "{tool} is coming next",
+      body: "This tool is listed so you can see the full workbench. It will unlock in a later phase.",
+    },
+    tools: {
+      format: "Format",
+      minify: "Minify",
+      validate: "Validate",
+      tree: "Tree View",
+      search: "Search",
+      diff: "Diff",
+      jsonpath: "JSONPath",
+      convert: "Convert",
+      toTypescript: "TypeScript",
+      toZod: "Zod",
+      toSchema: "JSON Schema",
+      yaml: "YAML",
+      csv: "CSV",
+      sortKeys: "Sort keys",
+      removeEmpty: "Remove empty",
+      flatten: "Flatten",
+      unflatten: "Unflatten",
+      escape: "Escape",
+      unescape: "Unescape",
+      repair: "Repair",
+      extract: "Extract keys & values",
+      extractKeys: "Extract keys",
+      extractValues: "Extract values",
+      pick: "Pick",
+      omit: "Omit",
+      compareStructure: "Compare structure",
     },
   },
   generator: {
@@ -1372,6 +2024,19 @@ export const en: Messages = {
     },
   },
   changelog: {
+    "2026-09-19-json-workbench": {
+      title: "JSON Workbench",
+      teaser: "Format, compare, and transform JSON",
+      hint: "/json-workbench — pick a tool, workspace updates in place",
+      summary:
+        "One in-browser workspace to format, compare structure, search, and transform JSON — plus TypeScript, Zod, YAML, CSV, and utilities.",
+      details: [
+        "Open /json-workbench and pick a tool — the workspace updates in place (deep-link with ?tool=).",
+        "Core: Format, Tree, Search, JSONPath, and Compare Structure.",
+        "Transform: TypeScript, Zod, JSON Schema, YAML, and CSV conversions.",
+        "Utilities: sort keys, clean empty values, flatten, escape, repair, pick/omit, and more.",
+      ],
+    },
     "2026-09-19-image-generator": {
       title: "Image Generator",
       teaser: "Placeholder images by URL",

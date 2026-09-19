@@ -1,10 +1,12 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft, Download, Eye } from "lucide-react";
 import { DocsWhatsNew } from "@/components/docs/docs-whats-new";
 import { ResetSeedPanel } from "@/components/docs/reset-seed-panel";
 import { VsCodeBlock } from "@/components/docs/vscode-block";
+import { TemporaryApiLabel } from "@/components/layout/temporary-api-label";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { apiResources, plannedResources } from "@/lib/catalog";
 import { RATE_LIMIT } from "@/lib/api/rate-limit";
@@ -64,11 +66,12 @@ export function DocsPageContent() {
   const isFa = locale === "fa";
   const allResources = [...apiResources, ...plannedResources];
 
-  const toc = [
+  const toc: [string, ReactNode][] = [
     ["#intro", d.toc.intro],
     ["#whats-new", d.toc.whatsNew],
-    ["#temporary", d.toc.temporary],
+    ["#temporary", <TemporaryApiLabel key="temporary" />],
     ["#generator", d.toc.generator],
+    ["#image-generator", d.toc.imageGenerator],
     ["#shared-data", d.toc.sharedData],
     ["#language", d.toc.language],
     ["#resources", d.toc.resources],
@@ -77,7 +80,7 @@ export function DocsPageContent() {
     ["#errors", d.toc.errors],
     ["#rate-limit", d.toc.rateLimit],
     ["#reset", d.toc.reset],
-  ] as const;
+  ];
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
@@ -162,7 +165,7 @@ export function DocsPageContent() {
                 isFa && "font-fa-label",
               )}
             >
-              {d.temporaryTitle}
+              <TemporaryApiLabel />
             </h2>
             <p
               className={cn(
@@ -238,6 +241,56 @@ export function DocsPageContent() {
                 )}
               >
                 {dict.common.generator}
+              </Link>
+            </p>
+          </section>
+
+          <section id="image-generator" className="scroll-mt-20 space-y-4">
+            <h2
+              className={cn(
+                "text-xl font-semibold tracking-tight",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.imageGeneratorTitle}
+            </h2>
+            <p
+              className={cn(
+                "text-[14px] leading-6 text-muted-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.imageGeneratorBody}
+            </p>
+            <ul
+              className={cn(
+                "list-inside list-disc space-y-1.5 text-[14px] leading-6 text-muted-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
+              {d.imageGeneratorBullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
+            </ul>
+            <div className="space-y-3" dir="ltr">
+              <VsCodeBlock
+                code={`<!-- SVG placeholder -->
+<img src="https://mockdata.ir/image/800/600" alt="Placeholder" />
+
+<!-- Real photo -->
+<img src="https://mockdata.ir/image/800/600?type=real" alt="Photo" />`}
+                language="html"
+              />
+            </div>
+            <p>
+              <Link
+                href="/image-generator"
+                className={cn(
+                  "text-[14px] font-medium text-foreground underline-offset-2 hover:underline",
+                  isFa && "font-fa-label",
+                )}
+              >
+                {dict.common.imageGenerator}
               </Link>
             </p>
           </section>

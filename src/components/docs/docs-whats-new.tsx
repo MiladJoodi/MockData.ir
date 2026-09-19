@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { TemporaryApiLabel } from "@/components/layout/temporary-api-label";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import {
   formatUpdateDate,
@@ -32,6 +33,12 @@ export function DocsWhatsNew() {
             details: item.details,
           };
           const num = (index + 1).toLocaleString(isFa ? "fa-IR" : "en-US");
+          const titleNode =
+            item.id === "2026-09-16-temporary" ? (
+              <TemporaryApiLabel />
+            ) : (
+              copy.title
+            );
 
           return (
             <li key={item.id}>
@@ -54,7 +61,7 @@ export function DocsWhatsNew() {
                       isFa && "font-fa-label",
                     )}
                   >
-                    {copy.title}
+                    {titleNode}
                   </h3>
                   {isLatest ? (
                     <span

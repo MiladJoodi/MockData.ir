@@ -9,6 +9,7 @@ Hit live endpoints, get predictable seeded responses, try auth flows, then wire 
 - **10 live resources** — Auth, Users, Posts, Comments, Albums, Photos, Todos, Products, Notifications, Countries
 - **Temporary API** — paste your own JSON and get a short-lived public REST URL (`/api/t/…`), no account, up to 5 live at a time
 - **Fake Data Generator** — schema-driven fake JSON at `/generator` (people, ecommerce, content, and more); copy, download, or Create API
+- **Image Generator** — placeholder SVG or real photos by URL at `/image/{w}/{h}` (optional `?type=real`, `?seed=`)
 - **Playground** — in-browser request runner; request/response state survives client-side navigation between resources and routes
 - **Full CRUD** — list, create, read, update, delete with pagination, search, and filters
 - **Persian data** — add `?lang=fa` for Iranian names and copy (English is default); Generator FA UI uses Persian locale packs
@@ -51,6 +52,8 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/playground` | Try live requests in the browser (state kept across SPA navigation) |
 | `/temporary` | Paste JSON → short-lived public REST URL |
 | `/generator` | Fake Data Generator → copy / download / Create API |
+| `/image-generator` | Build placeholder image URLs (SVG or real) |
+| `/image/{w}/{h}` | Image API — SVG body or 302 to Picsum (`?type=real`) |
 | `/users`, `/posts`, … | Per-resource docs (+ Preview where available) |
 | `/contact` | Contact form |
 | `/api/…` | Live JSON APIs (seeded resources) |
@@ -142,6 +145,23 @@ Open [/generator](https://mockdata.ir/generator) (or locally `/generator`). Gene
 | Export | Copy JSON or TypeScript types, download `.json` |
 | Create API | Same Temporary API flow (lifetime select + publish); max **500** items / **64 KB** per publish |
 | Session | Generator selections and results survive client-side route changes (cleared on full reload) |
+
+### Image Generator
+
+Open [/image-generator](https://mockdata.ir/image-generator) (or locally `/image-generator`) to pick size and mode, then copy a URL.
+
+| Mode | URL | Behavior |
+|------|-----|----------|
+| SVG (default) | `/image/800/600` | Neutral placeholder SVG from MockData |
+| Real photo | `/image/800/600?type=real` | `302` redirect to [Picsum](https://picsum.photos) |
+| Stable | add `?seed=my-seed` | Same SVG colors or same real photo every time |
+
+```html
+<img src="https://mockdata.ir/image/400/400" alt="Avatar" />
+<img src="https://mockdata.ir/image/1200/630?type=real" alt="Cover" />
+```
+
+Optional query: `bg` / `fg` (hex) for custom SVG colors when you want full control.
 
 ### Playground
 

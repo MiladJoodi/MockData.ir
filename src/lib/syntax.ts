@@ -84,6 +84,81 @@ function tokenizeJs(code: string): Token[] {
   return tokens;
 }
 
+/** Tags → keyword blue, attrs → property blue, values → string (same palette as JS). */
+function tokenizeHtml(code: string): Token[] {
+  const tokens: Token[] = [];
+  const re =
+    /(<\/?[A-Za-z][\w:-]*|>|\/>)|([A-Za-z_:][\w:.-]*)(?=\s*=)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(=)/g;
+  let last = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = re.exec(code))) {
+    if (match.index > last) {
+      tokens.push({ type: "plain", value: code.slice(last, match.index) });
+    }
+    if (match[1]) tokens.push({ type: "keyword", value: match[1] });
+    else if (match[2]) tokens.push({ type: "property", value: match[2] });
+    else if (match[3]) tokens.push({ type: "string", value: match[3] });
+    else if (match[4]) tokens.push({ type: "punctuation", value: match[4] });
+    last = match.index + match[0].length;
+  }
+
+  if (last < code.length) {
+    tokens.push({ type: "plain", value: code.slice(last) });
+  }
+  return tokens;
+}
+
+/** Properties → property blue, values/urls → string, like JS. */
+function tokenizeCss(code: string): Token[] {
+  const tokens: Token[] = [];
+  const re =
+    /([A-Za-z_-][\w-]*)(?=\s*:)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(:|;|\)|\()|(\burl\b)/g;
+  let last = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = re.exec(code))) {
+    if (match.index > last) {
+      tokens.push({ type: "plain", value: code.slice(last, match.index) });
+    }
+    if (match[1]) tokens.push({ type: "property", value: match[1] });
+    else if (match[2]) tokens.push({ type: "string", value: match[2] });
+    else if (match[3]) tokens.push({ type: "punctuation", value: match[3] });
+    else if (match[4]) tokens.push({ type: "function", value: match[4] });
+    last = match.index + match[0].length;
+  }
+
+  if (last < code.length) {
+    tokens.push({ type: "plain", value: code.slice(last) });
+  }
+  return tokens;
+}
+
+/** Flags → keyword blue, URLs/paths in quotes → string. */
+function tokenizeBash(code: string): Token[] {
+  const tokens: Token[] = [];
+  const re =
+    /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(https?:\/\/\S+)|(-\w[\w-]*)|(\b(?:curl|wget)\b)/g;
+  let last = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = re.exec(code))) {
+    if (match.index > last) {
+      tokens.push({ type: "plain", value: code.slice(last, match.index) });
+    }
+    if (match[1]) tokens.push({ type: "string", value: match[1] });
+    else if (match[2]) tokens.push({ type: "string", value: match[2] });
+    else if (match[3]) tokens.push({ type: "keyword", value: match[3] });
+    else if (match[4]) tokens.push({ type: "function", value: match[4] });
+    last = match.index + match[0].length;
+  }
+
+  if (last < code.length) {
+    tokens.push({ type: "plain", value: code.slice(last) });
+  }
+  return tokens;
+}
+
 function tokenizeTypes(code: string): Token[] {
   const tokens: Token[] = [];
   const re =
@@ -110,7 +185,7 @@ function tokenizeTypes(code: string): Token[] {
 
 export function highlightCode(
   code: string,
-  language: "json" | "javascript" | "bash" | "types" = "json",
+  language: "json" | "javascript" | "bash" | "types" | "html" | "css" = "json",
   options?: { persianStrings?: boolean },
 ): ReactNode {
   const tokens =
@@ -120,7 +195,13 @@ export function highlightCode(
         ? tokenizeJs(code)
         : language === "types"
           ? tokenizeTypes(code)
-          : [{ type: "plain" as const, value: code }];
+          : language === "html"
+            ? tokenizeHtml(code)
+            : language === "css"
+              ? tokenizeCss(code)
+              : language === "bash"
+                ? tokenizeBash(code)
+                : [{ type: "plain" as const, value: code }];
 
   return tokens.map((token, index) =>
     createElement(

@@ -36,6 +36,7 @@ export type Messages = {
     temporary: string;
     temporaryBadge: string;
     generator: string;
+    imageGenerator: string;
   };
   header: {
     primaryNav: string;
@@ -95,6 +96,7 @@ export type Messages = {
       whatsNew: string;
       temporary: string;
       generator: string;
+      imageGenerator: string;
       sharedData: string;
       language: string;
       resources: string;
@@ -114,6 +116,9 @@ export type Messages = {
     generatorTitle: string;
     generatorBody: string;
     generatorBullets: string[];
+    imageGeneratorTitle: string;
+    imageGeneratorBody: string;
+    imageGeneratorBullets: string[];
     sharedDataTitle: string;
     sharedDataBody: string;
     languageTitle: string;
@@ -230,6 +235,35 @@ export type Messages = {
       TOO_MANY_KEYS: string;
       UNSAFE_KEY: string;
       AUTO_FIXED: string;
+    };
+  };
+  imageGenerator: {
+    title: string;
+    blurb: string;
+    modeSvg: string;
+    modeReal: string;
+    width: string;
+    height: string;
+    generate: string;
+    generating: string;
+    yourUrl: string;
+    preview: string;
+    useInProject: string;
+    tabUrl: string;
+    tabHtml: string;
+    tabCss: string;
+    tabJs: string;
+    tabCurl: string;
+    readySizes: string;
+    sizes: {
+      avatar: string;
+      thumbnail: string;
+      profile: string;
+      square: string;
+      post: string;
+      cover: string;
+      banner: string;
+      story: string;
     };
   };
   generator: {
@@ -383,6 +417,7 @@ export const en: Messages = {
     temporary: "Temporary API",
     temporaryBadge: "Instant",
     generator: "Generator",
+    imageGenerator: "Images",
   },
   header: {
     primaryNav: "Primary",
@@ -446,12 +481,13 @@ export const en: Messages = {
     title: "Documentation",
     navLabel: "Docs",
     intro:
-      "MockData serves fake REST resources as JSON. Use public resources freely, hit Auth to practice login, try live calls in the Playground, generate fixtures at /generator, or publish your own short-lived Temporary API. Production uses one shared database for catalog resources — see Shared data.",
+      "MockData serves fake REST resources as JSON. Use public resources freely, hit Auth to practice login, try live calls in the Playground, generate fixtures at /generator, grab placeholder images at /image-generator, or publish your own short-lived Temporary API. Production uses one shared database for catalog resources — see Shared data.",
     toc: {
       intro: "Introduction",
       whatsNew: "What's new",
       temporary: "Temporary API",
       generator: "Fake Data Generator",
+      imageGenerator: "Image Generator",
       sharedData: "Shared data",
       language: "Language",
       resources: "Resources",
@@ -491,6 +527,15 @@ export const en: Messages = {
       "Site language FA uses Persian locale packs; EN uses multi-country English packs.",
       "Generate up to 1,000 records; Create API is capped by Temporary limits (500 items / 64 KB).",
       "Selections and results survive client-side navigation (cleared on full page reload).",
+    ],
+    imageGeneratorTitle: "Image Generator",
+    imageGeneratorBody:
+      "Need a placeholder image URL for UI work? Use MockData SVG placeholders or random real photos (via Picsum redirect). Set width and height, copy the link, and drop it into img, CSS, or any image field.",
+    imageGeneratorBullets: [
+      "Open /image-generator — SVG placeholders or real photos.",
+      "Public URL shape: /image/{width}/{height} for SVG; add ?type=real for photos.",
+      "Random by default. Optional ?seed= keeps the same SVG colors or the same real photo.",
+      "Ready sizes for avatar, thumbnail, profile, post, cover, banner, and story.",
     ],
     sharedDataTitle: "Shared data",
     sharedDataBody:
@@ -628,6 +673,36 @@ export const en: Messages = {
       TOO_MANY_KEYS: "Too many keys in one object (max {max}).",
       UNSAFE_KEY: "Unsafe key “{key}” is not allowed.",
       AUTO_FIXED: "Trailing commas or unsafe keys were removed.",
+    },
+  },
+  imageGenerator: {
+    title: "Image Generator",
+    blurb:
+      "For project images you can use MockData SVGs or random real photos with custom dimensions. Put the image link directly in an img, CSS, or any field meant for an image.",
+    modeSvg: "SVG",
+    modeReal: "Real Image",
+    width: "Width",
+    height: "Height",
+    generate: "Generate",
+    generating: "Generating…",
+    yourUrl: "Your API URL",
+    preview: "Preview",
+    useInProject: "Use it in your project",
+    tabUrl: "URL",
+    tabHtml: "HTML",
+    tabCss: "CSS",
+    tabJs: "JavaScript",
+    tabCurl: "cURL",
+    readySizes: "Ready sizes",
+    sizes: {
+      avatar: "Avatar",
+      thumbnail: "Thumbnail",
+      profile: "Profile",
+      square: "Square",
+      post: "Post",
+      cover: "Cover",
+      banner: "Banner",
+      story: "Story",
     },
   },
   generator: {
@@ -1297,6 +1372,19 @@ export const en: Messages = {
     },
   },
   changelog: {
+    "2026-09-19-image-generator": {
+      title: "Image Generator",
+      teaser: "Placeholder images by URL",
+      hint: "/image-generator — SVG or real photo, copy the link",
+      summary:
+        "Placeholder images by URL — MockData SVG or real photos via Picsum, with ready sizes for avatars, posts, and banners.",
+      details: [
+        "Open /image-generator to pick SVG or real image, set width/height, and copy a ready URL.",
+        "Public URLs are random by default: /image/{w}/{h} for SVG, add ?type=real for photos.",
+        "Optional ?seed= pins the same SVG colors or the same real photo every time.",
+        "Drop the link into img, CSS, or any image field — no upload step.",
+      ],
+    },
     "2026-09-17-generator": {
       title: "Fake Data Generator",
       teaser: "Realistic JSON in seconds",

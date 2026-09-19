@@ -11,6 +11,7 @@ import {
   WandSparkles,
 } from "lucide-react";
 import { CopyButton } from "@/components/docs/copy-button";
+import { TemporaryApiLabel } from "@/components/layout/temporary-api-label";
 import { HighlightedJsonEditor } from "@/components/playground/highlighted-json-editor";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import {
@@ -358,7 +359,9 @@ export function TemporaryPageContent() {
               aria-hidden
             />
           </Link>
-          <span className="truncate">{t.title}</span>
+          <span className="truncate">
+            <TemporaryApiLabel />
+          </span>
         </h1>
         <p
           className={cn(

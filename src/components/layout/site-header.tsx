@@ -4,19 +4,27 @@ import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import {
   BookOpen,
+  ChevronDown,
   Home,
+  ImageIcon,
   Languages,
+  Layers,
   Mail,
   Menu,
   Moon,
+  Sparkles,
   Sun,
+  Terminal,
+  Timer,
   X,
 } from "lucide-react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ResourcesNavMenu } from "@/components/layout/resources-nav-menu";
+import { TemporaryApiLabel } from "@/components/layout/temporary-api-label";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useTheme } from "@/components/providers/theme-provider";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
+import { apiResources } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 
 const drawerIconClass = "size-4 shrink-0 text-muted-foreground";
@@ -25,7 +33,9 @@ export function SiteHeader() {
   const { dict, locale, setLocale } = useUiLocale();
   const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [resourcesOpen, setResourcesOpen] = useState(false);
   const panelId = useId();
+  const resourcesId = useId();
   const isFa = locale === "fa";
   const isDark = theme === "dark";
 
@@ -43,21 +53,32 @@ export function SiteHeader() {
     };
   }, [menuOpen]);
 
+  useEffect(() => {
+    if (!menuOpen) setResourcesOpen(false);
+  }, [menuOpen]);
+
   function closeMenu() {
     setMenuOpen(false);
   }
 
   const navLinkClass = cn(
-    "inline-flex shrink-0 items-center rounded-md px-2 py-1.5 text-[13px] text-muted-foreground whitespace-nowrap transition-colors",
+    "inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] text-muted-foreground whitespace-nowrap transition-colors",
     "hover:bg-[var(--surface-hover)] hover:text-foreground",
     isFa && "font-fa-label",
   );
 
-  const temporaryLabel = (
-    <span dir="ltr" className="ltr-tech">
-      {dict.common.temporary}
+  const newBadge = (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-md bg-[var(--request-fill)]/15 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--request)]",
+        isFa && "font-fa-label",
+      )}
+    >
+      {dict.common.new}
     </span>
   );
+
+  const temporaryLabel = <TemporaryApiLabel />;
 
   const drawerItemClass = cn(
     "flex w-full items-center gap-2.5 px-4 py-2.5 text-start text-[13px] text-foreground transition-colors",
@@ -124,6 +145,9 @@ export function SiteHeader() {
             <Link href="/generator" className={navLinkClass}>
               {dict.common.generator}
             </Link>
+            <Link href="/image-generator" className={navLinkClass}>
+              {dict.common.imageGenerator}
+            </Link>
             <ResourcesNavMenu />
           </nav>
 
@@ -139,6 +163,10 @@ export function SiteHeader() {
             </Link>
             <Link href="/generator" className={navLinkClass}>
               {dict.common.generator}
+            </Link>
+            <Link href="/image-generator" className={navLinkClass}>
+              {dict.common.imageGenerator}
+              {newBadge}
             </Link>
             <ResourcesNavMenu />
             <Link href="/docs" className={navLinkClass}>
@@ -175,7 +203,7 @@ export function SiteHeader() {
             aria-modal="true"
             aria-label={dict.header.menu}
             className={cn(
-              "fixed inset-y-0 z-50 flex w-[min(15rem,80vw)] flex-col bg-background",
+              "fixed inset-y-0 z-50 flex w-[min(16.5rem,85vw)] flex-col bg-background",
               "animate-in fade-in-0 duration-200",
               isFa
                 ? "right-0 border-s border-border slide-in-from-right-3"
@@ -210,6 +238,105 @@ export function SiteHeader() {
                 {dict.common.home}
               </Link>
               <Link
+                href="/playground"
+                onClick={closeMenu}
+                className={drawerItemClass}
+              >
+                <Terminal
+                  className={drawerIconClass}
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+                {dict.common.playground}
+              </Link>
+              <Link
+                href="/temporary"
+                onClick={closeMenu}
+                className={drawerItemClass}
+              >
+                <Timer
+                  className={drawerIconClass}
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+                {temporaryLabel}
+              </Link>
+              <Link
+                href="/generator"
+                onClick={closeMenu}
+                className={drawerItemClass}
+              >
+                <Sparkles
+                  className={drawerIconClass}
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+                {dict.common.generator}
+              </Link>
+              <Link
+                href="/image-generator"
+                onClick={closeMenu}
+                className={drawerItemClass}
+              >
+                <ImageIcon
+                  className={drawerIconClass}
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+                <span className="flex-1">{dict.common.imageGenerator}</span>
+                {newBadge}
+              </Link>
+
+              <div>
+                <button
+                  type="button"
+                  aria-expanded={resourcesOpen}
+                  aria-controls={resourcesId}
+                  onClick={() => setResourcesOpen((o) => !o)}
+                  className={drawerItemClass}
+                >
+                  <Layers
+                    className={drawerIconClass}
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                  <span className="flex-1">{dict.home.resourcesTitle}</span>
+                  <ChevronDown
+                    className={cn(
+                      "size-3.5 shrink-0 text-muted-foreground transition-transform",
+                      resourcesOpen && "rotate-180",
+                    )}
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                </button>
+                {resourcesOpen ? (
+                  <div
+                    id={resourcesId}
+                    className="border-y border-border/70 bg-muted/25 py-1"
+                  >
+                    {apiResources.map((resource) => {
+                      const title =
+                        dict.catalog[resource.id]?.title ?? resource.title;
+                      return (
+                        <Link
+                          key={resource.id}
+                          href={resource.href}
+                          onClick={closeMenu}
+                          className={cn(
+                            "flex w-full items-center px-4 py-2 ps-11 text-start text-[12px] text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground",
+                            isFa && "font-fa-label",
+                          )}
+                        >
+                          {title}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ) : null}
+              </div>
+
+              <Link
                 href="/docs"
                 onClick={closeMenu}
                 className={drawerItemClass}
@@ -221,6 +348,8 @@ export function SiteHeader() {
                 />
                 {dict.common.docs}
               </Link>
+
+              <div className="my-1 border-t border-border" />
 
               <button
                 type="button"
@@ -259,7 +388,8 @@ export function SiteHeader() {
                     aria-hidden
                   />
                 )}
-                <span className="flex-1">
+                <span className="flex-1">{dict.header.appearance}</span>
+                <span className="text-[12px] text-muted-foreground">
                   {isDark ? dict.header.dark : dict.header.light}
                 </span>
               </button>

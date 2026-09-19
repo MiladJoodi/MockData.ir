@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 type VsCodeBlockProps = {
   code: string;
   filename?: string;
-  language?: "json" | "javascript" | "bash";
+  language?: "json" | "javascript" | "bash" | "html" | "css";
   className?: string;
   showLineNumbers?: boolean;
 };

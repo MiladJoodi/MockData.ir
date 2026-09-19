@@ -14,6 +14,21 @@ export type SiteUpdate = {
 /** Newest first. User-facing features only. Prepend to resurface the badge. */
 export const siteUpdates: SiteUpdate[] = [
   {
+    id: "2026-09-19-image-generator",
+    date: "2026-09-19",
+    title: "Image Generator",
+    summary:
+      "Placeholder images by URL — MockData SVG or real photos via Picsum, with ready sizes for avatars, posts, and banners.",
+    details: [
+      "Open /image-generator to pick SVG or real image, set width/height, and copy a ready URL.",
+      "Public URLs are random by default: /image/{w}/{h} for SVG, add ?type=real for photos.",
+      "Optional ?seed= pins the same SVG colors or the same real photo every time.",
+      "Drop the link into img, CSS, or any image field — no upload step.",
+    ],
+    href: "/image-generator",
+    hrefLabel: "Open Image Generator",
+  },
+  {
     id: "2026-09-17-generator",
     date: "2026-09-17",
     title: "Fake Data Generator",

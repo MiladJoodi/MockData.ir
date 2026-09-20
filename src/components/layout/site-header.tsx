@@ -76,7 +76,7 @@ export function SiteHeader() {
   }
 
   const navLinkClass = cn(
-    "inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] text-muted-foreground whitespace-nowrap transition-colors",
+    "inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-1.5 text-[12px] text-muted-foreground whitespace-nowrap transition-colors md:gap-1.5 md:px-2 md:text-[13px]",
     "hover:bg-[var(--surface-hover)] hover:text-foreground",
     isFa && "font-fa-label",
   );
@@ -103,7 +103,7 @@ export function SiteHeader() {
   const menuButton = (
     <button
       type="button"
-      className="grid size-10 shrink-0 place-items-center rounded-md text-foreground transition-colors hover:bg-[var(--surface-hover)] md:hidden"
+      className="grid size-9 shrink-0 place-items-center rounded-md text-foreground transition-colors hover:bg-[var(--surface-hover)] md:hidden"
       aria-expanded={menuOpen}
       aria-controls={panelId}
       aria-label={menuOpen ? dict.common.close : dict.header.openMenu}
@@ -136,14 +136,14 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-border bg-[var(--header-bg)] backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
+      <header className="sticky top-0 z-40 overflow-x-clip border-b border-border bg-[var(--header-bg)] backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-6xl items-center gap-1.5 px-3 sm:gap-3 sm:px-6">
           <div className="md:hidden">{menuButton}</div>
           {brand}
 
           <nav
             className={cn(
-              "flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto md:hidden",
+              "header-nav-scroll flex min-w-0 flex-1 items-center gap-0 overflow-x-auto overscroll-x-contain md:hidden",
               // FA header is RTL, so reverse keeps Playground near the menu and Resources last.
               isFa && "flex-row-reverse",
             )}
@@ -162,7 +162,9 @@ export function SiteHeader() {
             <Link href="/image-generator" className={navLinkClass}>
               {dict.common.imageGenerator}
             </Link>
-            <ResourcesNavMenu />
+            <ResourcesNavMenu
+              linkClassName="px-1.5 py-1.5 text-[12px] md:px-2 md:text-[13px]"
+            />
           </nav>
 
           <nav

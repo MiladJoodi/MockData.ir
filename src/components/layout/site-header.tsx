@@ -26,9 +26,18 @@ import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useTheme } from "@/components/providers/theme-provider";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { apiResources } from "@/lib/catalog";
+import { RESOURCE_PLACEHOLDERS } from "@/lib/resource-images";
 import { cn } from "@/lib/utils";
 
 const drawerIconClass = "size-4 shrink-0 text-muted-foreground";
+
+function preloadResourceImages() {
+  for (const src of Object.values(RESOURCE_PLACEHOLDERS)) {
+    const img = new window.Image();
+    img.decoding = "async";
+    img.src = src;
+  }
+}
 
 export function SiteHeader() {
   const { dict, locale, setLocale } = useUiLocale();
@@ -57,6 +66,10 @@ export function SiteHeader() {
   useEffect(() => {
     if (!menuOpen) setResourcesOpen(false);
   }, [menuOpen]);
+
+  useEffect(() => {
+    if (resourcesOpen) preloadResourceImages();
+  }, [resourcesOpen]);
 
   function closeMenu() {
     setMenuOpen(false);
@@ -149,9 +162,6 @@ export function SiteHeader() {
             <Link href="/image-generator" className={navLinkClass}>
               {dict.common.imageGenerator}
             </Link>
-            <Link href="/json-workbench" className={navLinkClass}>
-              {dict.common.jsonWorkbench}
-            </Link>
             <ResourcesNavMenu />
           </nav>
 
@@ -172,7 +182,7 @@ export function SiteHeader() {
               {dict.common.imageGenerator}
               {newBadge}
             </Link>
-            <Link href="/json-workbench" className={navLinkClass}>
+            <Link href="/json" className={navLinkClass}>
               {dict.common.jsonWorkbench}
             </Link>
             <ResourcesNavMenu />
@@ -294,7 +304,7 @@ export function SiteHeader() {
                 {newBadge}
               </Link>
               <Link
-                href="/json-workbench"
+                href="/json"
                 onClick={closeMenu}
                 className={drawerItemClass}
               >
@@ -337,17 +347,29 @@ export function SiteHeader() {
                     {apiResources.map((resource) => {
                       const title =
                         dict.catalog[resource.id]?.title ?? resource.title;
+                      const imageSrc =
+                        RESOURCE_PLACEHOLDERS[resource.id] ??
+                        "/placeholders/users.png";
                       return (
                         <Link
                           key={resource.id}
                           href={resource.href}
                           onClick={closeMenu}
                           className={cn(
-                            "flex w-full items-center px-4 py-2 ps-11 text-start text-[12px] text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground",
+                            "flex w-full items-center gap-2.5 px-4 py-2 ps-11 text-start text-[12px] text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground",
                             isFa && "font-fa-label",
                           )}
                         >
-                          {title}
+                          <img
+                            src={imageSrc}
+                            alt=""
+                            width={18}
+                            height={18}
+                            decoding="async"
+                            className="size-[18px] shrink-0 object-contain"
+                            aria-hidden
+                          />
+                          <span className="min-w-0 truncate">{title}</span>
                         </Link>
                       );
                     })}

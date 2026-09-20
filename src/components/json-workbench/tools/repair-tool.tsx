@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { CopyButton } from "@/components/docs/copy-button";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import {
@@ -12,44 +12,47 @@ import { cn } from "@/lib/utils";
 import { EmptyState } from "../shared/empty-state";
 import { JsonPane } from "../shared/json-pane";
 import { ParseError } from "../shared/parse-error";
+import { WorkbenchChipButton } from "../shared/workbench-check-chip";
 import { useWorkbench } from "../workbench-context";
 
 export function RepairTool() {
   const { dict, locale } = useUiLocale();
   const t = dict.jsonWorkbench;
   const isFa = locale === "fa";
-  const { source } = useWorkbench();
+  const { source, useAsSource } = useWorkbench();
   const outputId = useId();
+  const [justApplied, setJustApplied] = useState(false);
 
   const result = useMemo<RepairResult | null>(() => {
     if (!source.trim()) return null;
     return repairJson(source);
   }, [source]);
 
+  useEffect(() => {
+    setJustApplied(false);
+  }, [source]);
+
   const output = result?.ok ? result.text : "";
   const alreadyValid = result?.ok === true && result.alreadyValid;
   const repaired = result?.ok === true && !result.alreadyValid;
+  const failed = result != null && !result.ok;
+
+  function applyToSource() {
+    if (!output) return;
+    useAsSource(output);
+    setJustApplied(true);
+  }
 
   return (
     <div className="space-y-3">
-      <div className="rounded-md border border-[var(--request)]/25 bg-[var(--request-fill)]/10 px-3 py-2.5">
-        <p
-          className={cn(
-            "text-[13px] font-medium text-foreground",
-            isFa && "font-fa-label",
-          )}
-        >
-          {t.utilities.repairHint}
-        </p>
-        <p
-          className={cn(
-            "mt-1 text-[12.5px] leading-relaxed text-muted-foreground",
-            isFa && "font-fa-label",
-          )}
-        >
-          {t.utilities.repairUse}
-        </p>
-      </div>
+      <p
+        className={cn(
+          "text-[13px] leading-relaxed text-muted-foreground",
+          isFa && "font-fa-label",
+        )}
+      >
+        {t.utilities.repairHint}
+      </p>
 
       {!source.trim() ? (
         <EmptyState
@@ -58,7 +61,7 @@ export function RepairTool() {
         />
       ) : null}
 
-      {result && !result.ok ? (
+      {failed ? (
         <div className="space-y-2">
           <p
             className={cn(
@@ -79,9 +82,38 @@ export function RepairTool() {
               fixes={result.fixes}
               labels={t.utilities.repairFixes}
               isFa={isFa}
-              tone="muted"
             />
           ) : null}
+        </div>
+      ) : null}
+
+      {repaired ? (
+        <div className="space-y-2.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <p
+              role="status"
+              className={cn(
+                "text-[13px] text-[var(--response)]",
+                isFa && "font-fa-label",
+              )}
+            >
+              {t.utilities.repairApplied}
+            </p>
+            <WorkbenchChipButton
+              onClick={applyToSource}
+              className={cn(
+                "border-[var(--response)]/35 text-foreground",
+                isFa && "font-fa-label",
+              )}
+            >
+              {t.source.useResult}
+            </WorkbenchChipButton>
+          </div>
+          <FixChips
+            fixes={result.fixes}
+            labels={t.utilities.repairFixes}
+            isFa={isFa}
+          />
         </div>
       ) : null}
 
@@ -89,32 +121,14 @@ export function RepairTool() {
         <p
           role="status"
           className={cn(
-            "rounded-md border border-border bg-muted/40 px-3 py-2.5 text-[13px] text-foreground",
+            "text-[13px] text-muted-foreground",
             isFa && "font-fa-label",
           )}
         >
-          {t.utilities.repairAlreadyValid}
+          {justApplied
+            ? t.utilities.repairAppliedToSource
+            : t.utilities.repairAlreadyValid}
         </p>
-      ) : null}
-
-      {repaired ? (
-        <div className="space-y-2">
-          <p
-            role="status"
-            className={cn(
-              "rounded-md border border-border bg-muted/40 px-3 py-2.5 text-[13px] text-foreground",
-              isFa && "font-fa-label",
-            )}
-          >
-            {t.utilities.repairApplied}
-          </p>
-          <FixChips
-            fixes={result.fixes}
-            labels={t.utilities.repairFixes}
-            isFa={isFa}
-            tone="accent"
-          />
-        </div>
       ) : null}
 
       {output ? (
@@ -140,12 +154,10 @@ function FixChips({
   fixes,
   labels,
   isFa,
-  tone,
 }: {
   fixes: RepairFixId[];
   labels: Record<RepairFixId, string>;
   isFa: boolean;
-  tone: "accent" | "muted";
 }) {
   if (fixes.length === 0) return null;
   return (
@@ -154,11 +166,8 @@ function FixChips({
         <li
           key={id}
           className={cn(
-            "rounded-md border px-2 py-0.5 text-[11.5px] font-medium",
+            "rounded-md border border-border bg-muted/30 px-2 py-0.5 text-[11.5px] text-muted-foreground",
             isFa && "font-fa-label",
-            tone === "accent"
-              ? "border-[var(--request)]/30 bg-[var(--request-fill)]/20 text-foreground"
-              : "border-border bg-muted/40 text-muted-foreground",
           )}
         >
           {labels[id] ?? id}

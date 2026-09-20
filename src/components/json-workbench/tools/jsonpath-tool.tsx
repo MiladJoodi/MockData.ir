@@ -76,11 +76,8 @@ export function JsonPathTool() {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-md border border-border bg-muted/40 px-3 py-2.5">
-        <p className="mb-1 text-[12px] font-medium text-foreground">
-          {t.jsonpath.hintTitle}
-        </p>
-        <p className="mb-2 text-[12.5px] leading-relaxed text-muted-foreground">
+      <div className="space-y-2">
+        <p className="text-[13px] leading-relaxed text-muted-foreground">
           {t.jsonpath.whatIs}
         </p>
         <div className="flex flex-wrap justify-start gap-1.5" dir="ltr">
@@ -92,7 +89,7 @@ export function JsonPathTool() {
               className={cn(
                 "rounded-md border px-2 py-1 text-start font-mono text-[11.5px] transition-colors",
                 path === ex
-                  ? "border-[var(--request)] bg-[var(--request-fill)]/15 text-foreground"
+                  ? "border-[var(--request)]/40 bg-[var(--request)]/15 text-foreground"
                   : "border-border bg-card text-muted-foreground hover:text-foreground",
               )}
             >

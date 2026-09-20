@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   startNavigationProgress,
+  subscribeNavigationProgressCancel,
   subscribeNavigationProgressStart,
 } from "@/lib/navigation-progress";
 import { cn } from "@/lib/utils";
@@ -58,6 +59,11 @@ function NavigationProgressInner() {
     }, SHOW_DELAY_MS);
   }
 
+  function cancel() {
+    clearTimers();
+    setPhase("idle");
+  }
+
   function finish() {
     clearTimers();
     const current = phaseRef.current;
@@ -86,7 +92,14 @@ function NavigationProgressInner() {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  useEffect(() => subscribeNavigationProgressStart(begin), []);
+  useEffect(() => {
+    const unsubStart = subscribeNavigationProgressStart(begin);
+    const unsubCancel = subscribeNavigationProgressCancel(cancel);
+    return () => {
+      unsubStart();
+      unsubCancel();
+    };
+  }, []);
 
   useEffect(() => {
     function onClick(event: MouseEvent) {
@@ -96,6 +109,7 @@ function NavigationProgressInner() {
       const target = event.target as Element | null;
       const anchor = target?.closest?.("a");
       if (!anchor) return;
+      if (anchor.hasAttribute("data-soft-nav")) return;
 
       const hrefAttr = anchor.getAttribute("href");
       if (!hrefAttr || hrefAttr.startsWith("mailto:") || hrefAttr.startsWith("tel:")) {

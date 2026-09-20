@@ -23,24 +23,14 @@ export function EscapeTool() {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-md border border-[var(--request)]/25 bg-[var(--request-fill)]/10 px-3 py-2.5">
-        <p
-          className={cn(
-            "text-[13px] font-medium text-foreground",
-            isFa && "font-fa-label",
-          )}
-        >
-          {t.utilities.escapeHint}
-        </p>
-        <p
-          className={cn(
-            "mt-1 text-[12.5px] leading-relaxed text-muted-foreground",
-            isFa && "font-fa-label",
-          )}
-        >
-          {t.utilities.escapeUse}
-        </p>
-      </div>
+      <p
+        className={cn(
+          "text-[13px] leading-relaxed text-muted-foreground",
+          isFa && "font-fa-label",
+        )}
+      >
+        {t.utilities.escapeHint}
+      </p>
 
       {output ? (
         <CodeOutputPane

@@ -299,11 +299,19 @@ export function DocsPageContent() {
           <section id="json-workbench" className="scroll-mt-20 space-y-4">
             <h2
               className={cn(
-                "text-xl font-semibold tracking-tight",
+                "inline-flex flex-wrap items-center gap-2 text-xl font-semibold tracking-tight",
                 isFa && "font-fa-label",
               )}
             >
               {d.jsonWorkbenchTitle}
+              <span
+                className={cn(
+                  "inline-flex items-center rounded-md bg-[var(--request-fill)]/15 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--request)]",
+                  isFa && "font-fa-label",
+                )}
+              >
+                {dict.common.inDevelopment}
+              </span>
             </h2>
             <p
               className={cn(
@@ -325,7 +333,7 @@ export function DocsPageContent() {
             </ul>
             <p>
               <Link
-                href="/json-workbench"
+                href="/json"
                 className={cn(
                   "text-[14px] font-medium text-foreground underline-offset-2 hover:underline",
                   isFa && "font-fa-label",

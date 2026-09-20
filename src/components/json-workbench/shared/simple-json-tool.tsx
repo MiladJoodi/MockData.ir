@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 import { CopyButton } from "@/components/docs/copy-button";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { formatJson, parseJson } from "@/lib/json-workbench/parse";
@@ -32,6 +32,8 @@ type Props = {
   options?: ReactNode;
   note?: ReactNode;
   autoRun?: boolean;
+  /** Re-run transform when this changes (e.g. option toggles) without remounting. */
+  rerunKey?: string | number;
   /** Allow pushing result into the shared JSON pane */
   allowApply?: boolean;
 };
@@ -47,12 +49,12 @@ export function SimpleJsonTool({
   options,
   note,
   autoRun = true,
+  rerunKey,
 }: Props) {
   const { dict } = useUiLocale();
   const t = dict.jsonWorkbench;
   const { source, parsed } = useWorkbench();
   const outputId = useId();
-  const lastSource = useRef<string | null>(null);
 
   const [output, setOutput] = useState("");
   const [error, setError] = useState<ParseErr | null>(null);
@@ -101,16 +103,14 @@ export function SimpleJsonTool({
 
   useEffect(() => {
     if (!autoRun) return;
-    if (lastSource.current === source) return;
-    lastSource.current = source;
     if (!source.trim()) {
       setOutput("");
       setError(null);
       return;
     }
     run(source);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [source, autoRun]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- rerun when source/options change; transform closes over latest opts
+  }, [source, autoRun, rerunKey]);
 
   return (
     <div className="space-y-3">

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="240" viewBox="0 0 640 240" role="img" aria-label="Mock data diagram">
+  <rect width="640" height="240" fill="#0f1419"/>
+  <rect x="24" y="24" width="592" height="192" rx="12" fill="#1a222c" stroke="#2a3544"/>
+  <text x="48" y="120" fill="#9fb0c3" font-family="ui-monospace, monospace" font-size="28">{ "users": [ ... ] }</text>
+</svg>

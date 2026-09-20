@@ -16,6 +16,7 @@ export type Messages = {
     searchPlaceholder: string;
     noResults: string;
     new: string;
+    inDevelopment: string;
     actions: string;
     copy: string;
     copied: string;
@@ -73,6 +74,32 @@ export type Messages = {
     body: string;
     home: string;
     docs: string;
+  };
+  blog: {
+    title: string;
+    description: string;
+    all: string;
+    emptyTitle: string;
+    emptyBody: string;
+    emptyCategoryTitle: string;
+    emptyCategoryBody: string;
+    readingTime: string;
+    previousPage: string;
+    nextPage: string;
+    pageStatus: string;
+    paginationNav: string;
+    categoriesNav: string;
+    backToBlog: string;
+    previousArticle: string;
+    nextArticle: string;
+    relatedArticles: string;
+    categories: {
+      news: string;
+      "mock-data": string;
+      json: string;
+      api: string;
+      frontend: string;
+    };
   };
   contact: {
     title: string;
@@ -482,6 +509,7 @@ export type Messages = {
       repairFormatted: string;
       repairReady: string;
       repairApplied: string;
+      repairAppliedToSource: string;
       repairFailedTitle: string;
       repairFailedAt: string;
       repairPreview: string;
@@ -687,6 +715,8 @@ export type Messages = {
       teaser?: string;
       /** Optional URL / hint under the teaser */
       hint?: string;
+      /** Optional status chip in What's new (e.g. In development) */
+      badge?: string;
     }
   >;
   catalog: Record<string, { title: string; summary: string }>;
@@ -710,6 +740,7 @@ export const en: Messages = {
     searchPlaceholder: "Search APIs…",
     noResults: "No results",
     new: "New",
+    inDevelopment: "In development",
     actions: "Actions",
     copy: "Copy",
     copied: "Copied",
@@ -731,7 +762,7 @@ export const en: Messages = {
     temporaryBadge: "Instant",
     generator: "Generator",
     imageGenerator: "Images",
-    jsonWorkbench: "JSON",
+    jsonWorkbench: "JSON Workbench",
   },
   header: {
     primaryNav: "Primary",
@@ -771,6 +802,33 @@ export const en: Messages = {
     home: "Home",
     docs: "Docs",
   },
+  blog: {
+    title: "Blog",
+    description:
+      "Guides and notes on mock data, JSON, APIs, and frontend workflows—written for builders using MockData.",
+    all: "All",
+    emptyTitle: "No posts",
+    emptyBody: "Published articles will show up here. Check back soon.",
+    emptyCategoryTitle: "No posts",
+    emptyCategoryBody: "Try another category or browse all posts.",
+    readingTime: "{n} min read",
+    previousPage: "Previous",
+    nextPage: "Next",
+    pageStatus: "Page {page} of {total}",
+    paginationNav: "Pagination",
+    categoriesNav: "Categories",
+    backToBlog: "Blog",
+    previousArticle: "Previous",
+    nextArticle: "Next",
+    relatedArticles: "Related articles",
+    categories: {
+      news: "News",
+      "mock-data": "Mock data",
+      json: "JSON",
+      api: "API",
+      frontend: "Frontend",
+    },
+  },
   contact: {
     title: "Get in touch",
     intro:
@@ -795,7 +853,7 @@ export const en: Messages = {
     title: "Documentation",
     navLabel: "Docs",
     intro:
-      "MockData serves fake REST resources as JSON. Use public resources freely, hit Auth to practice login, try live calls in the Playground, generate fixtures at /generator, grab placeholder images at /image-generator, work with JSON at /json-workbench, or publish your own short-lived Temporary API. Production uses one shared database for catalog resources — see Shared data.",
+      "MockData serves fake REST resources as JSON. Use public resources freely, hit Auth to practice login, try live calls in the Playground, generate fixtures at /generator, grab placeholder images at /image-generator, open JSON Workbench at /json, or publish your own short-lived Temporary API. Production uses one shared database for catalog resources — see Shared data.",
     toc: {
       intro: "Introduction",
       whatsNew: "What's new",
@@ -854,13 +912,14 @@ export const en: Messages = {
     ],
     jsonWorkbenchTitle: "JSON Workbench",
     jsonWorkbenchBody:
-      "A single in-browser workspace for everyday JSON work while you build UIs — format, compare, search, and convert without leaving MockData.",
+      "JSON Workbench (in development): one in-browser space for everyday JSON work while you build UIs — format, compare, search, and convert without leaving MockData.",
     jsonWorkbenchBullets: [
-      "Open /json-workbench and select a tool — the workspace updates in place (share with ?tool=).",
+      "Open JSON Workbench at /json and select a tool — the workspace updates in place (share with ?tool=).",
       "Core: Format, Tree View, Search, JSONPath, and Compare Structure.",
       "Transform: TypeScript, Zod, JSON Schema, YAML, and CSV.",
       "Utilities: sort keys, remove empty values, flatten, escape/repair, pick/omit, and more.",
       "Runs in your browser — JSON is not sent to a server.",
+      "Still evolving — more tools and polish over time.",
     ],
     sharedDataTitle: "Shared data",
     sharedDataBody:
@@ -1039,7 +1098,7 @@ export const en: Messages = {
       title: "Your JSON",
       hint: "Paste here once. Every action below uses this document.",
       sample: "Load sample",
-      valid: "JSON looks valid — pick an action.",
+      valid: "JSON is valid.",
       needJson: "Paste your JSON on the left first.",
       fixFirst: "Fix the JSON error in Your JSON, then try again.",
       pickAction: "What do you want to do?",
@@ -1056,7 +1115,7 @@ export const en: Messages = {
       utility: "Utilities",
     },
     labels: {
-      input: "Input — paste here",
+      input: "Input",
       output: "Output",
       tree: "Tree",
       matches: "Matches",
@@ -1248,16 +1307,17 @@ export const en: Messages = {
       unescapeIdleTitle: "JSON appears here",
       unescapeIdleBody: "Paste an escaped JSON string, then unescape.",
       repairHint:
-        "Professional JSON repair — multi-pass salvage for truncated and mid-edit JSON.",
+        "Multi-pass repair for broken, truncated, commented, or mid-edit JSON.",
       repairUse:
         "Fixes quotes, commas, and brackets; strips comments and code fences; handles Python/JS literals, JSONP, MongoDB types, NDJSON, truncated documents, and junk typed in the middle.",
-      repairAlreadyValid: "Already valid JSON — pretty-printed in the output.",
-      repairFormatted: "Formatted — see output below.",
-      repairReady: "Repairable issues detected — see output below.",
-      repairApplied: "Repaired — see output below (Your JSON is unchanged).",
-      repairFailedTitle: "Could not fully repair",
+      repairAlreadyValid: "Already fine. Just formatted.",
+      repairFormatted: "Formatted.",
+      repairReady: "Fixed what we could.",
+      repairApplied: "Fixed.",
+      repairAppliedToSource: "Applied to Your JSON.",
+      repairFailedTitle: "Couldn’t fully repair",
       repairFailedAt: "{message} (line {line}, column {column})",
-      repairPreview: "Repaired output",
+      repairPreview: "Repaired",
       repairFixes: {
         "trailing-commas": "Trailing commas",
         "single-quotes": "Single quotes",
@@ -1303,10 +1363,10 @@ export const en: Messages = {
       fieldsClear: "Clear",
       fieldsEmpty: "This JSON has no selectable fields.",
       pickHint: "Keep only the fields you select — click fields below.",
-      pickIdleTitle: "Select the fields you want to keep.",
+      pickIdleTitle: "Result appears here",
       pickIdleBody: "",
       omitHint: "Remove the fields you select — click fields below.",
-      omitIdleTitle: "Select the fields you want to remove.",
+      omitIdleTitle: "Result appears here",
       omitIdleBody: "",
       compareHint: "Paste two JSON documents side by side. Structure only — values are ignored.",
       compareUse:
@@ -2026,15 +2086,17 @@ export const en: Messages = {
   changelog: {
     "2026-09-19-json-workbench": {
       title: "JSON Workbench",
-      teaser: "Format, compare, and transform JSON",
-      hint: "/json-workbench — pick a tool, workspace updates in place",
+      teaser: "In development — format, compare, and transform JSON",
+      hint: "/json — pick a tool, workspace updates in place",
+      badge: "In development",
       summary:
-        "One in-browser workspace to format, compare structure, search, and transform JSON — plus TypeScript, Zod, YAML, CSV, and utilities.",
+        "JSON Workbench is in development: one in-browser workspace to format, compare structure, search, and transform JSON — plus TypeScript, Zod, YAML, CSV, and utilities.",
       details: [
-        "Open /json-workbench and pick a tool — the workspace updates in place (deep-link with ?tool=).",
+        "Open JSON Workbench at /json and pick a tool — the workspace updates in place (deep-link with ?tool=).",
         "Core: Format, Tree, Search, JSONPath, and Compare Structure.",
         "Transform: TypeScript, Zod, JSON Schema, YAML, and CSV conversions.",
         "Utilities: sort keys, clean empty values, flatten, escape, repair, pick/omit, and more.",
+        "Still evolving — expect more tools and polish over time.",
       ],
     },
     "2026-09-19-image-generator": {

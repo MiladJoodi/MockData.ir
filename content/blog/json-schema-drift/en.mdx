@@ -1,0 +1,14 @@
+---
+id: "json-schema-drift"
+title: "Catch JSON Schema Drift Early"
+description: "How sample fixtures reveal breaking field renames before they hit production UIs."
+category: "json"
+date: "2026-09-12"
+published: false
+---
+
+Renaming `userName` to `fullName` looks harmless until every screen breaks. Keep fixtures next to the schema and regenerate often.
+
+## Diff the samples
+
+When generators change, compare yesterday’s JSON with today’s. Small diffs catch big surprises.

@@ -1,0 +1,64 @@
+---
+id: "temporary-api-smoke-tests"
+title: "Smoke-Test Frontends with a Temporary API"
+description: "How a temporary API can help you build and test a frontend before the real backend is ready."
+category: "api"
+date: "2026-09-17"
+published: false
+---
+
+Suppose you're working on a frontend page that needs an API, but the backend isn't ready yet. You don't have to stop working or build everything around hardcoded data.
+
+A temporary API gives you the endpoints your frontend needs so you can work with real HTTP requests and JSON responses from the start.
+
+## Start with the endpoints you need
+
+You don't need to build the whole API. Just create the endpoints required by the page you're working on.
+
+For example, a users page might only need these:
+
+```http id="b2k7qx"
+GET /users
+GET /users/42
+POST /users
+```
+
+Now the frontend can fetch a list of users, get a single user, and create a new user without waiting for the real API.
+
+## Test different responses
+
+A temporary API is not only useful for testing the normal flow. You can also use it to return different responses and see how the UI handles them.
+
+For example, return `404` when a user doesn't exist or `422` when the submitted data is invalid.
+
+```http id="r5m1cv"
+GET /users/42 HTTP/1.1
+Accept: application/json
+```
+
+This lets you build and test states like "User not found", validation errors, and other error messages before the real backend is ready.
+
+> A temporary API is useful for more than the happy path. You can use it to test different error states before the real backend is ready.
+
+## Keep the response shape consistent
+
+If the real API is expected to return a user with fields like `id`, `name`, and `email`, use the same structure in the temporary API.
+
+This matters because when the real backend is ready, you shouldn't have to change a large part of the frontend just because the response shape is different.
+
+> The closer the temporary API is to the real API, the easier it will be to replace it later.
+
+The goal of a temporary API isn't to build a complete backend. It just needs to give the frontend something close enough to the real API to develop and test against.
+
+## When a temporary API is useful
+
+A temporary API is useful whenever the backend isn't ready but the frontend needs API endpoints to keep moving.
+
+You can use it to:
+
+* Develop the UI
+* Test API requests
+* Check loading and error states
+* Run demos without depending on the real API
+
+Once the real backend is ready, replace the temporary endpoints with the real ones.

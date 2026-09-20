@@ -41,7 +41,7 @@ export function ConvertModeToggle({ mode, onChange }: ConvertModeToggleProps) {
             className={cn(
               "h-7 rounded px-2 text-[11.5px] transition-colors sm:px-2.5 sm:text-[12px]",
               mode === id
-                ? "bg-[var(--request-fill)]/20 font-medium text-foreground"
+                ? "bg-[var(--request)]/15 font-medium text-foreground"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >

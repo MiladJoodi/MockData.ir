@@ -22,7 +22,7 @@ export function HomePageContent() {
       <JsonLd data={softwareApplicationJsonLd()} />
       <JsonLd data={organizationJsonLd()} />
 
-      <section className="mb-24 flex max-w-full flex-col items-center overflow-x-clip text-center">
+      <section className="mb-12 flex max-w-full flex-col items-center overflow-x-clip text-center sm:mb-24">
         <HeroTitle className="max-w-full" />
         <p className="mt-5 max-w-xl text-[15px] leading-7 text-foreground/75 sm:text-[16px] sm:leading-8">
           {dict.home.tagline}
@@ -33,7 +33,7 @@ export function HomePageContent() {
       </section>
 
       <section id="resources" className="scroll-mt-16">
-        <div className="mb-10 max-w-2xl">
+        <div className="mb-8 max-w-2xl sm:mb-10">
           <h2 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
             {dict.home.resourcesTitle}
           </h2>

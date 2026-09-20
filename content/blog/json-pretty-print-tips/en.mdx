@@ -1,0 +1,25 @@
+---
+id: "json-pretty-print-tips"
+title: "Pretty-Print JSON Without Losing Structure"
+description: "Quick habits for formatting JSON in the workbench so nested objects stay readable during debugging."
+category: "json"
+date: "2026-09-18"
+published: false
+---
+
+Messy minified JSON slows everyone down. A clean pretty-print makes nesting, arrays, and nulls obvious at a glance.
+
+## Keep keys stable
+
+When you regenerate fixtures, keep key order consistent so diffs stay small and reviews stay focused.
+
+## Validate before you paste
+
+Run a quick parse check in the JSON workbench before dropping payloads into tests or docs.
+
+```json
+{
+  "ok": true,
+  "items": [1, 2, 3]
+}
+```

@@ -49,7 +49,7 @@ export function HeroTitle({ className }: { className?: string }) {
   return (
     <h1
       className={cn(
-        "max-w-full text-5xl leading-[0.92] font-semibold tracking-[-0.05em] sm:text-7xl",
+        "max-w-full text-5xl leading-none font-semibold tracking-[-0.05em] sm:text-7xl",
         className,
       )}
       dir="ltr"
@@ -69,7 +69,7 @@ export function HeroTitle({ className }: { className?: string }) {
           {letters.map((char, i) => (
             <span
               key={i}
-              className="hero-letter-mask inline-block overflow-hidden pb-[0.08em]"
+              className="hero-letter-mask inline-block overflow-hidden pt-[0.12em] pb-[0.1em]"
             >
               <span
                 className="hero-letter-face inline-block will-change-transform"

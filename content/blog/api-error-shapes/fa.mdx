@@ -1,0 +1,22 @@
+---
+id: "api-error-shapes"
+title: "شکل خطاهای API را یکدست نگه دارید"
+description: "یادداشت کوتاه درباره JSON خطای پایدار تا فرانت بدون حالت خاص، خطاها را نشان دهد."
+category: "api"
+date: "2026-09-13"
+published: false
+---
+
+payload خطای ناسازگار UI را پر از شاخه می‌کند. یک شکل انتخاب کنید و در API موقت و واقعی ثابت بمانید.
+
+## فیلدهای حداقلی
+
+`code`، `message` و در صورت نیاز `details` کافی است—هم برای toast و هم خطای فرم.
+
+```json
+{
+  "code": "validation_error",
+  "message": "ایمیل نامعتبر است",
+  "details": { "field": "email" }
+}
+```

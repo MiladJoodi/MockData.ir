@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useId, useMemo, useState } from "react";
-import { Check } from "lucide-react";
 import { CopyButton } from "@/components/docs/copy-button";
 import { useUiLocale } from "@/components/providers/ui-locale-provider";
 import { extractEntries } from "@/lib/json-workbench/extract";
 import { formatJson } from "@/lib/json-workbench/parse";
 import { cn } from "@/lib/utils";
+import {
+  WorkbenchCheckChip,
+  WorkbenchChipButton,
+} from "../shared/workbench-check-chip";
 import { EmptyState } from "../shared/empty-state";
 import { JsonPane } from "../shared/json-pane";
-import { workbenchGhostBtn } from "../shared/workbench-toolbar";
 import { useWorkbench } from "../workbench-context";
 
 export function ExtractTool() {
@@ -50,24 +52,14 @@ export function ExtractTool() {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-md border border-[var(--request)]/25 bg-[var(--request-fill)]/10 px-3 py-2.5">
-        <p
-          className={cn(
-            "text-[13px] font-medium text-foreground",
-            isFa && "font-fa-label",
-          )}
-        >
-          {t.utilities.extractHint}
-        </p>
-        <p
-          className={cn(
-            "mt-1 text-[12.5px] leading-relaxed text-muted-foreground",
-            isFa && "font-fa-label",
-          )}
-        >
-          {t.utilities.fieldsClickHint}
-        </p>
-      </div>
+      <p
+        className={cn(
+          "text-[13px] leading-relaxed text-muted-foreground",
+          isFa && "font-fa-label",
+        )}
+      >
+        {t.utilities.extractHint}
+      </p>
 
       {parsed.ok && available.length > 0 ? (
         <div className="space-y-2">
@@ -79,62 +71,37 @@ export function ExtractTool() {
               )}
             >
               {t.utilities.fieldsLabel}
-              <span className="ms-1.5 font-normal tabular-nums">
-                ({selected.length}/{available.length})
-              </span>
             </span>
             <div className="flex gap-1.5">
-              <button
-                type="button"
-                className={cn(workbenchGhostBtn, "h-8 px-2.5 text-[12px]")}
+              <WorkbenchChipButton
                 onClick={() => setSelected(available)}
                 disabled={selected.length === available.length}
+                className={cn(isFa && "font-fa-label")}
               >
                 {t.utilities.fieldsSelectAll}
-              </button>
-              <button
-                type="button"
-                className={cn(workbenchGhostBtn, "h-8 px-2.5 text-[12px]")}
+              </WorkbenchChipButton>
+              <WorkbenchChipButton
                 onClick={() => setSelected([])}
                 disabled={selected.length === 0}
+                className={cn(isFa && "font-fa-label")}
               >
                 {t.utilities.fieldsClear}
-              </button>
+              </WorkbenchChipButton>
             </div>
           </div>
 
           <ul
-            className="flex max-h-48 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-border bg-background/60 p-2"
+            className="flex max-h-48 flex-wrap gap-1.5 overflow-y-auto"
             aria-label={t.utilities.fieldsLabel}
           >
             {available.map((path) => {
               const on = selected.includes(path);
               return (
                 <li key={path}>
-                  <button
-                    type="button"
-                    role="checkbox"
-                    aria-checked={on}
+                  <WorkbenchCheckChip
+                    checked={on}
                     onClick={() => toggle(path)}
-                    className={cn(
-                      "inline-flex max-w-full items-center gap-1.5 rounded-md border px-2 py-1 text-start transition-colors",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--request)]/45",
-                      on
-                        ? "border-[var(--request)]/45 bg-[var(--request-fill)]/15"
-                        : "border-border bg-card hover:bg-[var(--surface-hover)]",
-                    )}
                   >
-                    <span
-                      className={cn(
-                        "grid size-4 shrink-0 place-items-center rounded-full border",
-                        on
-                          ? "border-[var(--request)] bg-[var(--request)] text-white"
-                          : "border-border bg-background text-transparent",
-                      )}
-                      aria-hidden
-                    >
-                      <Check className="size-2.5" strokeWidth={3} />
-                    </span>
                     <code
                       className={cn(
                         "truncate font-mono text-[12px]",
@@ -144,7 +111,7 @@ export function ExtractTool() {
                     >
                       {path}
                     </code>
-                  </button>
+                  </WorkbenchCheckChip>
                 </li>
               );
             })}

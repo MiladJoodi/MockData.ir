@@ -28,12 +28,9 @@ export function SourcePanel({ className, compact }: Props) {
   return (
     <div className={cn("flex min-h-0 flex-col gap-2", className)}>
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="text-[13px] font-semibold text-[var(--request)]">
-            {t.source.title}
-          </p>
-          <p className="text-[12px] text-muted-foreground">{t.source.hint}</p>
-        </div>
+        <p className="min-w-0 text-[13px] font-semibold text-[var(--request)]">
+          {t.source.title}
+        </p>
         <button
           type="button"
           onClick={loadSample}

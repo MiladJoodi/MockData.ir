@@ -200,6 +200,16 @@ function WorkbenchShell() {
             </Link>
           )}
           <span className="truncate">{headerTitle}</span>
+          {!isCompare ? (
+            <span
+              className={cn(
+                "inline-flex shrink-0 items-center rounded-md bg-[var(--request-fill)]/15 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--request)]",
+                isFa && "font-fa-label",
+              )}
+            >
+              {dict.common.inDevelopment}
+            </span>
+          ) : null}
         </h1>
         <p
           className={cn(

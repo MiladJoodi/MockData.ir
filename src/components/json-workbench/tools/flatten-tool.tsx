@@ -24,24 +24,14 @@ export function FlattenTool() {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-md border border-[var(--request)]/25 bg-[var(--request-fill)]/10 px-3 py-2.5">
-        <p
-          className={cn(
-            "text-[13px] font-medium text-foreground",
-            isFa && "font-fa-label",
-          )}
-        >
-          {t.utilities.flattenHint}
-        </p>
-        <p
-          className={cn(
-            "mt-1 text-[12.5px] leading-relaxed text-muted-foreground",
-            isFa && "font-fa-label",
-          )}
-        >
-          {t.utilities.flattenUse}
-        </p>
-      </div>
+      <p
+        className={cn(
+          "text-[13px] leading-relaxed text-muted-foreground",
+          isFa && "font-fa-label",
+        )}
+      >
+        {t.utilities.flattenHint}
+      </p>
 
       {output ? (
         <JsonPane

@@ -63,7 +63,16 @@ export function DocsWhatsNew() {
                   >
                     {titleNode}
                   </h3>
-                  {isLatest ? (
+                  {copy.badge ? (
+                    <span
+                      className={cn(
+                        "inline-flex items-center rounded-md bg-[var(--request-fill)]/15 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--request)]",
+                        isFa && "font-fa-label",
+                      )}
+                    >
+                      {copy.badge}
+                    </span>
+                  ) : isLatest ? (
                     <span
                       className={cn(
                         "inline-flex items-center rounded-md bg-[var(--request-fill)]/15 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--request)]",

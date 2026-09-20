@@ -203,7 +203,7 @@ export function SearchTool() {
                   className={cn(
                     "flex w-full flex-col gap-0.5 rounded-md px-2.5 py-2 text-start transition-colors",
                     i === activeIndex
-                      ? "bg-[var(--request-fill)]/15"
+                      ? "bg-[var(--request)]/15"
                       : "hover:bg-[var(--surface-hover)]",
                   )}
                 >

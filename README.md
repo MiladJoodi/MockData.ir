@@ -10,7 +10,7 @@ Hit live endpoints, get predictable seeded responses, try auth flows, then wire 
 - **Temporary API** — paste your own JSON and get a short-lived public REST URL (`/api/t/…`), no account, up to 5 live at a time
 - **Fake Data Generator** — schema-driven fake JSON at `/generator` (people, ecommerce, content, and more); copy, download, or Create API
 - **Image Generator** — placeholder SVG or real photos by URL at `/image/{w}/{h}` (optional `?type=real`, `?seed=`)
-- **JSON Workbench** — format, validate, diff, search, and transform JSON in the browser at `/json-workbench` (TypeScript, Zod, YAML, CSV, utilities)
+- **JSON Workbench** (in development) — format, validate, diff, search, and transform JSON in the browser at `/json` (TypeScript, Zod, YAML, CSV, utilities)
 - **Playground** — in-browser request runner; request/response state survives client-side navigation between resources and routes
 - **Full CRUD** — list, create, read, update, delete with pagination, search, and filters
 - **Persian data** — add `?lang=fa` for Iranian names and copy (English is default); Generator FA UI uses Persian locale packs
@@ -54,6 +54,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/temporary` | Paste JSON → short-lived public REST URL |
 | `/generator` | Fake Data Generator → copy / download / Create API |
 | `/image-generator` | Build placeholder image URLs (SVG or real) |
+| `/json` | JSON Workbench (in development) — format, compare, transform |
 | `/image/{w}/{h}` | Image API — SVG body or 302 to Picsum (`?type=real`) |
 | `/users`, `/posts`, … | Per-resource docs (+ Preview where available) |
 | `/contact` | Contact form |

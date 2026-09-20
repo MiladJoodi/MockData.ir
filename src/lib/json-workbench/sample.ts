@@ -3,6 +3,10 @@ export const WORKBENCH_SAMPLE_JSON = `{
   "name": "MockData",
   "active": true,
   "count": 3,
+  "note": "",
+  "extra": null,
+  "tags": [],
+  "meta": {},
   "skills": ["React", "Next.js"],
   "address": {
     "city": "Tehran"

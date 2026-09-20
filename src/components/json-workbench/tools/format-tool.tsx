@@ -41,7 +41,7 @@ export function FormatModeToggle({ mode, onChange }: FormatModeToggleProps) {
           className={cn(
             "h-7 rounded px-2.5 text-[12px] transition-colors",
             mode === id
-              ? "bg-[var(--request-fill)]/20 font-medium text-foreground"
+              ? "bg-[var(--request)]/15 font-medium text-foreground"
               : "text-muted-foreground hover:text-foreground",
           )}
         >

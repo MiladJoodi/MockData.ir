@@ -1,14 +1,19 @@
-import type { Metadata } from "next";
-import { JsonWorkbenchPageContent } from "@/components/json-workbench/json-workbench-page";
-import { createPageMetadata } from "@/lib/seo";
+import { permanentRedirect } from "next/navigation";
 
-export const metadata: Metadata = createPageMetadata({
-  title: "JSON Workbench",
-  description:
-    "Format, validate, compare structure, search, and transform JSON in the browser — TypeScript, Zod, YAML, CSV, and utilities on MockData.",
-  path: "/json-workbench",
-});
+type Props = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-export default function JsonWorkbenchPage() {
-  return <JsonWorkbenchPageContent />;
+/** Old path — keep bookmarks and shared links working. */
+export default async function JsonWorkbenchRedirect({ searchParams }: Props) {
+  const params = await searchParams;
+  const qs = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (typeof value === "string") qs.set(key, value);
+    else if (Array.isArray(value)) {
+      for (const v of value) qs.append(key, v);
+    }
+  }
+  const query = qs.toString();
+  permanentRedirect(query ? `/json?${query}` : "/json");
 }

@@ -1,0 +1,22 @@
+---
+id: "api-error-shapes"
+title: "Keep API Error Shapes Consistent"
+description: "A short note on stable error JSON so frontends can render failures without special cases."
+category: "api"
+date: "2026-09-13"
+published: false
+---
+
+Inconsistent error payloads force UI branches everywhere. Pick one shape and stick to it across temporary and real APIs.
+
+## Minimal fields
+
+Include `code`, `message`, and optional `details`. That covers toast copy and form field errors.
+
+```json
+{
+  "code": "validation_error",
+  "message": "Email is invalid",
+  "details": { "field": "email" }
+}
+```

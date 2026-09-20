@@ -1,0 +1,94 @@
+---
+id: "realistic-user-fixtures"
+title: "How to Build Mock Data for Users"
+description: "A few simple tips for creating Mock Data for Users without using real user information."
+category: "mock-data"
+date: "2026-09-14"
+published: false
+---
+
+When you're working on a frontend project, you often need a few Users to build and test the UI.
+
+You can start with a few simple records, but if every User has a name like `John Doe` and an email like `test@example.com`, you won't see many of the problems that can happen in the UI.
+
+It's better to use data that is close to what you expect to receive from the API, both in structure and values.
+
+## Don't only change the name and email
+
+If a User in your project only has `name` and `email`, those fields may be enough. But if you also have fields like `role`, `avatar`, or `phone`, it's better to include them in your Mock Data too.
+
+For example:
+
+```json
+{
+  "id": "usr_1001",
+  "name": "Samira Nouri",
+  "email": "samira.nouri@example.com",
+  "role": "developer"
+}
+```
+
+The data doesn't need to be complicated. The important thing is that its structure and format are close to what you actually receive in your project.
+
+## Don't use real user information
+
+Sometimes, to get data faster, you might take a few Users from the main database and put them into the project. It's better not to do that.
+
+You can generate Mock Data yourself and create as many records as you need.
+
+> Don't put real user information into Mock Data. Generate synthetic data instead, so you can safely keep it in Git or share it with your team.
+
+## Don't make every User the same
+
+If all Users have short names, short emails, and complete information, you're only testing the UI in one situation.
+
+For better testing, you can include different cases in your data:
+
+* Short and long names
+* Emails with different lengths
+* Different roles like `developer` and `admin`
+* Some empty or `null` fields
+
+For example:
+
+```json
+[
+  {
+    "id": "usr_1001",
+    "name": "Samira Nouri",
+    "email": "samira.nouri@example.com",
+    "role": "developer"
+  },
+  {
+    "id": "usr_1002",
+    "name": "Alexandra Johnson-Williams",
+    "email": "alexandra.johnson@example.com",
+    "role": "admin"
+  }
+]
+```
+
+This can help you find problems like broken table layouts, truncated text, or issues on smaller screens earlier.
+
+| Case           | Example                         |
+| -------------- | ------------------------------- |
+| Long name      | `Alexandra Johnson-Williams`    |
+| Long email     | `alexandra.johnson@example.com` |
+| Empty field    | `"phone": null`                 |
+| Different role | `"role": "admin"`               |
+
+## Keep some ids stable for testing
+
+If your tests always need to find a specific User, it's better to keep its `id` stable.
+
+For example, you can always use the User with the `id` `usr_1001` in your tests.
+
+For other Users, you can generate different `id` values when you need more variety.
+
+## When you need more Users
+
+Creating a few Users manually is fine, but when you need hundreds of records for pagination, search, or table testing, adding all of them manually takes time.
+
+That's where a [Mock Data Generator](https://mockdata.ir/generator) can help.
+
+You can use it to generate many Users with the same structure and create new data whenever you need it.

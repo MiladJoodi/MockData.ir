@@ -95,7 +95,7 @@ function ToolChip({
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--request)]/45",
           isFa && "font-fa-label",
           active
-            ? "bg-[var(--request)] font-medium text-white shadow-sm"
+            ? "border border-[var(--request)]/40 bg-[var(--request)]/15 font-medium text-foreground"
             : "border border-border bg-card text-foreground hover:border-[var(--request)]/40 hover:bg-[var(--surface-hover)]",
         )}
       >

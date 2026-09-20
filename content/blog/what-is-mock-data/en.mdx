@@ -1,0 +1,46 @@
+---
+id: "what-is-mock-data"
+title: "What Is Mock Data?"
+description: "A practical intro to mock data, why frontend teams use it, what good mock data looks like, and how MockData can help."
+category: "mock-data"
+date: "2026-09-20"
+published: true
+---
+
+Mock data is fake data that looks and behaves like data from a real API. It gives you something realistic to work with while the backend is still being built or when you don't want to use real production data.
+
+## Why teams use it
+
+Frontend work often starts before the backend is ready. Instead of building everything around empty screens or a few hardcoded examples, you can use mock data and keep working on the UI.
+
+It also makes it easier to test different situations, like long lists, empty states, forms, and error responses.
+
+> Mock data lets you build and test the frontend before the real backend is ready.
+
+## What good mock data looks like
+
+Good mock data should be realistic enough to be useful, but it doesn't need to be complicated.
+
+Keep field names and data types consistent, and use values that make sense for the UI you're building.
+
+For example:
+
+```json id="q7n4xm"
+{
+  "id": "user_01",
+  "name": "Ada Lovelace",
+  "email": "ada@example.com"
+}
+```
+
+Use made-up names, emails, and other values instead of copying data from a real database.
+
+> Keep your mock data separate from real user data. You can generate as many test records as you need without exposing production information.
+
+## Where MockData helps
+
+MockData gives you a few ways to work with mock data:
+
+* Generate records when you need more data for your UI.
+* Create a temporary API when you need live endpoints.
+* Use the JSON Workbench to format, fix, or convert JSON before using it in your project.

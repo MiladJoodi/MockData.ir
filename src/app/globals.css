@@ -294,7 +294,8 @@
 
 .hero-title-stage {
   max-width: 100%;
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
   perspective: 900px;
   transform-style: preserve-3d;
 }

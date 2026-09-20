@@ -1,0 +1,14 @@
+---
+id: "mock-data-seed-values"
+title: "Seed Values Make Mock Data Repeatable"
+description: "Lock generator seeds when tests need the same users every run—and unlock them for demos."
+category: "mock-data"
+date: "2026-09-10"
+published: false
+---
+
+Random fixtures are great for demos and terrible for brittle assertions. Prefer seeded generation in CI.
+
+## Two modes
+
+Use a fixed seed in tests. Use fresh randomness in playground sessions so demos stay lively.
